@@ -23,7 +23,7 @@ def main():
     sw = open(os.path.join(APP, 'sw.js'), encoding='utf-8').read()
     man = json.load(open(os.path.join(APP, 'manifest.webmanifest'), encoding='utf-8'))
     v = re.search(r"APP_VERSION='([\d.]+)'", html).group(1)
-    assert v == '2.1.0', v
+    assert v == '2.2.0', v
     assert re.search(r"const CACHE = '([^']+)'", sw).group(1) == f'gaishutsu-shisaku-v{v}'
     assert "const DB_NAME='gaishutsu_kanri_shisaku'" in html
     assert "indexedDB.open('gaishutsu_kanri'" not in html, '現行の DB 名で開いている'
@@ -63,7 +63,7 @@ def main():
         keys = pg.evaluate('caches.keys()')
         print('caches', keys)
         assert 'gaishutsu-v1.12.0' in keys, '現行のキャッシュが消された'
-        assert 'gaishutsu-shisaku-v2.1.0' in keys
+        assert 'gaishutsu-shisaku-v2.2.0' in keys
         assert 'gaishutsu-shisaku-v1.0.0' not in keys, '新版の古いキャッシュが残っている'
         assert pg.evaluate("caches.open('gaishutsu-v1.12.0').then(c=>c.match('/genkou')).then(r=>r&&r.text())") == 'genkou'
 
@@ -77,13 +77,13 @@ def main():
         assert pg.locator('#activeList .card').count() == 0
         # 新版の DB に書く
         pg.click('nav button[data-tab=settings]'); pg.click('#demoIn'); pg.wait_for_timeout(1500)
-        assert pg.evaluate('outings.length') == 4
+        assert pg.evaluate('outings.length') == 8  # デモ：外出・外泊中7人（2.2.0で4人追加）＋予定1件
         names = pg.evaluate("indexedDB.databases().then(l=>l.map(x=>x.name).sort())")
         print('dbs', names)
         assert 'gaishutsu_kanri_shisaku' in names
         n_shisaku = pg.evaluate("""new Promise(res=>{const r=indexedDB.open('gaishutsu_kanri_shisaku');r.onsuccess=()=>{const d=r.result;
             const q=d.transaction('outings').objectStore('outings').count();q.onsuccess=()=>{d.close();res(q.result);};};})""")
-        assert n_shisaku == 4, n_shisaku
+        assert n_shisaku == 8, n_shisaku
         # 現行の DB は手つかず（見本の1件だけ）
         n_genkou = pg.evaluate("""new Promise(res=>{const r=indexedDB.open('gaishutsu_kanri');r.onsuccess=()=>{const d=r.result;
             const q=d.transaction('outings').objectStore('outings').getAll();q.onsuccess=()=>{d.close();res(q.result.map(x=>x.id));};};})""")
@@ -100,7 +100,7 @@ def main():
         fn = dl.value.suggested_filename
         assert re.fullmatch(r'外出管理バックアップ_\d{4}-\d{2}-\d{2}\.json', fn) and '試作' not in fn, fn
         data = json.load(open(dl.value.path(), encoding='utf-8'))
-        assert data['app'] == 'gaishutsu_kanri' and data['variant'] == 'shisaku' and len(data['outings']) == 4
+        assert data['app'] == 'gaishutsu_kanri' and data['variant'] == 'shisaku' and len(data['outings']) == 8
 
         # 現行の形のバックアップ（variant なし）を読み込める
         fp = os.path.join(OUT, 'v200_genkou_backup.json')

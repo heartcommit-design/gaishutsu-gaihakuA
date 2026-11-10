@@ -30,17 +30,17 @@ def main():
         pg.on('pageerror', lambda e: errs.append(str(e)))
         pg.goto(URL); pg.wait_for_timeout(800); pg.click('#startOv'); pg.wait_for_timeout(300)
 
-        # デモデータ：東1の50人、外出・外泊中3人、予定1件、超過1人でアラーム帯
+        # デモデータ：東1の54人（2.2.0で歴史上の人物の名前の4人を追加）、外出・外泊中7人、予定1件、超過1人でアラーム帯
         pg.click('nav button[data-tab=settings]'); pg.click('#demoIn'); pg.wait_for_timeout(1500)
         r = pg.evaluate("""({pts:patients.length,e1:patients.filter(x=>x.ward==='東1'&&x.demo).length,
             out:outings.filter(o=>o.status==='out').length,plan:outings.filter(o=>o.status==='planned').length,
             names:new Set(patients.map(x=>x.name)).size,fake:patients.every(x=>x.name.startsWith('(デモ) '))})""")
-        assert r == {'pts': 50, 'e1': 50, 'out': 3, 'plan': 1, 'names': 50, 'fake': True}, r
+        assert r == {'pts': 54, 'e1': 54, 'out': 7, 'plan': 1, 'names': 54, 'fake': True}, r
         assert pg.locator('.card.st-overdue').count() == 1
         assert pg.locator('#banner.on').count() == 1
         # 2回押しても増えない
         pg.click('nav button[data-tab=settings]'); pg.click('#demoIn'); pg.wait_for_timeout(600)
-        assert pg.evaluate('patients.length') == 50
+        assert pg.evaluate('patients.length') == 54
 
         # 新規登録（写真つき）→ 外出中に1枚増える
         pg.click('nav button[data-tab=new]')
@@ -51,25 +51,28 @@ def main():
         pg.fill('input[name=departNurse]', '看護師B')
         png(OUT + '/p.png'); pg.set_input_files('#photoInput', OUT + '/p.png'); pg.wait_for_timeout(600)
         pg.click('#submitBtn'); pg.wait_for_timeout(1200)
-        assert pg.evaluate("outings.filter(o=>o.status==='out').length") == 4
+        assert pg.evaluate("outings.filter(o=>o.status==='out').length") == 8
         assert pg.evaluate("tags.find(t=>t.id==='T-05').status") == 'inuse'
-        assert pg.evaluate("dbKeys('photos').then(k=>k.length)") == 1
+        assert pg.evaluate("dbKeys('photos').then(k=>k.length)") == 5  # デモ4人の写真＋新規1枚
+        assert pg.evaluate("dbKeys('photos').then(k=>k.includes(outings.find(o=>o.pid==='P0001').id))")
 
         # 帰院 → 写真が消え、タグが空く
         card = pg.locator('.card', has_text='テスト 太郎')
         card.locator('[data-act=return]').click()
         pg.fill('#dlgForm input[name=nurse]', '看護師C'); pg.click('#dlgActions button.ok'); pg.wait_for_timeout(1200)
-        assert pg.evaluate("dbKeys('photos').then(k=>k.length)") == 0, '帰院後も写真が残っている'
+        assert not pg.evaluate("dbKeys('photos').then(k=>k.includes(outings.find(o=>o.pid==='P0001').id))"), '帰院後も写真が残っている'
+        assert pg.evaluate("dbKeys('photos').then(k=>k.length)") == 4, '外出中のデモ4人の写真まで消えた'
         assert pg.evaluate("tags.find(t=>t.id==='T-05').status") == 'available'
         assert pg.evaluate("outings.find(o=>o.pid==='P0001').status") == 'returned'
 
         # 再読み込みしても残る（データはこの端末の中）
         pg.reload(); pg.wait_for_timeout(800); pg.click('#startOv'); pg.wait_for_timeout(800)
-        assert pg.evaluate('[patients.length,outings.length]') == [51, 5]
+        assert pg.evaluate('[patients.length,outings.length]') == [55, 9]
 
         # デモデータを消すと、デモ分だけ消える
         pg.click('nav button[data-tab=settings]'); pg.click('#demoOut'); pg.wait_for_timeout(1000)
         assert pg.evaluate('[patients.length,outings.length]') == [1, 1]
+        assert pg.evaluate("dbKeys('photos').then(k=>k.length)") == 0
         b.close()
     print('errors', errs)
     assert not errs

@@ -27,3 +27,4 @@ test_v200_haishoku
 test_v200_jikanjiku
 test_v200_zengamen
 test_v210_alarm_oto
+test_v220_demo_busho
