@@ -1,0 +1,60 @@
+import os as _os
+HERE=_os.path.dirname(_os.path.abspath(__file__));APP=_os.path.dirname(HERE);OUT=_os.path.join(HERE,'out');_os.makedirs(OUT,exist_ok=True)
+import asyncio
+from playwright.async_api import async_playwright
+SP=OUT
+async def main():
+    async with async_playwright() as p:
+        b=await p.chromium.launch(); pg=await b.new_page(viewport={'width':1024,'height':1366},has_touch=True)
+        errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)))
+        await pg.goto('file://'+APP+'/index.html#detail'); await pg.wait_for_timeout(600); await pg.click('#startOv')
+        async def plan(name,pid,tag,photo=True,hours=3):
+            await pg.click('nav button[data-tab=new]'); await pg.wait_for_timeout(200)
+            await pg.fill('input[name=name]',name); await pg.fill('input[name=pid]',pid); await pg.click('#wardRadios label:has-text("東1")')
+            fut=await pg.evaluate(f"toLocalInput(Date.now()+{hours}*3600000)"); await pg.evaluate("([s,v])=>{const i=document.querySelector(s);i.value=v;i.dispatchEvent(new Event('input',{bubbles:true}));i.dispatchEvent(new Event('change',{bubbles:true}))}",['input[name=departAt]',fut])
+            await pg.click('#dueQuick button[data-h="4"]')
+            print(' plan mode btn:', await pg.inner_text('#submitBtn'), '| tag visible:', not await pg.evaluate("document.getElementById('fsTag').hidden"))
+            if photo: await pg.set_input_files('#photoInput',SP+'/p.png'); await pg.wait_for_timeout(300)
+            if tag:
+                await pg.select_option('#tagSelect',tag); await pg.wait_for_timeout(100)
+                if await pg.locator('#consentBox input[name=consent]').count(): await pg.check('#consentBox input[name=consent]')
+            await pg.fill('input[name=departNurse]','看護 A子'); await pg.click('#submitBtn'); await pg.wait_for_timeout(700)
+            return await pg.evaluate(f"outings.find(o=>o.pid==='{pid}')")
+        o1=await plan('予定 一郎','P1','T-01')
+        print('1 plan:', o1['status'], o1['tagId'], 'photo', o1['hasPhoto'], '| T-01:', await pg.evaluate("tags.find(t=>t.id==='T-01').status"))
+        await pg.click('nav button[data-tab=new]'); await pg.wait_for_timeout(200)
+        print('  T-01 offered to others?', 'T-01' in await pg.evaluate("[...document.querySelectorAll('#tagSelect option')].map(o=>o.value).join(',')"))
+        await pg.click('nav button[data-tab=plan]'); await pg.wait_for_timeout(400)
+        await pg.screenshot(path=SP+'/go1.png')
+        due_before=o1['dueAt']
+        card=pg.locator('#planList .card',has_text='予定 一郎'); await card.locator('[data-pact=go]').click(); await pg.wait_for_timeout(300)
+        await pg.screenshot(path=SP+'/go2.png')
+        await pg.click('#dlgActions button.ok'); await pg.wait_for_timeout(300)
+        print('  nurse required kept dialog:', await pg.evaluate("document.getElementById('dlg').open"))
+        await pg.locator('#dlgBody .nchip').first.click(); await pg.click('#dlgActions button.ok'); await pg.wait_for_timeout(900)
+        o=await pg.evaluate("outings.find(o=>o.pid==='P1')")
+        print('2 GO:', o['status'], 'due same', o['dueAt']==due_before, 'departAt≈now', abs(o['departAt']-await pg.evaluate("Date.now()"))<60000, '| T-01:', await pg.evaluate("tags.find(t=>t.id==='T-01').status"), '| photo', o['hasPhoto'], await pg.evaluate("dbKeys('photos').then(k=>k.includes(outings.find(o=>o.pid==='P1').id))"))
+        print('  log:', o['log'][-1]['text'])
+        o2=await plan('予定 二郎','P2','T-02')
+        await pg.click('nav button[data-tab=plan]'); await pg.wait_for_timeout(300)
+        await pg.locator('#planList .card',has_text='予定 二郎').locator('[data-pact=cancel]').click(); await pg.click('#cdlgYes'); await pg.wait_for_timeout(600)
+        print('3 cancel: T-02', await pg.evaluate("tags.find(t=>t.id==='T-02').status"), '| photo removed', not await pg.evaluate(f"dbKeys('photos').then(k=>k.includes('{o2['id']}'))"))
+        o3=await plan('予定 三郎','P3','T-03')
+        await pg.click('nav button[data-tab=plan]'); await pg.wait_for_timeout(300)
+        await pg.locator('#planList .card',has_text='予定 三郎').locator('[data-pact=edit]').click(); await pg.wait_for_timeout(600)
+        print('4 edit: tag preselected', await pg.evaluate("document.getElementById('tagSelect').value"), '| photo loaded', await pg.evaluate("!!pendingPhoto"), '| due', await pg.evaluate("nf.elements.dueAt.value"))
+        await pg.locator('#newForm .nchips:not(.mchips) .nchip').first.click(); await pg.click('#submitBtn'); await pg.wait_for_timeout(900)
+        n3=await pg.evaluate("outings.find(o=>o.pid==='P3')")
+        print('  after: status', n3['status'], 'due same', n3['dueAt']==o3['dueAt'], '| T-03', await pg.evaluate("tags.find(t=>t.id==='T-03').status"), await pg.evaluate("tags.find(t=>t.id==='T-03').outingId===outings.find(o=>o.pid==='P3').id"), '| photo moved', await pg.evaluate("dbKeys('photos').then(k=>k.includes(outings.find(o=>o.pid==='P3').id))"), 'old photo gone', not await pg.evaluate(f"dbKeys('photos').then(k=>k.includes('{o3['id']}'))"))
+        # GO after due
+        o4=await plan('予定 四郎','P4','',False,1)
+        await pg.evaluate("(()=>{const o=outings.find(o=>o.pid==='P4');o.dueAt=Date.now()-60000;})()")
+        await pg.click('nav button[data-tab=plan]'); await pg.wait_for_timeout(300)
+        await pg.locator('#planList .card',has_text='予定 四郎').locator('[data-pact=go]').click(); await pg.wait_for_timeout(300)
+        print('5 GO after due blocked:', not await pg.evaluate("document.getElementById('dlg').open"), (await pg.inner_text('#toast'))[:20])
+        # demo
+        await pg.click('nav button[data-tab=settings]'); await pg.click('#demoIn'); await pg.wait_for_timeout(1200)
+        print('6 demo plans:', await pg.inner_text('#cntPlan'))
+        await pg.click('nav button[data-tab=tags]'); await pg.wait_for_timeout(300); await pg.screenshot(path=SP+'/go3.png')
+        print('errors',errs); await b.close()
+asyncio.run(main())

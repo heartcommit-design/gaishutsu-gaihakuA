@@ -1,0 +1,75 @@
+import os as _os
+HERE=_os.path.dirname(_os.path.abspath(__file__));APP=_os.path.dirname(HERE);OUT=_os.path.join(HERE,'out');_os.makedirs(OUT,exist_ok=True)
+import asyncio
+from playwright.async_api import async_playwright
+SP=OUT
+async def main():
+    async with async_playwright() as p:
+        b=await p.chromium.launch(); pg=await b.new_page(viewport={'width':1024,'height':1366},has_touch=True)
+        errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)))
+        await pg.goto('file://'+APP+'/index.html#detail'); await pg.wait_for_timeout(600); await pg.click('#startOv')
+        async def plan(name,pid,tag,photo=True,hours=3):
+            await pg.click('nav button[data-tab=new]'); await pg.wait_for_timeout(200)
+            await pg.fill('input[name=name]',name); await pg.fill('input[name=pid]',pid); await pg.click('#wardRadios label:has-text("東1")')
+            fut=await pg.evaluate(f"toLocalInput(Date.now()+{hours}*3600000)"); await pg.evaluate("([s,v])=>{const i=document.querySelector(s);i.value=v;i.dispatchEvent(new Event('input',{bubbles:true}));i.dispatchEvent(new Event('change',{bubbles:true}))}",['input[name=departAt]',fut])
+            await pg.click('#dueQuick button[data-h="4"]')
+            print(' plan mode btn:', await pg.inner_text('#submitBtn'), '| tag visible:', not await pg.evaluate("document.getElementById('fsTag').hidden"))
+            if photo: await pg.set_input_files('#photoInput',SP+'/p.png'); await pg.wait_for_timeout(300)
+            if tag:
+                await pg.select_option('#tagSelect',tag); await pg.wait_for_timeout(100)
+                if await pg.locator('#consentBox input[name=consent]').count(): await pg.check('#consentBox input[name=consent]')
+            await pg.fill('input[name=departNurse]','看護 A子'); await pg.click('#submitBtn'); await pg.wait_for_timeout(700)
+            return await pg.evaluate(f"outings.find(o=>o.pid==='{pid}')")
+        st=lambda tid: pg.evaluate(f"tags.find(t=>t.id==='{tid}').status")
+        async def opengo(name):
+            await pg.click('nav button[data-tab=plan]'); await pg.wait_for_timeout(300)
+            await pg.locator('#planList .card',has_text=name).locator('[data-pact=go]').click(); await pg.wait_for_timeout(300)
+        # A: plan without tag
+        await pg.click('nav button[data-tab=new]'); await pg.wait_for_timeout(200)
+        fut=await pg.evaluate("toLocalInput(Date.now()+3*86400000)"); await pg.evaluate("([s,v])=>{const i=document.querySelector(s);i.value=v;i.dispatchEvent(new Event('input',{bubbles:true}));i.dispatchEvent(new Event('change',{bubbles:true}))}",['input[name=departAt]',fut]); await pg.wait_for_timeout(100)
+        print('A option0 label (plan):', await pg.evaluate("document.querySelector('#tagSelect option').textContent"))
+        await pg.evaluate("([s,v])=>{const i=document.querySelector(s);i.value=v;i.dispatchEvent(new Event('input',{bubbles:true}));i.dispatchEvent(new Event('change',{bubbles:true}))}",['input[name=departAt]',await pg.evaluate("toLocalInput(Date.now())")]); await pg.wait_for_timeout(100)
+        print('  option0 label (now):', await pg.evaluate("document.querySelector('#tagSelect option').textContent"))
+        oa=await plan('予定 花子','PA',None,hours=2)
+        print('A plan tag:', repr(oa['tagId']), '| all tags available:', await pg.evaluate("tags.every(t=>t.status==='available')"))
+        await opengo('予定 花子'); await pg.screenshot(path=SP+'/go4.png')
+        print('  goTag default:', await pg.input_value('#goTag'), '| options:', await pg.evaluate("[...document.querySelectorAll('#goTag option')].map(o=>o.value||'none').join(',')"))
+        await pg.locator('#dlgBody .nchip').first.click(); await pg.click('#dlgActions button.ok'); await pg.wait_for_timeout(300)
+        print('  no tag chosen -> dialog stays:', await pg.evaluate("document.getElementById('dlg').open"))
+        await pg.select_option('#goTag','T-02'); await pg.wait_for_timeout(100)
+        print('  consent fields shown:', await pg.locator('#goConsent input[name=gcOk]').count()==1)
+        await pg.screenshot(path=SP+'/go5.png')
+        await pg.click('#dlgActions button.ok'); await pg.wait_for_timeout(300)
+        print('  consent unchecked -> dialog stays:', await pg.evaluate("document.getElementById('dlg').open"))
+        await pg.check('#goConsent input[name=gcOk]'); await pg.click('#dlgActions button.ok'); await pg.wait_for_timeout(800)
+        o=await pg.evaluate("outings.find(o=>o.pid==='PA')")
+        print('A GO:', o['status'], o['tagId'], 'consentDate', o['consentDate'], '| T-02', await st('T-02'), '| patient consent', await pg.evaluate("patients.find(p=>p.pid==='PA').consentDate"))
+        print('  log:', o['log'][-1]['text'])
+        # B: reserved T-01, switch to T-03 at GO
+        await plan('予定 次郎','PB','T-01',hours=2)
+        print('B reserved T-01:', await st('T-01'))
+        await opengo('予定 次郎'); print('  goTag default:', await pg.input_value('#goTag'), '| consent ok shown:', await pg.locator('#goConsent .cstat.ok').count())
+        await pg.select_option('#goTag','T-03'); await pg.locator('#dlgBody .nchip').first.click(); await pg.click('#dlgActions button.ok'); await pg.wait_for_timeout(800)
+        o=await pg.evaluate("outings.find(o=>o.pid==='PB')")
+        print('B GO:', o['tagId'], '| T-01', await st('T-01'), '| T-03', await st('T-03'), '|', o['log'][-1]['text'][-30:])
+        # C: reserved T-04, choose none
+        await plan('予定 三子','PC','T-04',hours=2)
+        await opengo('予定 三子'); await pg.select_option('#goTag',''); await pg.locator('#dlgBody .nchip').first.click(); await pg.click('#dlgActions button.ok'); await pg.wait_for_timeout(800)
+        o=await pg.evaluate("outings.find(o=>o.pid==='PC')")
+        print('C GO none:', repr(o['tagId']), o['status'], '| T-04', await st('T-04'), '|', o['log'][-1]['text'][-25:])
+        # D: withdrawn consent blocked
+        await plan('予定 四郎','PD',None,hours=2)
+        await pg.evaluate("(async()=>{const p=patients.find(p=>p.pid==='PD');p.consentWithdrawn='2026-10-01';await dbPut('patients',p);})()")
+        await opengo('予定 四郎'); await pg.select_option('#goTag','T-05'); await pg.wait_for_timeout(100)
+        print('D withdrawn msg:', await pg.locator('#goConsent .cstat.ng').count()); await pg.locator('#dlgBody .nchip').first.click(); await pg.click('#dlgActions button.ok'); await pg.wait_for_timeout(300)
+        print('  blocked:', await pg.evaluate("document.getElementById('dlg').open"), '| T-05', await st('T-05'))
+        await pg.click('#dlgActions button:not(.ok)'); await pg.wait_for_timeout(200)
+        await pg.screenshot(path=SP+'/go6.png')
+        # E: demo plan
+        await pg.click('nav button[data-tab=settings]'); await pg.click('#demoIn'); await pg.wait_for_timeout(1500)
+        d=await pg.evaluate("outings.find(o=>o.pid==='D1004')")
+        print('E demo plan tag:', repr(d['tagId']), d['status'])
+        await opengo(await pg.evaluate("outings.find(o=>o.pid==='D1004').name")); print('  demo consent ok:', await pg.locator('#goConsent').inner_text() or '(none until tag chosen)')
+        await pg.select_option('#goTag',index=1); await pg.wait_for_timeout(100); print('  after choose:', await pg.locator('#goConsent').inner_text())
+        print('errors', errs); await b.close()
+asyncio.run(main())

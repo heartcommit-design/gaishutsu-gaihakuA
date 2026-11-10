@@ -1,0 +1,2129 @@
+<!doctype html>
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="外出管理">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1f8fb8">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<title>外出・外泊管理</title>
+<script>
+/* 配色（明るい／暗い）を最初の描画の前に決める：開いた瞬間に明暗がちらつかないように。
+   設定の本体は IndexedDB（settings）。ここで読むのは、その写し（新版専用のキー。現行とは分けている）だけ。 */
+window.__isDarkTime=function(now,from,to){var hm=function(v){var m=/^(\d{1,2}):(\d{2})$/.exec(v||'');return m?(+m[1])*60+(+m[2]):null;};
+  var a=hm(from),b=hm(to);if(a===null||b===null||a===b)return false;var d=new Date(now),m=d.getHours()*60+d.getMinutes();return a<b?(m>=a&&m<b):(m>=a||m<b);};
+(function(){var c={};try{c=JSON.parse(localStorage.getItem('gaishutsu_shisaku_theme')||'{}')||{};}catch(e){}
+  var mode=c.mode||'auto',el=document.documentElement;
+  el.dataset.theme=mode==='light'||mode==='dark'?mode:(window.__isDarkTime(Date.now(),c.from||'18:00',c.to||'07:00')?'dark':'light');
+  el.dataset.glass=c.glassOff?'off':'on';})();
+</script>
+<style>
+:root,html[data-theme="light"]{color-scheme:light;
+ --bg:#eef2f7;--blob1:rgba(120,190,235,.55);--blob2:rgba(178,165,225,.42);--blob3:rgba(140,205,230,.32);
+ --ink:#14233a;--sub:#4a5a70;--muted:#5f6b7c;--line:rgba(20,35,58,.18);--line2:rgba(20,35,58,.10);--lines:#c7d0db;
+ --glass:rgba(255,255,255,.55);--glass2:rgba(255,255,255,.66);--edge:rgba(255,255,255,.85);--hl:inset 0 1px 0 rgba(255,255,255,.95);--shadow:0 6px 20px rgba(20,35,58,.08);
+ --blur:blur(24px) saturate(170%);--blurbar:blur(24px) saturate(170%) brightness(1.04);
+ --bar:rgba(255,255,255,.62);--dlg:rgba(250,252,255,.90);--field:rgba(255,255,255,.88);--fline:rgba(20,35,58,.26);--btn:rgba(255,255,255,.82);
+ --solid:#fff;--solid2:#f6f8fb;--thead:#e4ebf3;--hover:#eaf2fc;--chipbg:#e7f1fb;
+ --pri:#1f5fae;--pritx:#1f5fae;--onpri:#fff;--selbg:#e3edfa;
+ --ok:#17633b;--onok:#fff;--okbg:#dcefe4;--oktx:#145a33;--okline:#3c9a66;
+ --warn:#b7791f;--warnbg:#fff3d6;--warntx:#6b4500;--soonbg:#ffe08a;--soontx:#5a3a00;
+ --bad:#c62828;--badbg:#ffe3e3;--badtx:#a31515;--srch:#7b1fa2;--srchbg:#f5e4fb;--srchtx:#6a1690;
+ --planbg:#e3e9f6;--plantx:#2b4a85;--mutedbg:#e3e7ec;--mutedtx:#4a5563;
+ --tagbg:#16304f;--tagtx:#fff;--cntbg:#14233a;--cnttx:#fff;--tabon:#fff;--tabontx:#14233a;--legend:#16304f;
+ --sun:#c62828;--sat:#1f5fae;--today:#fff8dc;--infobg:#e7f1fb;--infoline:#9cc2e8;
+ --noticebg:#fff4cc;--noticetx:#5a3d00;--noticeline:#e0b100;--toast:#16304f;--toasttx:#fff;
+ --ov:rgba(238,242,247,.97);--ovtx:#14233a;
+ --tlgrid:rgba(20,35,58,.13);--tlnow:#1b2f5e;--tlnowtx:#fff;--tlhalo:rgba(255,255,255,.75);--tlok:#cbe9d6;--tlokb:#2f8f5c;--tloktx:#0e3b22;--tlsoon:#e0a030;--tlsoontx:#3d2600;--tlbad:#c62828;--tlbadtx:#fff;--tlext:#7f1414;--tlextb:#7f1414;--tlsrch:#7b1fa2;--tlsrchext:#4a0f63;
+ --cstok:#dcefe4;--cstoktx:#14532d;--cstokl:#9fd0b4;--cstng:#ffe3e3;--cstngtx:#7a0f0f;--cstngl:#f0a0a0;--cstneed:#fff4e5;--cstneedtx:#6b4500;--cstneedl:#f0b46a}
+html[data-theme="dark"]{color-scheme:dark;
+ --bg:#0e1a2d;--blob1:rgba(40,170,165,.32);--blob2:rgba(70,80,190,.36);--blob3:rgba(50,130,200,.20);
+ --ink:#f2f6fb;--sub:#b4c2d6;--muted:#9aa8bc;--line:rgba(255,255,255,.20);--line2:rgba(255,255,255,.10);--lines:#33465f;
+ --glass:rgba(255,255,255,.08);--glass2:rgba(255,255,255,.08);--edge:rgba(255,255,255,.18);--hl:inset 0 1px 0 rgba(255,255,255,.20);--shadow:0 10px 28px rgba(0,0,0,.28);
+ --blur:blur(28px) saturate(160%);--blurbar:blur(28px) saturate(160%) brightness(.9);
+ --bar:rgba(16,28,46,.62);--dlg:rgba(22,34,54,.92);--field:rgba(255,255,255,.08);--fline:rgba(255,255,255,.30);--btn:rgba(255,255,255,.09);
+ --solid:#15233a;--solid2:#1a2a43;--thead:#22344f;--hover:#213656;--chipbg:rgba(143,186,255,.16);
+ --pri:#2f6fd0;--pritx:#9cc3ff;--onpri:#fff;--selbg:rgba(143,186,255,.18);
+ --ok:#2fbf7a;--onok:#06281a;--okbg:rgba(95,224,164,.14);--oktx:#6be6ad;--okline:#3fbf86;
+ --warn:#ffc457;--warnbg:rgba(255,196,87,.13);--warntx:#ffd27a;--soonbg:#ffc457;--soontx:#3d2600;
+ --bad:#c62828;--badbg:#4a1518;--badtx:#ff9a90;--srch:#7b1fa2;--srchbg:#3a1747;--srchtx:#e3afff;
+ --planbg:rgba(143,186,255,.16);--plantx:#b9d3ff;--mutedbg:rgba(255,255,255,.12);--mutedtx:#c3cddb;
+ --tagbg:rgba(255,255,255,.14);--tagtx:#fff;--cntbg:#2c4770;--cnttx:#fff;--tabon:rgba(255,255,255,.22);--tabontx:#fff;--legend:#cfe0f5;
+ --sun:#ff9a90;--sat:#9cc3ff;--today:rgba(255,196,87,.12);--infobg:rgba(143,186,255,.12);--infoline:rgba(143,186,255,.45);
+ --noticebg:#3b2e07;--noticetx:#ffe08a;--noticeline:#c79a00;--toast:#f2f6fb;--toasttx:#0e1a2d;
+ --ov:rgba(11,21,36,.97);--ovtx:#f2f6fb;
+ --tlgrid:rgba(255,255,255,.14);--tlnow:#fff;--tlnowtx:#0e1a2d;--tlhalo:rgba(255,255,255,.35);--tlok:#23744f;--tlokb:#5fe0a4;--tloktx:#eafff4;--tlsoon:#ffc457;--tlsoontx:#3d2600;--tlbad:#ff6b6b;--tlbadtx:#3a0a0a;--tlext:#b71c1c;--tlextb:#fff;--tlsrch:#7b1fa2;--tlsrchext:#4a0f63;
+ --cstok:rgba(95,224,164,.14);--cstoktx:#8ff0c2;--cstokl:rgba(95,224,164,.5);--cstng:#4a1518;--cstngtx:#ffb4ab;--cstngl:#ff8a80;--cstneed:rgba(255,196,87,.13);--cstneedtx:#ffd27a;--cstneedl:rgba(255,196,87,.55)}
+html[data-glass="off"]{--blur:none;--blurbar:none;--glass2:var(--solid);--glass:var(--solid);--bar:var(--solid);--dlg:var(--solid)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;font-family:"Hiragino Sans","Yu Gothic UI","Meiryo",system-ui,sans-serif;font-size:17px;color:var(--ink);background:var(--bg);line-height:1.5;min-height:100vh}
+/* ガラスの後ろに置く、ぼかした淡い色の面（画像は使わない） */
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(560px 440px at 6% 2%,var(--blob1),transparent 70%),radial-gradient(640px 520px at 98% 100%,var(--blob2),transparent 70%),radial-gradient(420px 340px at 60% 55%,var(--blob3),transparent 70%),var(--bg)}
+.glass{background:var(--glass);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid var(--edge);box-shadow:var(--hl),var(--shadow)}
+.topbar{position:sticky;top:0;z-index:20;padding-top:env(safe-area-inset-top,0px);background:var(--bar);-webkit-backdrop-filter:var(--blurbar);backdrop-filter:var(--blurbar);border-bottom:1px solid var(--edge);box-shadow:var(--hl),var(--shadow)}
+header{color:var(--ink);display:flex;align-items:center;gap:12px;padding:10px 16px;flex-wrap:wrap}
+header h1{font-size:21px;margin:0;flex:1;min-width:160px;letter-spacing:.03em;white-space:nowrap}
+#clock{font-size:30px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+#soundBtn{font:inherit;font-size:15px;font-weight:700;padding:8px 14px;min-height:44px;border-radius:22px;border:1px solid var(--fline);background:var(--btn);color:var(--ink);cursor:pointer;box-shadow:var(--hl);white-space:nowrap}
+/* 音が出ない時の警告：どちらの配色でも不透明の赤で点滅（弱めない） */
+#soundBtn.off{background:#c62828;color:#fff;border:2px solid #fff;box-shadow:0 0 0 2px #c62828,0 4px 14px rgba(198,40,40,.45);animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.45}}
+#themeBtn{font:inherit;font-size:15px;font-weight:700;padding:8px 14px;min-height:44px;border-radius:22px;border:1px solid var(--fline);background:var(--btn);color:var(--ink);cursor:pointer;box-shadow:var(--hl);white-space:nowrap}
+.thmrange{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:12px 0 4px;font-size:16px}
+.thmrange .rl{font-weight:700}
+.thmrange select{min-width:110px}
+html[data-glass="off"] .glass,html[data-glass="off"] .card,html[data-glass="off"] .panel,html[data-glass="off"] nav,html[data-glass="off"] .topbar,html[data-glass="off"] dialog{-webkit-backdrop-filter:none;backdrop-filter:none}
+#banner{display:none;position:relative;background:#c62828;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 6px 18px rgba(198,40,40,.35);padding:12px 16px;gap:12px;align-items:center;flex-wrap:wrap;font-size:19px;font-weight:700}
+#banner.on{display:flex;animation:flash 1s steps(2) infinite}
+@keyframes flash{0%,100%{background:#c62828}50%{background:#7a0f0f}}
+#banner .msg{flex:1;min-width:220px}
+#banner button{font:inherit;font-size:16px;padding:8px 16px;min-height:44px;border-radius:14px;border:2px solid #fff;background:#fff;color:#a31515;font-weight:800;cursor:pointer}
+nav{display:flex;gap:4px;margin:10px auto 0;max-width:1168px;padding:5px;border-radius:27px;flex-wrap:wrap;background:var(--glass);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid var(--edge);box-shadow:var(--hl),var(--shadow)}
+nav button{font:inherit;font-size:16px;font-weight:600;padding:0 14px;min-height:44px;border:1px solid transparent;background:transparent;border-radius:22px;cursor:pointer;color:var(--ink);white-space:nowrap;flex:1 1 auto;display:inline-flex;align-items:center;justify-content:center;gap:2px}
+nav button.active{background:var(--tabon);color:var(--tabontx);font-weight:800;border-color:var(--edge);box-shadow:var(--hl),0 2px 8px rgba(20,35,58,.14)}
+nav .cnt{display:inline-block;min-width:24px;padding:0 6px;border-radius:12px;background:var(--cntbg);color:var(--cnttx);font-size:14px;font-weight:700;margin-left:4px;text-align:center;line-height:22px}
+nav .cnt.bad{background:var(--bad)}
+main{padding:16px;max-width:1200px;margin:0 auto}
+main h2,.toolbar h2{letter-spacing:.02em}
+section{display:none}section.active{display:block}
+h2{font-size:20px;margin:4px 0 12px}
+.btn{font:inherit;font-size:16px;padding:10px 16px;border-radius:12px;border:1px solid var(--fline);background:var(--btn);cursor:pointer;min-height:44px;color:var(--ink);box-shadow:var(--hl)}
+.btn:hover{filter:brightness(.96)}
+.btn.pri{background:var(--pri);color:var(--onpri);border-color:var(--pri);font-weight:700}
+.btn.bad{background:var(--bad);color:#fff;border-color:var(--bad);font-weight:700}
+.btn.srch{background:var(--srch);color:#fff;border-color:var(--srch);font-weight:700}
+.btn.ok{background:var(--ok);color:var(--onok);border-color:var(--ok);font-weight:800}
+.btn.sm{font-size:14px;padding:6px 10px;min-height:36px}
+.btn.big{font-size:20px;padding:14px 28px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.toolbar .sp{flex:1}
+.empty{padding:40px;text-align:center;color:var(--sub);background:var(--glass2);border-radius:18px;border:1px dashed var(--fline)}
+.cards{display:grid;gap:14px}
+.card{background:var(--glass2);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid var(--edge);border-left:8px solid var(--line);border-radius:18px;padding:14px;box-shadow:var(--hl),var(--shadow)}
+.card.st-ok{border-left-color:var(--okline)}
+.card.st-soon{border-color:var(--warn);border-width:2px 2px 2px 8px;background:var(--warnbg)}
+/* 予定超過・捜索中：不透明の面のまま脈動（ぼかしは掛けない・弱めない） */
+.card.st-overdue{border:2px solid var(--bad);border-left-width:10px;background:var(--badbg);-webkit-backdrop-filter:none;backdrop-filter:none;animation:pulse 1.2s infinite}
+.card.st-search{border:2px solid var(--srch);border-left-width:10px;background:var(--srchbg);-webkit-backdrop-filter:none;backdrop-filter:none;animation:pulse2 1.6s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(229,57,53,.55)}50%{box-shadow:0 0 0 8px rgba(229,57,53,.45)}}
+@keyframes pulse2{0%,100%{box-shadow:0 0 0 0 rgba(171,71,188,.5)}50%{box-shadow:0 0 0 8px rgba(171,71,188,.42)}}
+.head{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.tagbadge{font-size:28px;font-weight:800;background:var(--tagbg);color:var(--tagtx);border:1px solid var(--edge);border-radius:12px;padding:6px 14px;min-width:100px;text-align:center;letter-spacing:.02em;white-space:nowrap;box-shadow:var(--hl)}
+.tagbadge.none{background:transparent;color:var(--sub);border:1.5px dashed var(--fline);box-shadow:none;font-size:16px;font-weight:700;padding:12px 10px}
+.st-overdue .tagbadge:not(.none){background:var(--bad);color:#fff}.st-search .tagbadge:not(.none){background:var(--srch);color:#fff}
+.who{flex:1;min-width:180px}.name{font-size:23px;font-weight:700}.sub{color:var(--sub);font-size:15px}
+.statebox{text-align:right;min-width:150px}
+.lbl{display:inline-block;font-weight:800;padding:3px 12px;border-radius:14px;font-size:15px;white-space:nowrap}
+.lbl-ok{background:var(--okbg);color:var(--oktx);box-shadow:inset 0 0 0 1px var(--okline)}.lbl-soon{background:var(--soonbg);color:var(--soontx)}.lbl-overdue{background:var(--bad);color:#fff}.lbl-search{background:var(--srch);color:#fff}    .lbl-planned{background:var(--planbg);color:var(--plantx)}.lbl-returned{background:var(--mutedbg);color:var(--mutedtx)}
+.crow{display:grid;grid-template-columns:84px minmax(150px,1fr) 215px 175px auto;align-items:center;gap:8px 16px;padding:10px 14px}
+.crow .acts{justify-content:flex-end}
+.crow .who{flex:1 1 200px;min-width:0}
+.crow .who .name{font-size:21px}
+.crow .times{display:flex;flex-direction:column;font-size:15px;color:var(--sub);line-height:1.5}
+.crow .times b{color:var(--ink);font-variant-numeric:tabular-nums}
+.crow .statebox{text-align:right;min-width:150px}
+.crow .count{font-size:22px;white-space:nowrap}
+.crow .acts{display:flex;gap:6px;flex-wrap:nowrap}
+.tagbadge.sm{font-size:20px;min-width:74px;padding:4px 8px}
+.tagbadge.sm.none{font-size:13px;padding:8px 6px}
+#activeList{display:flex;flex-direction:column;gap:10px;--tlL:380px;--tlR:390px}
+/* ---------- 外出・外泊中：時間軸（新版） ---------- */
+.tlhead{display:grid;grid-template-columns:var(--tlL) minmax(0,1fr) var(--tlR);gap:8px 14px;align-items:end;padding:0 14px;border:2px solid transparent;border-left-width:8px;height:54px;font-size:15px;font-weight:700;color:var(--sub);white-space:nowrap}
+.tlhead>.cap{padding-bottom:4px}
+.tlhaxis{position:relative;height:100%}
+.tlticks span{position:absolute;bottom:4px;transform:translateX(-50%);font-size:15px;font-weight:700;color:var(--sub);white-space:nowrap;font-variant-numeric:tabular-nums;z-index:3;text-shadow:0 0 3px var(--bg),0 0 3px var(--bg),0 0 6px var(--bg)}
+.tlnowlbl{position:absolute;top:0;transform:translateX(-50%);height:22px;line-height:22px;padding:0 9px;border-radius:11px;background:var(--tlnow);color:var(--tlnowtx);font-size:14px;font-weight:800;white-space:nowrap;z-index:3;font-variant-numeric:tabular-nums;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.card.crow.tl{grid-template-columns:var(--tlL) minmax(0,1fr) var(--tlR);gap:8px 14px;padding:10px 14px;border-width:2px 2px 2px 8px;border-style:solid}
+.card.crow.tl:not(.st-soon):not(.st-overdue):not(.st-search){border-top-color:var(--edge);border-right-color:var(--edge);border-bottom-color:var(--edge)}
+.tlleft{display:flex;align-items:center;gap:10px;min-width:0}
+.tl .who{min-width:0;flex:1 1 auto}
+.crow.tl .who .name{font-size:20px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl .l2{display:flex;align-items:center;gap:8px;min-width:0;margin-top:3px}
+.tl .l2 .lbl{flex:none;font-size:14px;padding:2px 10px}
+.tl .l2 .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.tlaxis{position:relative;align-self:stretch;min-height:44px}
+.tlg{position:absolute;top:-17px;bottom:-17px;width:1px;margin-left:-.5px;background:var(--tlgrid);z-index:0;pointer-events:none}
+.tlhaxis .tlg{top:26px;bottom:-7px}
+.tlnow{position:absolute;top:-17px;bottom:-17px;width:2px;margin-left:-1px;background:var(--tlnow);box-shadow:0 0 0 1px var(--tlhalo);z-index:2;pointer-events:none}
+.tlhaxis .tlnow{top:22px;bottom:-7px}
+.tlbar,.tlext{position:absolute;top:50%;height:28px;margin-top:-14px;border-radius:14px;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:4px;overflow:hidden;font-size:13px;font-weight:800;white-space:nowrap;padding:0;font-variant-numeric:tabular-nums;pointer-events:none}
+.tlbar .cl,.tlext .cl{padding:0 8px}
+.tlbar{background:var(--tlok);color:var(--tloktx);box-shadow:inset 0 0 0 1.5px var(--tlokb),inset 0 1px 0 rgba(255,255,255,.35)}
+.st-soon .tlbar{background:var(--tlsoon);color:var(--tlsoontx);box-shadow:inset 0 1px 0 rgba(255,255,255,.45)}
+.st-overdue .tlbar{background:var(--tlbad);color:var(--tlbadtx);box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.st-search .tlbar{background:var(--tlsrch);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.tlbar.cut-l{border-top-left-radius:3px;border-bottom-left-radius:3px}
+.tlbar.cut-r,.tlbar.join{border-top-right-radius:3px;border-bottom-right-radius:3px}
+.tlbar.join{border-top-right-radius:0;border-bottom-right-radius:0}
+.tlext{border-radius:0 14px 14px 0;background:var(--tlext);color:#fff;box-shadow:inset 0 0 0 1px var(--tlextb)}
+.st-search .tlext{background:var(--tlsrchext);box-shadow:inset 0 0 0 1px #fff}
+.tlext.cut-l{border-top-left-radius:3px;border-bottom-left-radius:3px}
+.tlext.cut-r{border-top-right-radius:3px;border-bottom-right-radius:3px}
+.tlbar .cl:empty,.tlext .cl:empty{display:none}
+.tlbar .cl-r{margin-left:auto}
+@media (max-width:1100px){.tlbar.cut-r .cl-l{display:none}}
+.tlright{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0}
+.crow.tl .statebox{width:172px;min-width:0;text-align:right;flex:none}
+.crow.tl .count{font-size:22px;white-space:nowrap;line-height:1.3}
+.tl .due{font-size:13px;color:var(--sub);white-space:nowrap;font-variant-numeric:tabular-nums}
+.tl .due b{color:var(--ink)}
+.tl .acts .btn{padding:10px 12px}
+.tl .acts [data-act=return]{min-width:92px}.tl .acts [data-act=open]{min-width:112px}
+.tlmini{display:none}
+.tlmini i{display:block;height:100%;border-radius:3px;background:var(--okline)}
+.st-soon .tlmini i{background:var(--tlsoon)}.st-overdue .tlmini i{background:#c62828}.st-search .tlmini i{background:#7b1fa2}
+#viewSeg .btn{min-width:84px;font-weight:700}
+@media (max-width:1100px){#activeList{--tlL:330px}.tlticks span:nth-child(even){visibility:hidden}}
+@media (max-width:900px){
+ #activeList .tlhead{display:none}
+ .card.crow.tl{display:flex;flex-wrap:wrap;gap:8px 12px}
+ .crow.tl .tlaxis{display:none}
+ .crow.tl .tlleft{flex:1 1 100%}
+ .crow.tl .tlright{flex:1 1 100%;justify-content:space-between;flex-wrap:wrap}
+ .crow.tl .statebox{text-align:left;width:auto}
+ .tlmini{display:block;height:6px;border-radius:3px;background:var(--line);margin-top:6px;overflow:hidden}
+}
+.count{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+.st-overdue .count{color:var(--badtx)}.st-search .count{color:var(--srchtx)}.st-soon .count{color:var(--warntx)}
+.body{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap}
+.thumb{width:120px;height:160px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:zoom-in;background:var(--field)}
+.nophoto{width:120px;height:160px;border-radius:8px;border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;color:var(--sub);font-size:14px;text-align:center;background:var(--field)}
+dl.info{display:grid;grid-template-columns:max-content 1fr;gap:3px 12px;margin:0;flex:1;min-width:240px}
+dl.info dt{color:var(--sub)}dl.info dd{margin:0;font-weight:600;word-break:break-word}
+.guide{margin-top:12px;padding:10px 14px;border-radius:12px;background:var(--solid);color:var(--ink);border:2px dashed var(--bad)}
+.st-search .guide{border-color:var(--srch)}
+.guide b{font-size:18px}
+.guide ol{margin:6px 0 0;padding-left:22px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.panel{background:var(--glass2);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border-radius:18px;padding:16px;border:1px solid var(--edge);box-shadow:var(--hl),var(--shadow)}
+.about{display:grid;grid-template-columns:max-content 1fr;gap:8px 18px;margin:4px 0 0;font-size:15px;line-height:1.6}
+.about dt{color:var(--sub);font-weight:700;white-space:nowrap}
+.about dd{margin:0}
+.nw{white-space:nowrap;display:inline-block}
+.seg{display:inline-flex;flex-wrap:wrap;gap:6px}
+.seg .btn.on{background:var(--pri);color:#fff;border-color:var(--pri);font-weight:700}
+.nchip.more{background:var(--btn);border-style:dashed;font-weight:700}
+.nall{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:6px;max-height:170px;overflow:auto;padding:6px;border:1px solid var(--line);border-radius:10px;background:var(--solid)}
+.dlgin .radios label{margin-bottom:0}
+.linkbtn{border:none;background:none;color:var(--sub);text-decoration:underline;font:inherit;font-size:14px;cursor:pointer;padding:6px 0}
+.gophoto{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-top:10px}
+.gophoto .thumb,.gophoto .nophoto{width:96px;height:128px;font-size:13px}
+.stcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0 14px}
+.stcard{background:var(--glass2);border:1px solid var(--edge);border-radius:16px;padding:10px 14px;box-shadow:var(--hl)}
+.stcard .k{color:var(--sub);font-size:14px;white-space:nowrap}
+.stcard .v{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.3;white-space:nowrap}
+.stcard .v small{font-size:16px;font-weight:700;margin-left:2px}
+.stcard .s{font-size:14px;color:var(--sub);white-space:nowrap}
+.stgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:14px}
+.stgrid .panel{padding:12px 14px}
+.stgrid h3,.sth{font-size:17px;margin:0 0 8px}
+.sth{margin:16px 0 6px}
+.stgrid table.xl{min-width:0;width:100%}
+table.xl td.num,table.xl th.num{text-align:right;font-variant-numeric:tabular-nums}
+table.xl a.ptlink{color:var(--pritx);font-weight:700;text-decoration:underline;cursor:pointer}
+fieldset{border:1px solid var(--line);border-radius:14px;margin:0 0 14px;padding:10px 14px 14px}
+legend{font-weight:800;padding:0 6px;color:var(--legend)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px 14px}
+label{display:block;font-size:15px;color:var(--sub)}
+label>input,label>select,label>textarea{display:block;width:100%;margin-top:3px}
+input,select,textarea{font:inherit;font-size:17px;padding:9px 10px;border:1px solid var(--fline);border-radius:10px;background:var(--field);color:var(--ink)}
+input::placeholder,textarea::placeholder{color:var(--muted);opacity:1}
+select option{background:var(--solid);color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:3px solid var(--selbg);outline-offset:0;border-color:var(--pritx)}
+textarea{min-height:70px;resize:vertical}
+.req{color:#fff;background:var(--bad);font-size:12px;border-radius:4px;padding:0 5px;margin-left:6px}
+.radios{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.radios label{display:flex;align-items:center;gap:6px;border:1px solid var(--fline);border-radius:12px;padding:8px 14px;min-height:44px;color:var(--ink);font-size:17px;cursor:pointer;background:var(--field)}
+.radios label:has(input:checked){border-color:var(--pritx);background:var(--selbg);font-weight:700;box-shadow:inset 0 0 0 1px var(--pritx)}
+input[type=radio],input[type=checkbox]{accent-color:var(--pri)}
+.radios input{width:20px;height:20px;margin:0}
+.quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.hint{font-size:14px;color:var(--sub);margin:6px 0 0}
+.warnbox{background:var(--cstneed);color:var(--cstneedtx);border:1px solid var(--cstneedl);border-radius:8px;padding:8px 12px;font-size:15px;margin-top:8px}
+.photoarea{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-top:8px}
+.consent{display:flex;gap:10px;align-items:flex-start;margin-top:10px;font-size:16px;color:var(--ink)}
+.consent input{width:24px;height:24px;margin-top:2px;flex:none}
+table{border-collapse:collapse;width:100%;background:var(--solid);color:var(--ink);font-size:15px}
+th,td{border:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+th{background:var(--thead);white-space:nowrap}
+tr.click{cursor:pointer}tr.click:hover{background:var(--hover)}
+.tablewrap{overflow-x:auto}
+dialog{border:1px solid var(--edge);border-radius:20px;padding:0;max-width:640px;width:calc(100% - 24px);color:var(--ink);background:var(--dlg);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);box-shadow:var(--hl),0 18px 50px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,20,35,.50)}
+.dlgin{padding:18px 20px}
+.dlgin h3{margin:0 0 12px;font-size:20px}
+.dlgin label{margin-bottom:10px}
+.dlgActions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:14px}
+.loglist{list-style:none;margin:0 0 12px;padding:0;max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--solid)}
+.loglist li{padding:6px 10px;border-bottom:1px solid var(--line2);font-size:15px}
+.loglist li:last-child{border-bottom:none}
+.loglist time{color:var(--sub);font-variant-numeric:tabular-nums;margin-right:8px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--toast);color:var(--toasttx);box-shadow:0 8px 24px rgba(0,0,0,.3);padding:12px 20px;border-radius:10px;font-size:16px;display:none;z-index:50;max-width:90%}
+video{width:100%;border-radius:8px;background:#000}
+.foot{color:var(--sub);font-size:13px;text-align:center;padding:20px}
+.printhead{display:none}
+#watchOv{position:fixed;inset:0;z-index:90;background:var(--ov);color:var(--ovtx);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px;cursor:pointer}
+#watchOv .big{font-size:30px;font-weight:800}
+#watchOv .msg{font-size:19px;max-width:560px;line-height:1.6}
+#watchOv .tapbtn{font-size:24px;font-weight:800;background:var(--pri);color:var(--onpri);border-radius:18px;padding:18px 40px;box-shadow:var(--hl),0 10px 30px rgba(31,95,174,.35)}
+.notice{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:9px 16px;font-size:16px;font-weight:700;background:var(--noticebg);color:var(--noticetx);border-bottom:2px solid var(--noticeline)}
+.notice .msg{flex:1;min-width:200px}
+#banner.urgent{animation:flash2 .5s steps(2) infinite}
+@keyframes flash2{0%,100%{background:#ff1a1a}50%{background:#4a0000}}
+.rc{display:grid;grid-template-columns:max-content max-content minmax(0,1fr);gap:8px 10px;align-items:center;margin:6px 0 10px}
+.rc .rl{font-weight:700;color:var(--ink)}
+.rc label{display:flex;align-items:center;gap:6px;color:var(--ink);font-size:16px;margin:0}
+.rc input[type=checkbox]{width:22px;height:22px;margin:0}
+.rc input[type=text],.rc input:not([type]){min-width:0;width:100%}
+.loglist li.lx{color:var(--muted)}
+.lxbtn{margin-left:6px;padding:2px 10px;font-size:13px}
+.nchips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 4px}
+.mchips .nchip{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nchip{font:inherit;font-size:14px;padding:5px 11px;min-height:36px;border-radius:18px;border:1px solid var(--fline);background:var(--field);cursor:pointer;color:var(--ink)}
+.nchip:hover{background:var(--hover)}
+.cstat{padding:8px 12px;border-radius:8px;font-size:15px;margin-top:8px;font-weight:700}
+.cstat.ok{background:var(--cstok);color:var(--cstoktx);border:1px solid var(--cstokl)}
+.cstat.ng{background:var(--cstng);color:var(--cstngtx);border:1px solid var(--cstngl)}
+.cstat.need{background:var(--cstneed);color:var(--cstneedtx);border:1px solid var(--cstneedl)}
+.lbl-cancelled{background:var(--mutedbg);color:var(--mutedtx)}
+table.xl tr.r-cancelled td:not(.st):not(.rn){color:var(--muted);text-decoration:line-through}
+table.xl tr.tot td{font-weight:700;background:var(--thead)!important}
+table.xl td.lb{font-weight:700}
+.mgr{display:flex;gap:6px;flex-wrap:wrap}
+.mgr span{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--fline);border-radius:16px;padding:3px 4px 3px 11px;background:var(--field);font-size:15px}
+.mgr button{border:none;background:var(--mutedbg);color:var(--ink);border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:14px;line-height:1}
+.xlwrap{overflow:auto;max-height:70vh;border:1px solid var(--line);border-radius:12px;background:var(--solid)}
+table.xl{border-collapse:separate;border-spacing:0;font-size:14px;width:max-content;min-width:100%}
+table.xl th,table.xl td{border-right:1px solid var(--line2);border-bottom:1px solid var(--line2);padding:5px 8px;white-space:nowrap;vertical-align:top;background:var(--solid);color:var(--ink)}
+table.xl th{position:sticky;top:0;z-index:2;background:var(--thead);font-weight:700;text-align:left}
+table.xl tbody tr:nth-child(even) td{background:var(--solid2)}
+table.xl tbody tr:hover td{background:var(--hover)}
+table.xl td.wide{white-space:normal;min-width:180px;max-width:280px}
+table.xl .rn{position:sticky;left:0;z-index:1;background:var(--thead)!important;color:var(--sub);text-align:right;min-width:36px}
+table.xl th.rn{z-index:3}
+table.xl .nm0{position:sticky;left:0;z-index:1;box-shadow:2px 0 0 var(--lines);min-width:9em}
+table.xl th.nm0{z-index:3}
+table.xl td.nm0 b{font-size:15px}
+table#ptTable td{vertical-align:middle}
+table.xl td.nm{position:sticky;left:36px;z-index:1;font-weight:700;box-shadow:2px 0 0 var(--lines)}
+table.xl tr.r-overdue td.st,table.xl tr.r-search td.st{background:var(--badbg)}
+table.xl .lbl{font-size:13px;padding:1px 8px}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal .wd{text-align:center;font-size:14px;color:var(--sub);padding:2px 0;font-weight:700}
+.cday{min-height:84px;border:1px solid var(--line);border-radius:12px;background:var(--glass2);padding:4px 6px;text-align:left;display:flex;flex-direction:column;gap:3px;cursor:pointer;font:inherit;color:var(--ink);min-width:0}
+.cday.empty{visibility:hidden}
+.cday .dn{font-weight:700;font-size:15px}.cday.sun .dn{color:var(--sun)}.cday.sat .dn{color:var(--sat)}
+.cday .ccnt{font-size:14px;font-weight:700;background:var(--chipbg);color:var(--ink);border-radius:6px;padding:0 6px;align-self:flex-start;white-space:nowrap}
+.cday .flags{display:flex;flex-wrap:wrap;gap:2px}
+.f{font-style:normal;font-size:12px;border-radius:4px;padding:0 5px;color:#fff;white-space:nowrap}
+.f.plan{background:#46608f}.f.srch{background:#7b1fa2}.f.late{background:#c62828}.f.out{background:#8a5a0c}
+.cday.today{background:var(--today)}.cday.sel{outline:3px solid var(--pritx);outline-offset:-1px}
+.calhead{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.calhead h2{margin:0 8px;min-width:150px;text-align:center}
+.daylist{margin-top:14px}
+.dayrow{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--edge);border-radius:14px;background:var(--glass2);margin-top:8px;cursor:pointer;box-shadow:var(--hl)}
+.dayrow:hover{background:var(--hover)}
+.dayrow .tm{font-variant-numeric:tabular-nums;font-weight:700;min-width:170px}
+.dayrow .nm{font-weight:700;font-size:18px;min-width:120px}
+.dayrow .mt{color:var(--sub);font-size:15px;flex:1;min-width:200px}
+@media (max-width:600px){.cday{min-height:64px;padding:3px}.cday .ccnt{font-size:12px;padding:0 3px}.f{font-size:10px;padding:0 3px}}
+.errbox{background:var(--cstng);border:2px solid var(--bad);border-radius:12px;padding:12px 16px;margin:0 0 14px;color:var(--cstngtx);font-size:17px}
+.errbox b{display:block;font-size:18px;margin-bottom:4px}
+.errbox ul{margin:4px 0 0;padding-left:22px}
+.invalid{outline:3px solid var(--bad)!important;outline-offset:2px;border-radius:8px}
+.tp{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:2px}
+.tp select{flex:1 1 150px;min-width:0}
+.tp select.tp-t{flex:0 1 130px}
+.tp .tp-fine{white-space:nowrap}
+.tp input{flex:1 1 220px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+fieldset{min-width:0}
+.chips.onerow{max-width:100%;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;scroll-snap-type:x proximity}
+.chips.onerow .chip{flex:0 0 auto;white-space:nowrap;scroll-snap-align:start}
+.chips.onerow .chip small{display:block}
+.chip{font:inherit;font-size:16px;padding:8px 14px;border-radius:22px;border:1px solid var(--fline);background:var(--field);cursor:pointer;color:var(--ink);text-align:left;line-height:1.3}
+.chip small{display:block;color:var(--sub);font-size:13px}
+.chip.out{border-color:var(--warn);background:var(--warnbg)}
+.loaded{background:var(--infobg);border:1px solid var(--infoline);border-radius:10px;padding:8px 12px;font-size:15px;color:var(--ink);margin-top:8px}
+.radios.wards label{min-width:72px;justify-content:center;font-weight:700}
+#startOv{position:fixed;inset:0;z-index:100;background:radial-gradient(560px 440px at 10% 5%,var(--blob1),transparent 70%),radial-gradient(640px 520px at 95% 100%,var(--blob2),transparent 70%),var(--bg);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center;cursor:pointer}
+#startOv .big{font-size:30px;font-weight:800}
+#startOv .tapbtn{font-size:24px;font-weight:800;background:var(--pri);color:var(--onpri);border-radius:18px;padding:18px 44px;box-shadow:var(--hl),0 10px 30px rgba(31,95,174,.35)}
+#startOv ul{font-size:16px;text-align:left;max-width:560px;line-height:1.7;margin:0;padding:16px 20px 16px 36px;border-radius:18px;background:var(--glass);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid var(--edge);box-shadow:var(--hl),var(--shadow)}
+#wakeBadge{font-size:14px;font-weight:700;padding:6px 12px;border-radius:16px;white-space:nowrap}
+#wakeBadge.on{background:var(--okbg);color:var(--oktx);border:1px solid var(--okline)}#wakeBadge.off{background:#c62828;color:#fff;border:2px solid #fff;box-shadow:0 0 0 1px #c62828}
+#printArea{display:none}
+@page{size:A4 landscape;margin:8mm}
+
+/* ---------- スマホ（幅600px以下） ---------- */
+@media (max-width:600px){
+ .crow{display:flex;flex-wrap:wrap}
+ .crow .acts{justify-content:flex-start}
+ .crow .statebox{text-align:left;min-width:0}
+ .crow .who .name{font-size:18px}
+ header{gap:6px 8px;padding:6px 12px}
+ header h1{font-size:16px;min-width:0;flex:1 1 auto}
+ #clock{font-size:20px;order:1}
+ #wakeBadge,#soundBtn{order:2;font-size:12px;padding:3px 8px;border-width:1px}
+ #soundBtn,#themeBtn{min-height:36px;padding:3px 10px;font-size:12px;order:2}
+ #themeBtn .thsub{display:none}
+ header{row-gap:6px;column-gap:5px}
+ #wakeBadge,#soundBtn,#themeBtn{padding:3px 7px;font-size:11.5px;letter-spacing:-.01em}
+ #banner{font-size:15px;padding:8px 12px;gap:8px}
+ #banner .msg{min-width:0;flex:1 1 100%}
+ #banner button{font-size:14px;padding:6px 10px}
+ .notice{font-size:13px;padding:6px 12px;gap:6px}
+ .notice .msg{min-width:0;flex:1 1 100%}
+ nav{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:4px;margin:8px 8px 0;gap:3px;scrollbar-width:none;border-radius:26px}
+ nav::-webkit-scrollbar{display:none}
+ nav button{font-size:15px;padding:0 12px;white-space:nowrap;flex:0 0 auto}
+ main{padding-left:10px;padding-right:10px}
+ .card{padding:10px;border-left-width:8px}
+ .head{gap:8px}
+ .tagbadge{font-size:20px;min-width:70px;padding:4px 8px}
+ .tagbadge.none{font-size:13px;padding:6px 6px}
+ .count{font-size:20px}
+ .body{gap:10px}
+ .thumb,.nophoto{width:84px;height:112px;font-size:12px}
+ .body .info{flex:1 1 180px;min-width:0}
+ .actions .btn{font-size:14px}
+ #toast{bottom:16px;font-size:14px}
+ dialog{max-width:calc(100vw - 16px)}
+}
+@media (min-width:601px) and (max-width:900px){.crow{grid-template-columns:84px minmax(120px,1fr) 205px 200px;}.crow .acts{grid-column:1/-1}}
+@media print{
+ :root,html[data-theme]{--bg:#fff;--ink:#000;--sub:#333;--muted:#444;--glass:#fff;--glass2:#fff;--solid:#fff;--solid2:#fff;--field:#fff;--btn:#fff;--bar:#fff;--dlg:#fff;--thead:#e6e6e6;--line:#999;--line2:#bbb;--fline:#999;--edge:#999;--blur:none;--blurbar:none;--hl:0 0 0 transparent;--shadow:0 0 0 transparent;--warnbg:#fff;--badbg:#fff;--srchbg:#fff;--badtx:#000;--srchtx:#000;--warntx:#000;--oktx:#000;--okbg:#fff;--tagbg:#fff;--tagtx:#000;--legend:#000;color-scheme:light}
+ html,body{background:#fff!important;color:#000!important}
+ body::before{display:none!important}
+ *,*::before,*::after{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;text-shadow:none!important}
+ .card{background:#fff!important;color:#000!important;border-left-width:12px}
+ body.pm-history>*:not(#printArea){display:none!important}
+ body.pm-history #printArea{display:block!important}
+ #printArea h1{font-size:13pt;margin:0 0 2mm}
+ #printArea .pmeta{font-size:8pt;margin:0 0 2mm;display:flex;justify-content:space-between;gap:4mm}
+ #printArea table{border-collapse:collapse;width:100%;font-size:7.5pt;line-height:1.35;table-layout:fixed}
+ #printArea th,#printArea td{border:0.5pt solid #000;padding:1mm 1.2mm;vertical-align:top;word-break:break-word;background:#fff;color:#000}
+ #printArea th{white-space:normal;background:#e6e6e6;-webkit-print-color-adjust:exact;print-color-adjust:exact;text-align:left}
+ #printArea thead{display:table-header-group}
+ #printArea tr{break-inside:avoid}
+ #printArea .em{font-weight:700}
+ #printArea .warn{font-weight:700;text-decoration:underline}
+ header,nav,#banner,.actions,.toolbar,.guide,.thumb,.nophoto,.foot,#toast{display:none!important}
+ .printhead{display:block;font-size:14px;margin-bottom:8px}
+ body{background:#fff;font-size:12pt}
+ .card{break-inside:avoid;animation:none!important;box-shadow:none!important}
+ section{display:none!important}#sec-active{display:block!important}
+}
+</style>
+</head>
+<body>
+<div id="startOv" role="button" tabindex="0">
+  <div class="big">外出・外泊管理</div>
+  <div class="tapbtn">タップして開始</div>
+  <ul>
+    <li>帰院予定時刻を過ぎると、<b>この端末（iPad等）</b>で音と画面表示でお知らせします。タグからは鳴りません。</li>
+    <li>音を出すため、開くたびにこの画面をタップしてください。</li>
+    <li>iPadは「設定」→「画面表示と明るさ」→「自動ロック」を「なし」にし、音量を上げておいてください。</li>
+    <li>この画面を閉じたり、他のアプリに切り替えたりするとアラームは鳴りません。</li>
+  </ul>
+</div>
+<div id="watchOv" hidden role="button" tabindex="0">
+  <div class="big">見守り確認</div>
+  <div class="msg" id="watchMsg"></div>
+  <div class="tapbtn">確認しました（タップ）</div>
+</div>
+<div class="topbar">
+<header>
+  <h1>外出・外泊管理</h1>
+  <span id="wakeBadge" class="off">画面オン維持：未</span>
+  <button id="themeBtn" type="button" aria-label="画面の明るさを切り替える">画面：自動</button>
+  <button id="soundBtn" class="off" type="button" title="音の状態">🔇 音が出ません：ここを押す</button>
+  <div id="clock">--:--</div>
+</header>
+<div id="banner" role="alert">
+  <div class="msg" id="bannerMsg"></div>
+  <button type="button" id="bannerGo">一覧を見る</button>
+  <button type="button" id="bannerAck">アラーム音を止める（対応開始）</button>
+</div>
+<div class="notice" id="gapBar" hidden><span class="msg" id="gapMsg"></span><button type="button" class="btn sm" id="gapOk">確認した</button></div>
+<div class="notice" id="prBar" hidden><span class="msg" id="prMsg"></span><button type="button" class="btn sm pri" id="prNow">一覧を印刷</button><button type="button" class="btn sm" id="prLater">閉じる</button></div>
+<div class="notice" id="bkBar" hidden><span class="msg">本日のバックアップ（データの保存）がまだです。</span><button type="button" class="btn sm pri" id="bkNow">バックアップを保存</button><button type="button" class="btn sm" id="bkLater">今日は閉じる</button></div>
+</div>
+<nav>
+  <button data-tab="active" class="active">外出・外泊中<span class="cnt" id="cntActive">0</span><span class="cnt bad" id="cntAlert" hidden>0</span></button>
+  <button data-tab="plan">予定<span class="cnt" id="cntPlan">0</span></button>
+  <button data-tab="new">＋ 新規登録</button>
+  <button data-tab="calendar">カレンダー</button>
+  <button data-tab="history">日別一覧</button>
+  <button data-tab="stats">集計</button>
+  <button data-tab="patients">患者台帳</button>
+  <button data-tab="tags">タグ管理</button>
+  <button data-tab="settings">設定</button>
+</nav>
+<main>
+<!-- 外出中 -->
+<section id="sec-active" class="active">
+  <div class="printhead" id="printHead"></div>
+  <div class="toolbar">
+    <h2 style="margin:0">外出・外泊中の患者</h2><div class="seg" id="viewSeg" role="group" aria-label="表示の切り替え"><button type="button" class="btn" data-view="timeline">時間軸</button><button type="button" class="btn" data-view="list">一覧</button></div><span class="hint" style="margin:0">連絡先・行き先・服装は「詳細」で表示（2分で自動で閉じます）</span><span class="sp"></span>
+    <button class="btn" type="button" id="printBtn">一覧を印刷（写真なし）</button>
+  </div>
+  <div class="cards" id="activeList"></div>
+</section>
+
+<!-- 予定 -->
+<section id="sec-plan">
+  <h2>出発前の予定</h2>
+  <p class="hint" style="margin-top:0">出発日時が先の登録はここに入ります。予定の段階で服装写真を撮っておけば、出発の時は<b>「出発（GO）」を押し、渡すタグと看護師名を選ぶだけ</b>です。タグは予定で予約しておくこともできます（予約すると出発日まで他の患者には使えません）。<b>帰院予定は、出発が早まっても遅れても変わりません。</b>写真を直したい時は「内容を確認・変更して出発」を使います。</p>
+  <div class="cards" id="planList"></div>
+</section>
+
+<!-- 新規登録 -->
+<section id="sec-new">
+  <h2>外出・外泊の登録</h2>
+  <form id="newForm" class="panel" autocomplete="off" novalidate>
+    <fieldset><legend>患者</legend>
+      <label>前回の情報を呼び出す<input id="pSearch" placeholder="氏名・ふりがな・IDの一部を入力（空欄なら最近外出した10人を表示）"></label>
+      <div class="chips onerow" id="pChips"></div><div class="hint" id="pChipsMore" style="margin:2px 0 0"></div>
+      <div class="loaded" id="pLoaded" hidden></div>
+      <div class="grid" style="margin-top:12px">
+        <label>患者氏名<span class="req">必須</span><input name="name" required></label>
+        <label>患者ID<span class="req">必須</span><input name="pid"></label>
+        <label>ふりがな<input name="kana" placeholder="例：やまだ いちろう"></label>
+        <label>性別<select name="sex"><option value=""></option><option>男</option><option>女</option><option>その他</option></select></label>
+        <label>年齢<input name="age" inputmode="numeric" placeholder="例：45"></label>
+        <label>入院形態<select name="adm"><option>任意入院</option><option>医療保護入院</option><option>その他</option></select></label>
+      </div>
+      <div style="margin-top:10px"><span class="hint">病棟<span class="req">必須</span></span>
+        <div class="radios wards" id="wardRadios"></div></div>
+    </fieldset>
+    <fieldset><legend>外出の内容</legend>
+      <div class="radios" id="kindRadios">
+        <label><input type="radio" name="kind" value="外出" checked>外出</label>
+        <label><input type="radio" name="kind" value="外泊">外泊</label>
+      </div>
+      <div class="grid" style="margin-top:10px">
+        <label>出発日時<span class="req">必須</span><input type="datetime-local" name="departAt" required></label>
+        <label>帰院予定日時<span class="req">必須</span><input type="datetime-local" name="dueAt" required></label>
+      </div>
+      <div class="quick" id="dueQuick">
+        <span class="hint" style="margin:8px 4px 0 0">出発から：</span>
+        <button type="button" class="btn sm" data-h="1">+1時間</button>
+        <button type="button" class="btn sm" data-h="2">+2時間</button>
+        <button type="button" class="btn sm" data-h="3">+3時間</button>
+        <button type="button" class="btn sm" data-h="4">+4時間</button>
+        <button type="button" class="btn sm" data-d="1">翌日 同時刻</button>
+        <button type="button" class="btn sm" data-d="2">2日後 同時刻</button>
+      </div>
+      <div class="grid" style="margin-top:10px">
+        <label>行き先<input name="dest" list="destList" placeholder="例：自宅、〇〇駅周辺の買い物"><span class="nchips mchips pchips" data-preset="dest" data-field="dest"></span></label>
+      </div>
+      <p class="hint">よく使う行き先はボタンで入ります（「設定」で登録）。前回の情報を呼び出すと前回の行き先が入り、入力欄を押すと過去の行き先からも選べます。</p>
+      <div class="grid" style="margin-top:10px">
+        <label>本人の携帯番号<input name="selfTel" inputmode="tel"></label>
+      </div>
+      <div class="grid" style="margin-top:10px">
+        <label>家族の氏名<input name="famName"></label>
+        <label>家族の続柄<input name="famRel" placeholder="例：母、夫"><span class="nchips mchips pchips" data-preset="rel" data-field="famRel"></span></label>
+        <label>家族の携帯番号<input name="famTel" inputmode="tel"></label>
+      </div>
+      <div style="margin-top:10px">
+        <span class="hint">同行者</span>
+        <div class="radios">
+          <label><input type="radio" name="alone" value="1" checked>単独</label>
+          <label><input type="radio" name="alone" value="0">同行あり</label>
+        </div>
+      </div>
+      <div class="grid" id="compBox" style="margin-top:10px" hidden>
+        <label>同行者氏名<span class="req">必須</span><input name="compName"></label>
+        <label>続柄<input name="compRel" placeholder="例：母、夫"><span class="nchips mchips pchips" data-preset="rel" data-field="compRel"></span></label>
+        <label>同行者の連絡先<input name="compTel" inputmode="tel"></label>
+      </div>
+    </fieldset>
+    <div class="loaded" id="planNote" hidden></div>
+    <fieldset id="fsClothes"><legend>服装</legend>
+      <label>服装の特徴<span class="hint" style="margin-left:6px">（写真を撮った場合は記入不要）</span><textarea name="clothes" placeholder="写真がない場合に記入　例：紺のダウン、灰色のズボン、白いスニーカー、黒いリュック"></textarea></label>
+      <div id="clothesHist"></div>
+      <div class="photoarea">
+        <div id="photoPrev"><div class="nophoto">写真なし</div></div>
+        <div>
+          <div class="quick" style="margin-top:0">
+            <label class="btn" style="color:var(--ink);display:inline-flex;align-items:center">カメラで撮る（iPad）<input type="file" accept="image/*" capture="environment" id="photoInput" hidden></label>
+            <button type="button" class="btn" id="webcamBtn">PCのカメラで撮る</button>
+            <button type="button" class="btn" id="photoClear" hidden>写真を外す</button>
+          </div>
+          <p class="hint">顔は写さず、首から下を撮影してください。写真は<b>帰院登録をした時点で自動的に削除</b>されます。</p>
+        </div>
+      </div>
+    </fieldset>
+    <fieldset id="fsTag"><legend>位置確認タグ</legend>
+      <label>タグ番号<select name="tagId" id="tagSelect"></select></label>
+      <p class="hint" id="tagHint"></p>
+      <div id="consentBox" hidden></div>
+    </fieldset>
+    <fieldset><legend>出発確認</legend>
+      <div class="grid">
+        <label>確認した看護師<span class="req">必須</span><input name="departNurse" list="nurseList" required></label>
+        <label>備考<input name="note"></label>
+      </div>
+    </fieldset>
+    <div class="errbox" id="formErr" role="alert" hidden></div>
+    <div class="quick" style="margin-top:0;gap:10px"><button type="button" class="btn pri big" id="submitBtn">この内容で外出を登録</button><button type="button" class="btn big" id="formBack" hidden>変更せずに戻る</button></div>
+  </form>
+</section>
+
+<!-- 日別一覧 -->
+<section id="sec-history">
+  <h2 id="hTitle">日別一覧</h2>
+  <div class="toolbar">
+    <button class="btn" type="button" id="hToday">本日</button>
+    <button class="btn" type="button" id="hYest">昨日</button>
+    <button class="btn" type="button" id="hPrev">‹ 前日</button>
+    <input type="date" id="hFrom" aria-label="表示する日">
+    <button class="btn" type="button" id="hNext">翌日 ›</button>
+    <label style="display:flex;gap:6px;align-items:center;color:var(--ink);white-space:nowrap">〜<input type="date" id="hTo" aria-label="期間の終わり（任意）"></label>
+    <select id="hWard" aria-label="病棟"></select>
+    <input id="hQ" placeholder="氏名・タグで絞り込み" style="min-width:160px">
+    <span class="sp"></span>
+    <button class="btn" type="button" id="hPrint">印刷</button>
+    <button class="btn" type="button" id="csvBtn">CSV出力（Excel用）</button>
+  </div>
+  <p class="hint" id="hSum" style="margin-top:0"></p>
+  <div class="xlwrap"><table class="xl" id="hTable"></table></div>
+  <p class="hint">その日に外出・外泊していた患者（予定を含む）を1行ずつ表示します。期間で見たいときは「〜」の右に終わりの日を入れてください。行を押すと詳しい記録と対応経過が開きます。写真は帰院時に削除されるため、表には残りません。</p>
+</section>
+
+<!-- 集計 -->
+<section id="sec-stats">
+  <div class="calhead">
+    <button class="btn" type="button" id="stPrev">‹ 前の月</button>
+    <h2 id="stTitle"></h2>
+    <button class="btn" type="button" id="stNext">次の月 ›</button>
+    <button class="btn" type="button" id="stNow">今月</button>
+    <span style="flex:1"></span>
+    <button class="btn" type="button" id="stPrint">印刷</button>
+    <button class="btn" type="button" id="stCsv">CSV出力（Excel用）</button>
+  </div>
+  <div class="seg" id="stWard"></div>
+  <p class="hint">出発日がその月の外出・外泊を数えます（予定・誤登録の取消は除く）。「遅れ」は当初の帰院予定より遅れて帰院したもの（まだ帰院していない場合は現時点での遅れ）です。</p>
+  <div class="stcards" id="stCards"></div>
+  <div class="stgrid">
+    <div class="panel"><h3>時間</h3><div id="stTime"></div></div>
+    <div class="panel"><h3>単独・同行</h3><table class="xl" id="stAlone"></table></div>
+    <div class="panel"><h3>行き先の上位5</h3><table class="xl" id="stDest"></table></div>
+  </div>
+  <div class="stgrid">
+    <div class="panel"><h3>曜日別の出発件数</h3><div class="tablewrap"><table class="xl" id="stWd"></table></div></div>
+    <div class="panel"><h3>時間帯別の出発件数</h3><table class="xl" id="stTb"></table></div>
+  </div>
+  <h3 class="sth">患者別</h3>
+  <p class="hint" style="margin:0 0 6px">回数の多い順です。氏名を押すと、その患者の過去の記録が開きます。</p>
+  <div class="xlwrap" style="max-height:60vh"><table class="xl" id="stPt"></table></div>
+  <div id="stWardBox"><h3 class="sth">病棟別</h3>
+  <div class="xlwrap" style="max-height:none"><table class="xl" id="stTable"></table></div></div>
+  <h3 class="sth">入院形態別</h3>
+  <div class="xlwrap" style="max-height:none"><table class="xl" id="stTable2"></table></div>
+</section>
+
+<!-- カレンダー -->
+<section id="sec-calendar">
+  <div class="calhead">
+    <button class="btn" type="button" id="calPrev">‹ 前の月</button>
+    <h2 id="calTitle"></h2>
+    <button class="btn" type="button" id="calNext">次の月 ›</button>
+    <button class="btn" type="button" id="calToday">今日</button>
+    <span style="flex:1"></span>
+    <label style="display:flex;gap:6px;align-items:center;color:var(--ink);white-space:nowrap">病棟<select id="calWard"><option value="">全病棟</option></select></label>
+  </div>
+  <div class="cal" id="calGrid"></div>
+  <p class="hint">日付を押すと、その日に外出・外泊していた患者の一覧が出ます（外泊は出発日から帰院日まで毎日に表示）。<span class="f late">遅れ</span> 帰院予定より遅れた　<span class="f srch">捜索</span> 捜索あり　<span class="f out">外出中</span> まだ帰院していない　<span class="f plan">予定</span> 出発前の予定</p>
+  <div class="daylist" id="calDay"></div>
+</section>
+
+<!-- 患者台帳 -->
+<section id="sec-patients">
+  <h2>患者台帳</h2>
+  <div class="toolbar"><div class="seg" id="ptSeg"><button type="button" class="btn on" data-pts="in">入院中（<span id="ptNIn">0</span>人）</button><button type="button" class="btn" data-pts="discharged">退院（<span id="ptNOut">0</span>人）</button></div>
+    <input id="ptQ" placeholder="氏名・ふりがな・IDで絞り込み" style="min-width:200px"><span class="sp"></span>
+    <span class="hint" id="ptCount"></span><button type="button" class="btn pri" id="ptCsvBtn">CSVから取り込む</button><button type="button" class="btn" id="ptCsvTpl">ひな形CSV</button>
+    <input type="file" id="ptCsvFile" accept=".csv,text/csv,text/plain" hidden></div>
+  <p class="hint" style="margin-top:0">外出を一度登録した患者は自動でここに入り、次回は「＋ 新規登録」で呼び出せます。院内の患者一覧（Excel）を<b>CSVで保存して取り込む</b>こともできます（氏名・ふりがな・ID・性別・年齢・家族氏名・続柄・連絡先など）。同じ患者IDの人は上書きされます。退院した患者は「退院」を押すと「退院」の一覧に移ります（外出の記録は残ります）。病棟の変更や連絡先の修正は「修正」で行います。</p>
+  <div class="xlwrap"><table class="xl" id="ptTable"></table></div>
+</section>
+
+<!-- タグ管理 -->
+<section id="sec-tags">
+  <h2>タグ管理</h2>
+  <div class="panel" style="margin-bottom:14px">
+    <div class="grid">
+      <label>タグ番号<span class="req">必須</span><input id="tNewId" placeholder="例：T-01"></label>
+      <label>「探す」アプリでの名前<input id="tNewName" placeholder="例：外出タグ01"></label>
+      <label>シリアル番号（控え）<input id="tNewSerial"></label>
+      <label>電池交換日<input type="date" id="tNewBat"></label>
+    </div>
+    <div class="quick"><button class="btn pri" type="button" id="tAdd">タグを追加</button>
+      <span class="hint" style="margin:10px 0 0 10px">まとめて追加：</span>
+      <input id="tBulkFrom" type="number" min="1" value="1" style="width:80px"> 〜 <input id="tBulkTo" type="number" min="1" value="5" style="width:80px">
+      <button class="btn" type="button" id="tBulk">T-01形式で一括追加</button>
+    </div>
+    <p class="hint">タグ本体の登録（ペアリング）も、このiPadの「探す」アプリで行えます。タグ番号は、「探す」アプリでのタグ名・タグ本体に貼る番号シールと同じ表記にしてください（例：アプリ名「T-03」・シール「T-03」）。</p>
+  </div>
+  <div class="tablewrap"><table id="tTable"></table></div>
+</section>
+
+<!-- 設定 -->
+<section id="sec-settings">
+  <h2>設定</h2>
+  <div class="panel" id="themePanel" style="margin-bottom:14px">
+    <h2 style="margin-top:0">画面の明るさ</h2>
+    <div class="seg" id="thmSeg" role="group" aria-label="画面の明るさ"><button type="button" class="btn" data-thm="auto">自動（時刻で切り替え）</button><button type="button" class="btn" data-thm="light">明るい</button><button type="button" class="btn" data-thm="dark">暗い</button></div>
+    <div class="thmrange" id="thmRange"><span class="rl">暗くする時間帯</span><span class="nw"><select id="thmFrom" aria-label="暗くする時間帯の開始"></select> から</span><span class="nw"><span id="thmToPre">翌日の</span> <select id="thmTo" aria-label="暗くする時間帯の終了"></select> まで</span></div>
+    <label class="consent"><input type="checkbox" id="thmGlass">透明感を弱める（ぼかしをやめて、不透明の面にする。文字が読みにくい時や動きが重い時に）</label>
+    <p class="hint">「自動」のときは、上の時間帯だけ暗い配色になり、画面を開いたまま切り替わります。画面いちばん上の「画面：」ボタンでも、その場で 自動 → 明るい → 暗い と切り替えられます。選んだ内容はすぐに保存されます。</p>
+  </div>
+  <div class="panel">
+    <div class="grid">
+      <label>帰院予定の何分前から黄色表示にするか<input type="number" min="0" max="120" id="sPre"></label>
+      <label>アラーム確認後、何分で再アラームするか<input type="number" min="1" max="120" id="sRe"></label>
+      <label>アラーム音量（0〜1）<input type="number" min="0" max="1" step="0.1" id="sVol"></label>
+      <label>アラームが確認されないとき、何分で強い警告にするか<input type="number" min="1" max="120" id="sEsc"></label>
+      <label>見守り確認：画面に触れない時間が何分続いたら確認を出すか（0で出さない）<input type="number" min="0" max="240" id="sIdle"></label>
+      <label>バックアップのお知らせを出す時刻（時）<input type="number" min="0" max="23" id="sBk"></label>
+      <label>見守り確認の音を止める時間帯（開始・時）<input type="number" min="0" max="23" id="sQf"></label>
+      <label>見守り確認の音を止める時間帯（終了・時）<input type="number" min="0" max="23" id="sQt"></label>
+      <label>一覧の印刷を促す時刻（時・カンマ区切り）<input id="sPh" placeholder="例：8,17"></label>
+    </div>
+    <label class="consent" style="margin-top:12px"><input type="checkbox" id="sMask">目隠し表示：外出・外泊中と予定の画面で、氏名を頭文字だけにし、連絡先・服装・写真を隠す（各カードの「表示」で30秒だけ見られます）</label>
+    <div class="quick"><button class="btn pri" type="button" id="sSave">設定を保存</button><button class="btn" type="button" id="sTest">アラーム音を試す</button></div>
+  </div>
+  <div class="panel" style="margin-top:14px">
+    <h2>よく使う選択肢</h2>
+    <p class="hint" style="margin-top:0">登録画面の入力欄の下にボタンで出ます。1行に1つずつ書いて「選択肢を保存」を押してください（例：病院そばのイオン）。</p>
+    <div class="grid">
+      <label>よく使う行き先<textarea id="sDest" rows="6"></textarea></label>
+      <label>よく使う続柄<textarea id="sRel" rows="6"></textarea></label>
+    </div>
+    <div class="quick"><button class="btn pri" type="button" id="sPresetSave">選択肢を保存</button></div>
+  </div>
+  <div class="panel" style="margin-top:14px">
+    <h2>看護師名の一覧</h2>
+    <p class="hint" style="margin-top:0">一度入力した名前は自動で覚え、入力欄の下にボタンで出ます（最近使った8人。ほかの人は「ほかの看護師」を押すと全員が出ます）。保存できるのは60人までです。間違えて覚えた名前は×で消せます。</p>
+    <div class="mgr" id="nurseMgr"></div>
+    <div class="quick"><input id="nurseAdd" placeholder="名前を追加" style="max-width:220px"><button class="btn" type="button" id="nurseAddBtn">追加</button></div>
+    <label style="margin-top:12px">看護師名をまとめて登録（1行に1人）<textarea id="nurseBulk" rows="5" placeholder="1行に1人ずつ書いて「まとめて登録」を押してください"></textarea></label>
+    <div class="quick"><button class="btn pri" type="button" id="nurseBulkBtn">まとめて登録</button></div>
+  </div>
+  <div class="panel" style="margin-top:14px">
+    <h2>アプリが止まっていた記録</h2>
+    <p class="hint" style="margin-top:0">画面が消えた・他のアプリに切り替えた・閉じていた等で、アラームが鳴らなかった時間帯です（最新20件）。</p>
+    <ul class="loglist" id="gapList"></ul>
+  </div>
+  <div class="panel" style="margin-top:14px">
+    <h2>デモ</h2>
+    <div class="quick" style="margin-top:0"><button class="btn" type="button" id="demoIn">デモデータを入れる</button><button class="btn" type="button" id="demoOut">デモデータを消す</button></div>
+    <p class="hint">説明・練習用。押すと<b>東1病棟の入院患者50人（架空）</b>が患者台帳に入り、外出・外泊中3人と予定1件がある状態から始まります（本番でCSVから病棟の患者を取り込んだ状態を想定）。デモの患者は「(デモ)」付きで、「デモデータを消す」でまとめて削除できます。</p>
+  </div>
+  <div class="panel" style="margin-top:14px">
+    <h2>データ</h2>
+    <p class="hint" style="margin-top:0">データはこのiPad（このアプリ）の中だけに保存され、外部には送信しません。別の端末とは共有されません。ホーム画面のアプリを削除する、またはSafariの「履歴とWebサイトデータを消去」をすると記録が消えるため、毎日のバックアップで保管してください。</p>
+    <div class="quick"><button class="btn" type="button" id="bkOut">バックアップ保存（写真を除く）</button>
+      <label class="btn" style="color:var(--ink);display:inline-flex;align-items:center">バックアップから復元<input type="file" accept="application/json" id="bkIn" hidden></label>
+      <button class="btn bad" type="button" id="wipe">全データを削除</button></div>
+    <p class="hint" id="storageInfo"></p>
+    <p class="hint" id="swInfo"></p>
+  </div>
+  <div class="panel" style="margin-top:14px">
+    <h2>iPadで使うときの注意</h2>
+    <ul class="hint" style="margin:0;padding-left:20px">
+      <li>アラームは、この画面が表示されている間だけ鳴ります。このアプリを閉じる・他のアプリに切り替える・画面が消えると鳴りません。</li>
+      <li>「設定」→「画面表示と明るさ」→「自動ロック」を「なし」にしてください。上部の「画面オン維持」が有効でも、念のため設定してください。</li>
+      <li>他のアプリに切り替えられないよう、「設定」→「アクセシビリティ」→「アクセスガイド」で固定する方法もあります。</li>
+      <li>消音・集中モードのときに音が鳴るかは、実際のiPadで「アラーム音を試す」を押して確認してください。</li>
+    </ul>
+  </div>
+  <div class="panel" style="margin-top:14px" id="aboutPanel">
+    <h2>このアプリについて</h2>
+    <dl class="about">
+      <dt>名前</dt><dd>外出・外泊管理</dd>
+      <dt>版</dt><dd id="aboutVer"></dd>
+      <dt>作成</dt><dd>黒田 優</dd>
+      <dt>目的</dt><dd>入院患者さんの外出・外泊を見守り、帰院の遅れに早く気づき、対応の経過を記録に残すためのアプリです。外出・外泊の許可や判断は、これまでどおり看護師と医師が行います。</dd>
+      <dt>記録の保存</dt><dd>記録はこのiPadの中だけに保存し、外部には送信しません。作成者も記録を預かりません。</dd>
+      <dt>ご意見・不具合</dt><dd>黒田 優まで。いただいたご意見は改修に反映し、新しい版でお知らせします。</dd>
+    </dl>
+  </div>
+</section>
+</main>
+<div class="foot">外出・外泊管理（作成 黒田 優）｜ アラームはこの端末で鳴ります（タグからは鳴らしません）。位置の検索は病院のiPhone／iPadの「探す」アプリで行い、この画面は位置情報を取得しません。</div>
+
+<datalist id="nurseList"></datalist>
+<datalist id="destList"></datalist>
+<dialog id="dlg"><div class="dlgin"><h3 id="dlgTitle" tabindex="-1" autofocus style="outline:none"></h3><form id="dlgForm" onsubmit="return false"><div id="dlgBody"></div><div class="dlgActions" id="dlgActions"></div></form></div></dialog>
+<dialog id="cdlg"><div class="dlgin"><h3 id="cdlgMsg" style="font-size:18px;line-height:1.6;white-space:pre-line"></h3><div class="dlgActions"><button type="button" class="btn" id="cdlgNo">やめる</button><button type="button" class="btn bad" id="cdlgYes">はい</button></div></div></dialog>
+<div id="printArea"></div>
+<div id="toast"></div>
+
+<script>
+'use strict';
+/* ---------- 小道具 ---------- */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const pad=n=>String(n).padStart(2,'0');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const WD='日月火水木金土';
+function fmt(ts){if(!ts)return '';const d=new Date(ts);return `${d.getMonth()+1}/${d.getDate()}(${WD[d.getDay()]}) ${pad(d.getHours())}:${pad(d.getMinutes())}`;}
+function fmtFull(ts){if(!ts)return '';const d=new Date(ts);return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;}
+function toLocalInput(ts){const d=new Date(ts);return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;}
+function toDateInput(ts){const d=new Date(ts);return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}
+
+/* ---------- 時刻：15分刻みで選ぶ（細かくしたい時だけ数値入力） ---------- */
+const IS_PHONE=Math.min(screen.width,screen.height)<600;
+if(IS_PHONE)document.addEventListener('DOMContentLoaded',()=>{const nav=document.querySelector('nav');['gapBar','prBar','bkBar'].forEach(id=>{const e=document.getElementById(id);if(e&&nav)nav.before(e);});});
+const TP_DESC=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');
+
+function round15(ts){return Math.round(ts/900000)*900000;}
+function enhanceTime(inp){
+  if(inp._tp)return;
+  const wrap=document.createElement('div');wrap.className='tp';
+  wrap.innerHTML='<select class="tp-d" aria-label="日付"></select><select class="tp-t" aria-label="時刻"></select><button type="button" class="btn sm tp-fine">細かく入力</button>';
+  inp.before(wrap);wrap.insertBefore(inp,wrap.querySelector('.tp-fine'));inp._tp=wrap;
+  const sd=wrap.querySelector('.tp-d'),st=wrap.querySelector('.tp-t'),bf=wrap.querySelector('.tp-fine');
+  let fine=false;
+  const setMode=f=>{fine=f;inp.hidden=!f;sd.hidden=f;st.hidden=f;bf.textContent=f?'15分刻みで選ぶ':'細かく入力';inp.step=f?60:900;};
+  const raw=()=>TP_DESC.get.call(inp);
+  const push=v=>{TP_DESC.set.call(inp,v);inp.dispatchEvent(new Event('input',{bubbles:true}));inp.dispatchEvent(new Event('change',{bubbles:true}));};
+  function sync(){
+    const v=raw();const cur=fromLocalInput(v);const today=new Date();today.setHours(0,0,0,0);
+    const days=[];for(let i=-7;i<=14;i++){const d=new Date(today);d.setDate(d.getDate()+i);days.push(d);}
+    let curDay=null,curHM='';
+    if(cur){const d=new Date(cur);curHM=pad(d.getHours())+':'+pad(d.getMinutes());d.setHours(0,0,0,0);curDay=d;
+      if(!days.some(x=>x.getTime()===d.getTime())){days.push(d);days.sort((a,b)=>a-b);}}
+    const rel={'-1':'昨日 ','0':'今日 ','1':'明日 ','2':'明後日 '};
+    sd.innerHTML=(cur?'':'<option value="">— 日付 —</option>')+days.map(d=>{const k=Math.round((d-today)/86400000);const ds=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+      return `<option value="${ds}"${curDay&&d.getTime()===curDay.getTime()?' selected':''}>${rel[k]||''}${d.getMonth()+1}/${d.getDate()}(${'日月火水木金土'[d.getDay()]})</option>`;}).join('');
+    const hm=[];for(let m=0;m<1440;m+=15)hm.push(pad(Math.floor(m/60))+':'+pad(m%60));
+    if(curHM&&!hm.includes(curHM)){hm.push(curHM);hm.sort();}
+    st.innerHTML=(cur?'':'<option value="">— 時刻 —</option>')+hm.map(t=>`<option value="${t}"${t===curHM?' selected':''}>${t}</option>`).join('');
+  }
+  function fromSel(){
+    let d=sd.value,t=st.value;
+    if(!t)return;                                  // 時刻が未選択なら値は入れない
+    if(!d){const n=new Date();d=`${n.getFullYear()}-${pad(n.getMonth()+1)}-${pad(n.getDate())}`;}
+    push(d+'T'+t);sync();
+  }
+  sd.addEventListener('change',fromSel);st.addEventListener('change',fromSel);
+  bf.addEventListener('click',()=>{setMode(!fine);if(fine)inp.focus();else sync();});
+  inp.addEventListener('input',()=>{if(fine)sync();});
+  Object.defineProperty(inp,'value',{get(){return raw();},set(v){TP_DESC.set.call(inp,v);if(v)wrap.classList.remove('invalid');sync();},configurable:true});
+  inp._tpSync=sync;setMode(false);sync();
+}
+function enhanceTimes(root){root.querySelectorAll('input[type="datetime-local"]').forEach(enhanceTime);}
+function fromLocalInput(v){if(!v)return null;const t=new Date(v).getTime();return isNaN(t)?null:t;}
+function dur(ms){const m=Math.floor(Math.abs(ms)/60000);const h=Math.floor(m/60),mm=m%60;if(h>=24)return `${Math.floor(h/24)}日${h%24}時間`;return h?`${h}時間${mm}分`:`${mm}分`;}
+function toast(msg,ms=3200){const t=$('#toast');t.textContent=msg;t.style.display='block';clearTimeout(toast._t);toast._t=setTimeout(()=>t.style.display='none',ms);}
+function download(name,blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}
+
+function askConfirm(msg,yes){return new Promise(res=>{const d=$('#cdlg');$('#cdlgMsg').textContent=msg;$('#cdlgYes').textContent=yes||'はい';
+  const done=v=>{d.close();$('#cdlgYes').onclick=$('#cdlgNo').onclick=null;res(v);};$('#cdlgYes').onclick=()=>done(true);$('#cdlgNo').onclick=()=>done(false);d.showModal();});}
+/* ---------- 保存（IndexedDB：この端末内のみ） ---------- */
+let db;
+// 新版（ガラス調・時間軸）：現行（gaishutsu_kanri）と同じドメインに置かれても混ざらないよう、別の名前のDBを使う
+const DB_NAME='gaishutsu_kanri_shisaku';
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,2);
+  r.onupgradeneeded=()=>{const d=r.result;['outings','tags','patients'].forEach(n=>{if(!d.objectStoreNames.contains(n))d.createObjectStore(n,{keyPath:'id'});});['photos','settings'].forEach(n=>{if(!d.objectStoreNames.contains(n))d.createObjectStore(n);});};
+  r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+function tx(store,mode,fn){return new Promise((res,rej)=>{const t=db.transaction(store,mode);const rq=fn(t.objectStore(store));let out;if(rq)rq.onsuccess=()=>{out=rq.result};t.oncomplete=()=>res(out);t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error);});}
+const dbAll=s=>tx(s,'readonly',st=>st.getAll());
+const dbKeys=s=>tx(s,'readonly',st=>st.getAllKeys());
+const dbGet=(s,k)=>tx(s,'readonly',st=>st.get(k));
+const dbPut=(s,v,k)=>tx(s,'readwrite',st=>k===undefined?st.put(v):st.put(v,k));
+const dbDel=(s,k)=>tx(s,'readwrite',st=>st.delete(k));
+const dbClear=s=>tx(s,'readwrite',st=>st.clear());
+
+/* ---------- 状態 ---------- */
+let outings=[],tags=[],patients=[];
+const WARDS=['東1','東2','東3','東4','西1','西2','西3','本3'];
+const wardText=o=>o.ward||'';   // 1.11.0：部屋（病室）は表示しない（保存済みの値は残す）
+const hira=t=>String(t||'').replace(/[\u30a1-\u30f6]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60));
+const half=t=>String(t||'').replace(/[０-９Ａ-Ｚａ-ｚ]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/　/g,' ').trim();
+function ageOf(x){if(!x)return '';if(x.birth){const b=new Date(x.birth+'T00:00:00');if(!isNaN(b)){const n=new Date();let a=n.getFullYear()-b.getFullYear();if(n.getMonth()<b.getMonth()||(n.getMonth()===b.getMonth()&&n.getDate()<b.getDate()))a--;return a>=0&&a<130?String(a):'';}}return x.age?String(x.age):'';}
+const isDis=p=>!!p&&p.status==='discharged';   // 患者台帳：status が無い・'in' は入院中
+const sexAge=x=>[x.sex||'',ageOf(x)?ageOf(x)+'歳':''].filter(Boolean).join(' ');
+const matchQ=(p,q)=>{q=hira(q).replace(/\s/g,'');if(!q)return true;return hira((p.name||'')+(p.kana||'')+(p.pid||'')).replace(/\s/g,'').includes(q);};
+let settings={themeMode:'auto',darkFrom:'18:00',darkTo:'07:00',glassOff:false,activeView:'timeline',preMin:15,realertMin:10,volume:0.7,nurses:[],escalateMin:10,idleMin:30,backupHour:17,mask:false,gaps:[],quietFrom:17,quietTo:8,printHours:[8,17],memos:{},destPresets:['自宅','実家','病院周辺の散歩','近くのコンビニ','喫煙','図書館','加古川のイオン'],relPresets:['母','父','妻','夫','姉','兄','妹','弟','娘','息子','その他の親族','施設職員']};
+const photoURL={};
+let pendingPhoto=null;
+const saveOuting=o=>dbPut('outings',o);
+const saveTag=t=>dbPut('tags',t);
+const saveSettings=()=>dbPut('settings',settings,'main');
+const DEST_ADD_1110=['喫煙','図書館','加古川のイオン'];
+// 1.11.0：すでに使っている端末にも行き先の3つを一度だけ足す（後で消したものは再び足さない）
+async function addPresets1110(){if(settings.destAdded1110)return;const l=settings.destPresets||[];settings.destPresets=[...l,...DEST_ADD_1110.filter(x=>!l.includes(x))];settings.destAdded1110=true;await saveSettings();}
+const NURSE_MAX=60;
+const tagSort=(a,b)=>a.id.localeCompare(b.id,'ja',{numeric:true});
+const TAG_ST={available:'利用可',reserved:'予約中',inuse:'貸出中',missing:'未回収',maint:'点検・電池交換'};
+
+async function loadAll(){
+  outings=await dbAll('outings');patients=await dbAll('patients');tags=(await dbAll('tags')).sort(tagSort);
+  const s=await dbGet('settings','main');if(s)settings={...settings,...s};
+  await purgePhotos();
+}
+// 帰院済み・削除済みの記録に写真が残っていれば必ず消す（安全策）
+async function purgePhotos(){
+  const keys=await dbKeys('photos');
+  for(const k of keys){const o=outings.find(x=>x.id===k);
+    if(!o||o.status==='returned'){await dbDel('photos',k);if(o&&o.hasPhoto){o.hasPhoto=false;o.photoDeletedAt=Date.now();await saveOuting(o);}}}
+}
+async function getPhotoURL(id){if(photoURL[id])return photoURL[id];const b=await dbGet('photos',id);if(!b)return null;photoURL[id]=URL.createObjectURL(b);return photoURL[id];}
+function dropPhotoURL(id){if(photoURL[id]){URL.revokeObjectURL(photoURL[id]);delete photoURL[id];}}
+function rememberMemo(key,t){t=(t||'').trim();if(!t)return;if(!settings.memos)settings.memos={};settings.memos[key]=[t,...(settings.memos[key]||[]).filter(x=>x!==t)].slice(0,30);saveSettings();}
+function memoChips(key,field){const l=((settings.memos||{})[key]||[]).slice(0,10);if(!l.length)return '';
+  return `<div class="nchips mchips">${l.map(t=>`<button type="button" class="nchip" data-memo="${esc(t)}" data-field="${field}" title="${esc(t)}">${esc(t)}</button>`).join('')}</div><p class="hint" style="margin:0 0 4px">前に入れた内容から選べます（選んだ後に書き足しても構いません）</p>`;}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-memo]');if(!b)return;e.preventDefault();const f=b.closest('form');const inp=f&&f.elements[b.dataset.field];if(!inp)return;inp.value=b.dataset.memo;inp.dispatchEvent(new Event('input',{bubbles:true}));inp.classList.remove('invalid');});
+function rememberNurse(n){n=(n||'').trim();if(!n)return;settings.nurses=[n,...settings.nurses.filter(x=>x!==n)].slice(0,NURSE_MAX);saveSettings();renderNurseList();}
+function renderNurseList(){$('#nurseList').innerHTML=settings.nurses.map(n=>`<option value="${esc(n)}">`).join('');}
+function addLog(o,text,by,extra){o.log=o.log||[];o.log.push({at:Date.now(),text,by:by||'',...(extra||{})});}
+
+/* ---------- 判定 ---------- */
+function stateOf(o,now){
+  if(o.status==='returned')return 'returned';
+  if(o.status==='planned')return 'planned';
+  if(o.status==='cancelled')return 'cancelled';
+  if(o.status==='search')return 'search';
+  if(now>o.dueAt)return 'overdue';
+  if(o.dueAt-now<=settings.preMin*60000)return 'soon';
+  return 'ok';
+}
+const isAlert=(o,now)=>{const s=stateOf(o,now);return s==='overdue'||s==='search';};
+function needsSound(o,now){
+  if(!isAlert(o,now))return false;
+  const start=o.status==='search'?o.searchAt:o.dueAt;
+  const ack=(o.ackAt&&o.ackAt>=start)?o.ackAt:null;
+  if(!ack)return true;
+  return now-ack>=settings.realertMin*60000;
+}
+const isActive=o=>o.status==='out'||o.status==='search';
+const PLAN_MIN=15;
+function stLabel(o,s){if(s==='ok')return (o.kind||'外出')+'中';if(s==='planned')return o.departAt<Date.now()?'出発予定時刻を過ぎています':(o.kind||'外出')+'の予定';return LABEL[s];}
+const LABEL={cancelled:'取消（誤登録）',planned:'予定',ok:'外出中',soon:'まもなく帰院時刻',overdue:'帰院時刻超過',search:'捜索中',returned:'帰院済'};
+function countText(o,now){
+  const s=stateOf(o,now);
+  if(s==='search')return '捜索 '+dur(now-o.searchAt);
+  if(s==='overdue')return dur(now-o.dueAt)+' 超過';
+  return 'あと '+dur(o.dueAt-now);
+}
+
+/* ---------- 音 ---------- */
+let actx=null,lastBeep=0;
+function ensureAudio(){try{if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume().then(updateSoundBtn);}catch(e){}updateSoundBtn();}
+function soundReady(){return actx&&actx.state==='running';}
+function updateSoundBtn(){const b=$('#soundBtn');if(soundReady()){b.classList.remove('off');b.textContent='🔔 アラーム音：有効';}else{b.classList.add('off');b.textContent='🔇 音が出ません：ここを押す';}}
+function tone(f,st,d,vol){const o=actx.createOscillator(),g=actx.createGain();o.type='square';o.frequency.value=f;const v=Math.max(0,Math.min(1,vol??settings.volume))*0.45;
+  g.gain.setValueAtTime(0,st);g.gain.linearRampToValueAtTime(v,st+0.01);g.gain.setValueAtTime(v,st+d-0.02);g.gain.linearRampToValueAtTime(0,st+d);o.connect(g);g.connect(actx.destination);o.start(st);o.stop(st+d+0.05);}
+function alarmUrgent(){if(!soundReady())return false;const t=actx.currentTime+0.05;for(let i=0;i<4;i++){tone(1320,t+i*0.3,0.13,1);tone(990,t+i*0.3+0.15,0.13,1);}return true;}
+function chime(){if(!soundReady())return false;const t=actx.currentTime+0.05;tone(660,t,0.25,Math.min(0.5,settings.volume));tone(880,t+0.3,0.35,Math.min(0.5,settings.volume));return true;}
+function alarm(){if(!soundReady())return false;const t=actx.currentTime+0.05;for(let i=0;i<3;i++){tone(880,t+i*0.5,0.2);tone(660,t+i*0.5+0.22,0.2);}return true;}
+try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch(e){}
+/* 画面オン維持（Wake Lock：iPadOS 16.4以降のSafari等） */
+let wakeLock=null;
+async function keepAwake(){
+  try{if('wakeLock' in navigator&&document.visibilityState==='visible'&&!wakeLock){wakeLock=await navigator.wakeLock.request('screen');wakeLock.addEventListener('release',()=>{wakeLock=null;updateWake();});}}catch(e){wakeLock=null;}
+  updateWake();
+}
+function updateWake(){const b=$('#wakeBadge');if(!b)return;if(wakeLock){b.className='on';b.textContent='画面オン維持：有効';}else{b.className='off';b.textContent='画面オン維持：無効';}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){keepAwake();ensureAudio();lastSig='';tick();}});
+document.addEventListener('pointerdown',()=>{if(!wakeLock)keepAwake();});
+document.addEventListener('pointerdown',ensureAudio);document.addEventListener('keydown',ensureAudio);
+
+/* ---------- 画面切替 ---------- */
+function showTab(name){$$('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));{const ab=document.querySelector(`nav button[data-tab="${name}"]`);if(ab&&IS_PHONE)ab.scrollIntoView({block:'nearest',inline:'center'});}$$('main section').forEach(s=>s.classList.toggle('active',s.id==='sec-'+name));
+  if(name==='new')prepareNewForm();if(name==='history')renderHistory();if(name==='tags')renderTags();if(name==='patients'){ptView='in';renderPatients();}if(name==='plan')renderPlans();if(name==='calendar')renderCalendar();if(name==='stats')renderStats();if(name==='settings')renderSettings();window.scrollTo(0,0);}
+$$('nav button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+
+/* ---------- 画面の明るさ（新版） ---------- */
+const THEME_NAME={auto:'自動',light:'明るい',dark:'暗い'};
+const themeNow=now=>{const m=settings.themeMode||'auto';return m==='light'||m==='dark'?m:(window.__isDarkTime(now,settings.darkFrom,settings.darkTo)?'dark':'light');};
+function applyTheme(now){
+  const el=document.documentElement,t=themeNow(now===undefined?Date.now():now),g=settings.glassOff?'off':'on';
+  if(el.dataset.theme!==t){el.dataset.theme=t;const mt=document.querySelector('meta[name="theme-color"]');if(mt)mt.content=t==='dark'?'#0e1a2d':'#eef2f7';}
+  if(el.dataset.glass!==g)el.dataset.glass=g;
+  const b=$('#themeBtn');if(b){const m=settings.themeMode||'auto';const k=m+':'+t;if(b.dataset.k!==k){b.dataset.k=k;b.innerHTML='画面：'+THEME_NAME[m]+(m==='auto'?'<span class="thsub">（'+THEME_NAME[t]+'）</span>':'');}}
+}
+function mirrorTheme(){try{localStorage.setItem('gaishutsu_shisaku_theme',JSON.stringify({mode:settings.themeMode,from:settings.darkFrom,to:settings.darkTo,glassOff:!!settings.glassOff}));}catch(e){}}
+async function saveTheme(){applyTheme();mirrorTheme();renderThemePanel();await saveSettings();}
+const HM48=[...Array(48)].map((_,i)=>pad(Math.floor(i/2))+':'+(i%2?'30':'00'));
+function renderThemePanel(){
+  const m=settings.themeMode||'auto';$$('#thmSeg [data-thm]').forEach(b=>{b.classList.toggle('on',b.dataset.thm===m);b.setAttribute('aria-pressed',b.dataset.thm===m?'true':'false');});
+  const opts=v=>(HM48.includes(v)?HM48:[...HM48,v].sort()).map(x=>`<option${x===v?' selected':''}>${x}</option>`).join('');
+  $('#thmFrom').innerHTML=opts(settings.darkFrom);$('#thmTo').innerHTML=opts(settings.darkTo);
+  $('#thmToPre').hidden=!(settings.darkTo<=settings.darkFrom);$('#thmRange').classList.toggle('off',m!=='auto');
+  $('#thmGlass').checked=!!settings.glassOff;}
+$('#thmSeg').addEventListener('click',e=>{const b=e.target.closest('[data-thm]');if(!b)return;settings.themeMode=b.dataset.thm;saveTheme();});
+$('#thmFrom').addEventListener('change',e=>{settings.darkFrom=e.target.value;saveTheme();});
+$('#thmTo').addEventListener('change',e=>{settings.darkTo=e.target.value;saveTheme();});
+$('#thmGlass').addEventListener('change',e=>{settings.glassOff=e.target.checked;saveTheme();});
+$('#themeBtn').addEventListener('click',()=>{const order=['auto','light','dark'];settings.themeMode=order[(order.indexOf(settings.themeMode||'auto')+1)%3];saveTheme();toast(settings.themeMode==='auto'?'画面の明るさ：自動（時刻で切り替え）':'画面の明るさ：'+THEME_NAME[settings.themeMode],1800);});
+
+/* ---------- 目隠し表示 ---------- */
+const revealUntil={};const openUntil={};let printFull=false;
+const OPEN_ALL=location.hash==='#detail';
+const isOpen=o=>OPEN_ALL||printFull||openUntil[o.id]>Date.now();
+function maskName(n){return String(n||'').trim().split(/[\s　]+/).map(x=>x?x[0]+'○'.repeat(Math.max(0,x.length-1)):'').join(' ');}
+function isMasked(o){return !!settings.mask&&!(revealUntil[o.id]>Date.now());}
+function shownName(o){return isMasked(o)?maskName(o.name):o.name;}
+
+/* ---------- 外出中一覧：時間軸（新版） ---------- */
+const TL_H=3600000,TL_SPAN=6;
+const tlView=()=>settings.activeView!=='list';
+// 表示範囲：現在の2時間前（毎正時に切り下げ）から6時間。時刻が進めば範囲も進む
+function tlRange(now){const d=new Date(now);d.setMinutes(0,0,0);const a=d.getTime()-2*TL_H;return [a,a+TL_SPAN*TL_H];}
+function fmtShort(ts,now){const d=new Date(ts),n=new Date(now);const hm=pad(d.getHours())+':'+pad(d.getMinutes());return d.toDateString()===n.toDateString()?hm:`${d.getMonth()+1}/${d.getDate()} ${hm}`;}
+const tlGrid=()=>[...Array(TL_SPAN+1)].map((_,i)=>`<i class="tlg" style="left:${(i/TL_SPAN*100).toFixed(4)}%"></i>`).join('');
+function tlHead(){return `<div class="tlhead" aria-hidden="true"><div class="cap">タグ・氏名・状態</div><div class="tlhaxis">${tlGrid()}<div class="tlticks"></div><div class="tlnow"></div><div class="tlnowlbl"></div></div><div class="cap" style="text-align:right">残り時間・操作</div></div>`;}
+function tlRowHTML(o,s,mk,now,alert){
+  return `<article class="card crow tl st-${s}" data-id="${o.id}">
+    <div class="tlleft">${o.tagId?`<div class="tagbadge sm">${esc(o.tagId)}</div>`:'<div class="tagbadge sm none">タグなし</div>'}
+      <div class="who"><div class="name">${esc(shownName(o))}</div><div class="l2"><span class="lbl lbl-${s}">${stLabel(o,s)}</span><span class="sub">${esc([o.ward,o.kind,(o.pid&&!mk)?'ID '+o.pid:''].filter(Boolean).join('・'))}</span></div><div class="tlmini"><i></i></div></div></div>
+    <div class="tlaxis" role="img" aria-label="出発 ${fmt(o.departAt)}、帰院予定 ${fmt(o.dueAt)}">${tlGrid()}<div class="tlbar"><span class="cl cl-l"></span><span class="cl cl-r"></span></div><div class="tlext"><span class="cl cl-l"></span></div><div class="tlnow"></div></div>
+    <div class="tlright"><div class="statebox"><div class="count" data-count="${o.id}">${countText(o,now)}</div><div class="due">帰院予定 <b>${fmtShort(o.dueAt,now)}</b></div></div>
+      <div class="acts"><button class="btn ok" data-act="return">帰院した</button>${alert?'<button class="btn bad" data-act="open">対応・詳細</button>':'<button class="btn" data-act="open">詳細</button>'}</div></div></article>`;}
+// 毎秒：行を作り直さずに、目盛り・現在線・バーの位置だけを動かす（操作中のボタンなどを壊さない）
+function updateTimeline(now){
+  const box=$('#activeList');if(!box)return;const [a,b]=tlRange(now),W=b-a,pc=t=>((t-a)/W*100).toFixed(4)+'%';
+  const head=box.querySelector('.tlhead');
+  if(head){if(head.dataset.start!==String(a)){head.dataset.start=a;head.querySelector('.tlticks').innerHTML=[...Array(TL_SPAN+1)].map((_,i)=>{const d=new Date(a+i*TL_H);return `<span style="left:${(i/TL_SPAN*100).toFixed(4)}%">${pad(d.getHours())}:00</span>`;}).join('');}
+    const d=new Date(now);head.querySelector('.tlnow').style.left=pc(now);const l=head.querySelector('.tlnowlbl');l.style.left=pc(now);l.textContent=`現在 ${pad(d.getHours())}:${pad(d.getMinutes())}`;}
+  // バーの中の日時は、入りきる時だけ出す（途中で切れた文字は出さない）
+  const fit=(px,...t)=>t.filter(Boolean).reduce((n,x)=>n+x.length*8.2+16,0)<=px;
+  box.querySelectorAll('.crow.tl').forEach(r=>{const o=outings.find(x=>x.id===r.dataset.id);if(!o)return;
+    const bar=r.querySelector('.tlbar'),ext=r.querySelector('.tlext'),late=now>o.dueAt,axW=r.querySelector('.tlaxis').clientWidth;
+    const x1=Math.max(o.departAt,a),x2=Math.min(o.dueAt,b);
+    if(x2>x1){bar.hidden=false;bar.style.left=pc(x1);bar.style.width=((x2-x1)/W*100).toFixed(4)+'%';}else bar.hidden=true;
+    bar.classList.toggle('cut-l',o.departAt<a);bar.classList.toggle('cut-r',o.dueAt>b);bar.classList.toggle('join',late&&o.dueAt>=a&&o.dueAt<=b);
+    let tl=o.departAt<a?'◀ '+fmtShort(o.departAt,now):'',tr=o.dueAt>b?fmtShort(o.dueAt,now)+' ▶':'';const bw=Math.max(0,(x2-x1)/W*axW);
+    if(!fit(bw,tl,tr)){if(fit(bw,tr))tl='';else if(fit(bw,tl))tr='';else tl=tr='';}
+    bar.querySelector('.cl-l').textContent=tl;bar.querySelector('.cl-r').textContent=tr;
+    const e1=Math.max(o.dueAt,a),e2=Math.min(now,b);
+    if(late&&e2>e1){ext.hidden=false;ext.style.left=pc(e1);ext.style.width=((e2-e1)/W*100).toFixed(4)+'%';}else ext.hidden=true;
+    ext.classList.toggle('cut-l',o.dueAt<a);ext.classList.toggle('cut-r',now>b);
+    const te=o.dueAt<a?'◀ 予定 '+fmtShort(o.dueAt,now):'';ext.querySelector('.cl-l').textContent=fit(Math.max(0,(e2-e1)/W*axW),te)?te:'';
+    r.querySelector('.tlnow').style.left=pc(Math.min(Math.max(now,a),b));
+    const span=Math.max(1,o.dueAt-o.departAt);r.querySelector('.tlmini i').style.width=(late?100:Math.max(0,Math.min(100,(now-o.departAt)/span*100))).toFixed(2)+'%';});
+}
+function renderViewSeg(){const v=tlView()?'timeline':'list';$$('#viewSeg [data-view]').forEach(b=>{b.classList.toggle('on',b.dataset.view===v);b.setAttribute('aria-pressed',b.dataset.view===v?'true':'false');});}
+$('#viewSeg').addEventListener('click',async e=>{const b=e.target.closest('[data-view]');if(!b)return;settings.activeView=b.dataset.view;renderViewSeg();lastSig='';await tick();await saveSettings();});
+
+/* ---------- 外出中一覧 ---------- */
+async function renderActive(){
+  const now=Date.now();
+  const rank={search:0,overdue:0,soon:1,ok:2};
+  $('#cntPlan').textContent=outings.filter(o=>o.status==='planned').length;
+  const list=outings.filter(o=>isActive(o)).sort((a,b)=>(rank[stateOf(a,now)]-rank[stateOf(b,now)])||(a.dueAt-b.dueAt));
+  $('#cntActive').textContent=list.length;
+  const na=list.filter(o=>isAlert(o,now)).length;$('#cntAlert').hidden=!na;$('#cntAlert').textContent='⚠'+na;
+  const box=$('#activeList');renderViewSeg();
+  if(!list.length){box.innerHTML='<div class="empty">現在、外出・外泊中の患者はいません。<br>「＋ 新規登録」から登録してください。出発前の予定は「予定」タブにあります。</div>';return;}
+  const urls={};for(const o of list){if(o.hasPhoto&&!isMasked(o))urls[o.id]=await getPhotoURL(o.id);}
+  const tl=tlView()&&list.some(o=>!isOpen(o));
+  box.innerHTML=(tl?tlHead():'')+list.map(o=>{
+    const s=stateOf(o,now);const mk=isMasked(o);
+    if(!isOpen(o)){const alert=s==='overdue'||s==='search';
+      if(tl)return tlRowHTML(o,s,mk,now,alert);
+      return `<article class="card crow st-${s}" data-id="${o.id}">
+      ${o.tagId?`<div class="tagbadge sm">${esc(o.tagId)}</div>`:'<div class="tagbadge sm none">タグなし</div>'}
+      <div class="who"><div class="name">${esc(shownName(o))}</div><div class="sub">${esc([(o.pid&&!mk)?'ID '+o.pid:'',o.ward,o.kind].filter(Boolean).join('・'))}</div></div>
+      <div class="times"><span>出発 <b>${fmt(o.departAt)}</b></span><span>帰院予定 <b>${fmt(o.dueAt)}</b></span></div>
+      <div class="statebox"><span class="lbl lbl-${s}">${stLabel(o,s)}</span><div class="count" data-count="${o.id}">${countText(o,now)}</div></div>
+      <div class="acts"><button class="btn ok" data-act="return">帰院した</button>${alert?'<button class="btn bad" data-act="open">対応・詳細</button>':'<button class="btn" data-act="open">詳細</button>'}</div></article>`;}
+    const tg=o.tagId?`<div class="tagbadge">${esc(o.tagId)}</div>`:'<div class="tagbadge none">タグなし</div>';
+    const tagName=o.tagId?(tags.find(t=>t.id===o.tagId)?.findName||o.tagId):'';
+    const comp=o.alone?'単独':(mk?'同行あり':`${esc(o.compName)}${o.compRel?'（'+esc(o.compRel)+'）':''}`);
+    const tel=[o.selfTel?'本人 '+esc(o.selfTel):'',(!o.alone&&o.compTel)?'同行者 '+esc(o.compTel):'',o.famTel?'家族'+(o.famRel?'（'+esc(o.famRel)+'）':'')+' '+esc(o.famTel):''].filter(Boolean).join('／')||'—';
+    const telShown=mk?'（「表示」で確認）':tel;
+    let guide='';
+    if(s==='overdue'||s==='search'){
+      guide=`<div class="guide"><b>${s==='search'?'捜索中：':'帰院時刻を過ぎています：'}対応の目安</b><ol>
+        <li>${o.selfTel||(!o.alone&&o.compTel)||o.famTel?'本人・同行者・家族へ電話（'+telShown+'）':'連絡先の登録なし → 関係者へ連絡'}</li>
+        <li>${o.tagId?`病院のiPhone／iPadの「探す」→「持ち物」で <b>${esc(tagName)}</b> の位置を確認`:'タグなし：行き先（'+esc(o.dest||'未記入')+'）と服装で捜索'}</li>
+        <li>行動はすべて「対応記録」に残す（院内の取り決めに従い警察へ連絡）</li></ol></div>`;
+    }
+    const acts=[];
+    acts.push(`<button class="btn ok" data-act="return">帰院した</button>`);
+    if(s==='overdue'||s==='search')acts.push(`<button class="btn bad" data-act="ack">アラーム確認（対応中）</button>`);
+    if(s!=='search')acts.push(`<button class="btn srch" data-act="lost">はぐれ・行方不明の連絡あり</button>`);
+    else acts.push(`<button class="btn" data-act="found">所在確認できた（捜索終了）</button>`);
+    if(mk)acts.push(`<button class="btn" data-act="reveal">表示（30秒）</button>`);
+    if(o.status==='out'&&o.departAtPlanned&&now-o.departAt<30*60000)acts.push(`<button class="btn" data-act="undo">GOの取消（予定に戻す）</button>`);
+    acts.push(`<button class="btn" data-act="log">対応記録</button>`,`<button class="btn" data-act="extend">帰院予定を変更</button>`,`<button class="btn" data-act="edit">内容を修正</button>`);
+    return `<article class="card st-${s}" data-id="${o.id}">
+      <div class="head">${tg}<div class="who"><div class="name">${esc(shownName(o))}</div><div class="sub">${esc([wardText(o),o.adm,o.kind,sexAge(o),(o.pid&&!mk)?'ID '+o.pid:''].filter(Boolean).join('・'))}</div></div>
+      <div class="statebox"><span class="lbl lbl-${s}">${stLabel(o,s)}</span><div class="count" data-count="${o.id}">${countText(o,now)}</div></div></div>
+      <div class="body">${urls[o.id]?`<img class="thumb" src="${urls[o.id]}" alt="服装写真" data-act="photo">`:(mk&&o.hasPhoto?'<div class="nophoto">写真あり<br>（表示で確認）</div>':'<div class="nophoto">写真なし</div>')}
+      <dl class="info"><dt>出発</dt><dd>${fmt(o.departAt)}（${esc(o.departNurse)}）</dd>
+      <dt>帰院予定</dt><dd>${fmt(o.dueAt)}${o.dueAt!==o.dueAtOriginal?' <span class="sub">（当初 '+fmt(o.dueAtOriginal)+'）</span>':''}</dd>
+      <dt>行き先</dt><dd>${esc(o.dest)||'—'}</dd><dt>同行</dt><dd>${comp}</dd><dt>連絡先</dt><dd>${telShown}</dd>
+      <dt>服装</dt><dd>${mk?'（「表示」で確認）':(esc(o.clothes)||'—')}</dd>${o.note&&!mk?`<dt>備考</dt><dd>${esc(o.note)}</dd>`:''}</dl></div>
+      ${guide}<div class="actions">${acts.join('')}${printFull?'':'<button class="btn" data-act="close">詳細を閉じる</button>'}</div></article>`;
+  }).join('');
+  if(tl)updateTimeline(now);
+}
+$('#activeList').addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;const id=b.closest('.card').dataset.id;const o=outings.find(x=>x.id===id);if(!o)return;
+  ({open:o=>{openUntil[o.id]=Date.now()+120000;lastSig='';tick();},close:o=>{delete openUntil[o.id];lastSig='';tick();},undo:dlgUndo,return:dlgReturn,ack:doAck,lost:dlgLost,found:o=>dlgExtend(o,true),log:dlgLog,extend:o=>dlgExtend(o,false),edit:dlgEdit,photo:dlgPhoto,reveal:o=>{revealUntil[o.id]=Date.now()+30000;lastSig='';tick();}})[b.dataset.act](o);
+});
+$('#printBtn').addEventListener('click',async()=>{showTab('active');$('#printHead').textContent='外出・外泊中一覧　印刷：'+fmtFull(Date.now());const now=Date.now();const h=(settings.printHours||[]).filter(x=>new Date(now).getHours()>=x).slice(-1)[0];if(h!==undefined){settings.prDoneKey=toDateInput(now)+':'+h;await saveSettings();$('#prBar').hidden=true;}printFull=true;await renderActive();try{window.print();}catch(e){toast('この画面からは印刷できません。SafariやChromeで直接開いてください。',6000);}printFull=false;lastSig='';tick();});
+
+/* ---------- 予定 ---------- */
+async function renderPlans(){
+  const now=Date.now();const list=outings.filter(o=>o.status==='planned').sort((a,b)=>a.departAt-b.departAt);
+  $('#cntPlan').textContent=list.length;
+  const urls={};for(const o of list){if(o.hasPhoto&&!isMasked(o))urls[o.id]=await getPhotoURL(o.id);}
+  $('#planList').innerHTML=list.map(o=>{const late=o.departAt<now;const mk=isMasked(o);
+    const ready=[o.tagId?'タグ '+esc(o.tagId)+' 予約済み':'タグは出発時に選ぶ',o.hasPhoto?'服装写真あり':'服装写真なし'];
+    return `<article class="card" data-id="${o.id}" style="${late?'border-color:var(--warn);background:var(--warnbg)':''}">
+     <div class="head">${o.tagId?`<div class="tagbadge">${esc(o.tagId)}</div>`:'<div class="tagbadge none">タグ<br>出発時</div>'}<div class="who"><div class="name">${esc(shownName(o))}</div><div class="sub">${esc([wardText(o),o.adm,(o.pid&&!mk)?'ID '+o.pid:''].filter(Boolean).join('・'))}</div></div>
+     <div class="statebox"><span class="lbl lbl-planned">${esc(stLabel(o,'planned'))}</span><div class="count" style="font-size:20px">${late?dur(now-o.departAt)+' 経過':'出発まで '+dur(o.departAt-now)}</div></div></div>
+     <div class="body">${urls[o.id]?`<img class="thumb" src="${urls[o.id]}" alt="服装写真" data-pact="photo">`:(mk&&o.hasPhoto?'<div class="nophoto">写真あり<br>（表示で確認）</div>':'<div class="nophoto">写真なし<br>（出発時でも可）</div>')}
+     <dl class="info"><dt>出発予定</dt><dd>${fmt(o.departAt)}</dd><dt>帰院予定</dt><dd><b>${fmt(o.dueAt)}</b>（出発が前後しても変わりません）</dd><dt>区分</dt><dd>${esc(o.kind)}</dd>
+     <dt>行き先</dt><dd>${esc(o.dest)||'—'}</dd><dt>同行</dt><dd>${o.alone?'単独':(mk?'同行あり':esc(o.compName)+(o.compRel?'（'+esc(o.compRel)+'）':''))}</dd>
+     <dt>準備</dt><dd>${ready.join('・')}</dd><dt>登録</dt><dd>${esc(o.departNurse)}</dd></dl></div>
+     <div class="actions"><button class="btn ok big" data-pact="go" style="font-size:20px;padding:12px 30px">出発（GO）</button><button class="btn" data-pact="edit">内容を確認・変更して出発</button><button class="btn" data-pact="planedit">予定を修正（出発しない）</button><button class="btn" data-pact="cancel">予定を取り消す</button></div></article>`;}).join('')
+   ||'<div class="empty">出発前の予定はありません。</div>';
+}
+$('#planList').addEventListener('click',async e=>{const b=e.target.closest('[data-pact]');if(!b)return;const o=outings.find(x=>x.id===b.closest('.card').dataset.id);if(!o)return;
+  if(b.dataset.pact==='go')dlgGo(o);
+  if(b.dataset.pact==='edit')startDeparture(o);
+  if(b.dataset.pact==='planedit')startDeparture(o,'edit');
+  if(b.dataset.pact==='photo')dlgPhoto(o);
+  if(b.dataset.pact==='cancel'){if(!await askConfirm(`${o.name} さんの${o.kind}予定（${fmt(o.departAt)}）を取り消しますか？`+(o.tagId?`予約していたタグ ${o.tagId} は空きに戻ります。`:''),'取り消す'))return;
+    await releasePlan(o);await dbDel('outings',o.id);outings=outings.filter(x=>x!==o);renderPlans();lastSig='';tick();toast('予定を取り消しました');}
+});
+async function releasePlan(o){
+  if(o.tagId){const t=tags.find(x=>x.id===o.tagId);if(t&&t.outingId===o.id&&t.status==='reserved'){t.status='available';t.outingId=null;await saveTag(t);}}
+  if(o.hasPhoto){await dbDel('photos',o.id);dropPhotoURL(o.id);}
+}
+function planPatient(o){return patients.find(x=>x.id===o.patientId)||(o.pid?patients.find(x=>x.pid===o.pid):null)||null;}
+function goTagOptions(o){
+  const av=tags.filter(t=>t.status==='available'||(t.status==='reserved'&&t.outingId===o.id));
+  return (o.tagId?'':'<option value="__">— タグを選んでください —</option>')+av.map(t=>`<option value="${esc(t.id)}"${t.id===o.tagId?' selected':''}>${esc(t.id)}${t.findName&&t.findName!==t.id?'（'+esc(t.findName)+'）':''}${t.status==='reserved'?'（この予定で予約中）':''}</option>`).join('')+'<option value="">タグなし（持たせない）</option>';
+}
+function goConsentHtml(o,tag){
+  if(!tag||tag==='__')return '';const c=consentState(planPatient(o));
+  if(c.st==='ok')return `<div class="cstat ok">✓ 同意書あり（${ymd(c.date)} 取得）</div>`;
+  if(c.st==='withdrawn')return `<div class="cstat ng">${ymd(c.date)} に同意を撤回しています。タグは渡せません（「タグなし」を選んでください）。</div>`;
+  return `<div class="cstat need">同意書が患者台帳に未登録です。確認して取得日を入れてください。</div>
+    <label style="margin-top:6px">同意書の取得日<input type="date" name="gcDate" value="${toDateInput(Date.now())}"></label>
+    <label class="consent"><input type="checkbox" name="gcOk">同意書を確認した（医療保護入院の場合は家族等の同意も含む）</label>`;
+}
+function dlgGo(o){
+  const now=Date.now();
+  if(now>=o.dueAt){toast('帰院予定の時刻をすでに過ぎています。「内容を確認・変更して出発」で帰院予定を直してください。',7000);return;}
+  const diff=Math.round((now-o.departAt)/60000);
+  const nAv=tags.filter(t=>t.status==='available').length;
+  openDlg(`出発（GO）：${o.name}`,`
+    <dl class="info"><dt>出発</dt><dd><b class="nw">今（${fmt(now)}）</b>${Math.abs(diff)>=1?` <span class="sub nw">予定より${dur(Math.abs(diff)*60000)}${diff>0?'遅い':'早い'}</span>`:''}</dd>
+    <dt>帰院予定</dt><dd><b class="nw">${fmt(o.dueAt)}</b><span class="nw">（変わりません）</span></dd></dl>
+    <div class="gophoto"><div id="goPhotoPrev">${o.hasPhoto?'<div class="nophoto">写真あり<br>（予定で撮影）</div>':'<div class="nophoto">写真なし</div>'}</div>
+      <div style="flex:1;min-width:200px"><span class="hint">服装の写真（首から下）・任意</span>
+        <div class="quick"><label class="btn" style="color:var(--ink);display:inline-flex;align-items:center;margin:0">${o.hasPhoto?'撮り直す／選ぶ':'撮る／選ぶ'}<input type="file" accept="image/*" capture="environment" id="goPhotoInput" hidden></label></div>
+        <p class="hint">顔は写さないでください。写真は帰院の登録で自動的に削除されます。${o.hasPhoto?'撮り直した時だけ、予定で撮った写真と置き換えます。':''}</p></div></div>
+    <label style="margin-top:10px">服装<span class="hint">（任意）</span><textarea name="goClothes" placeholder="例：紺のダウン、灰色のズボン、白いスニーカー">${esc(o.clothes)}</textarea></label>
+    ${clothesChips(planPatient(o),'goClothes')}
+    <label style="margin-top:10px">渡すタグ<span class="req">必須</span><select name="goTag" id="goTag">${goTagOptions(o)}</select></label>
+    <p class="hint" style="margin:4px 0 0">${o.tagId?`予定のときに ${esc(o.tagId)} を予約しています。別のタグに替えると、予約していたタグは空きに戻ります。`:`空いているタグ：${nAv}個。実際に渡すタグの番号を選んでください。`}</p>
+    <div id="goConsent" style="margin-top:6px">${goConsentHtml(o,o.tagId)}</div>
+    <label style="margin-top:10px">出発を確認した看護師<span class="req">必須</span><input name="nurse" list="nurseList"></label>`,
+  [{label:'やめる'},{label:'出発（GO）',cls:'ok',onClick:async f=>{
+    const tag=val(f,'goTag');const nurse=val(f,'nurse');
+    if(tag==='__'){toast('渡すタグを選んでください（渡さない時は「タグなし」）');return false;}
+    let cdate='';
+    if(tag){const c=consentState(planPatient(o));
+      if(c.st==='withdrawn'){toast('同意を撤回している患者にはタグを渡せません。「タグなし」を選んでください。',5000);return false;}
+      if(c.st==='none'){cdate=val(f,'gcDate');if(!cdate||!f.elements.gcOk?.checked){toast('タグを渡すには、同意書の取得日を入れて「同意書を確認した」にチェックしてください',5000);return false;}}
+      else cdate=c.date;
+      const t=tags.find(x=>x.id===tag);if(!t||!(t.status==='available'||(t.status==='reserved'&&t.outingId===o.id))){toast(`タグ ${tag} は使えなくなっています。別のタグを選んでください。`,5000);return false;}}
+    if(!nurse){toast('出発を確認した看護師を選んでください');return false;}
+    await goPlan(o,nurse,tag,cdate,{photo:goPhoto,clothes:val(f,'goClothes')});}}]);
+  let goPhoto=null,goURL=null;
+  $('#goTag').addEventListener('change',e=>{$('#goConsent').innerHTML=goConsentHtml(o,e.target.value);});
+  $('#goPhotoInput').addEventListener('change',async e=>{const fl=e.target.files[0];e.target.value='';if(!fl)return;
+    try{goPhoto=await compress(fl);if(goURL)URL.revokeObjectURL(goURL);goURL=URL.createObjectURL(goPhoto);$('#goPhotoPrev').innerHTML=`<img class="thumb" src="${goURL}" alt="服装写真">`;}catch(err){toast('写真を読み込めませんでした');}});
+  $('#dlg').addEventListener('close',()=>{if(goURL)URL.revokeObjectURL(goURL);},{once:true});
+}
+async function goPlan(o,nurse,tag,cdate,extra){
+  const now=Date.now();if(tag===undefined)tag=o.tagId||'';
+  const before=o.tagId||'';
+  if(before&&before!==tag){const t=tags.find(x=>x.id===before);if(t&&t.outingId===o.id&&t.status==='reserved'){t.status='available';t.outingId=null;await saveTag(t);}}
+  o.departAtPlanned=o.departAt;o.planNurse=o.departNurse;o.departAt=now;o.departNurse=nurse;o.status='out';
+  o.tagId=tag;o.consent=!!tag;o.consentDate=tag?(cdate||o.consentDate||''):'';
+  if(tag){const t=tags.find(x=>x.id===tag);if(t){t.status='inuse';t.outingId=o.id;await saveTag(t);}}
+  const pt=planPatient(o);
+  if(tag&&pt&&consentState(pt).st==='none'&&cdate){pt.consentDate=cdate;pt.consentLog=[...(pt.consentLog||[]),{at:now,text:`同意書取得日を ${ymd(cdate)} に登録（出発時）`,by:nurse}];}
+  const tagTxt=tag?(before&&before!==tag?`（予約 ${before} → タグ ${tag} 貸出）`:`（タグ ${tag} 貸出）`):(before?`（予約していた ${before} は使わず・タグなし）`:'（タグなし）');
+  addLog(o,`${o.kind}に出発（予定 ${fmt(o.departAtPlanned)} → 実際 ${fmt(now)}／帰院予定 ${fmt(o.dueAt)} は変更なし）`+tagTxt,nurse);
+  // 出発の画面で記入した服装（空欄のときは予定の内容のままにし、記録も残さない）
+  const cl=extra&&typeof extra.clothes==='string'?extra.clothes.trim():'';
+  if(cl&&cl!==(o.clothes||'')){o.clothes=cl;addLog(o,'服装を記入（出発時）',nurse);}
+  rememberNurse(nurse);
+  if(pt){rememberClothes(pt,o.clothes);o.ptPrev=markOuting(pt,o,now);await dbPut('patients',pt);}
+  // 外出の状態（出発・タグ）を先に保存し、写真はそのあとに保存する（写真で失敗しても出発とタグは食い違わない）
+  await saveOuting(o);
+  let photoErr=false;
+  if(extra&&extra.photo){try{await dbPut('photos',extra.photo,o.id);dropPhotoURL(o.id);addLog(o,o.hasPhoto?'服装写真を撮り直し（出発時）':'服装写真を登録（出発時）',nurse);o.hasPhoto=true;}
+    catch(err){photoErr=true;addLog(o,'服装写真を保存できなかった（出発は登録済み）',nurse);}
+    await saveOuting(o);}
+  renderPlans();lastSig='';showTab('active');tick();
+  toast(photoErr?`${o.name} さんの${o.kind}の出発は登録しましたが、服装写真を保存できませんでした。服装は記入欄の内容で残っています。`
+    :`${o.name} さんが${o.kind}に出発しました（帰院予定 ${fmt(o.dueAt)}）。間違えた時は30分以内なら、その人の「詳細」→「GOの取消」で予定に戻せます`,photoErr?9000:7000);
+}
+function backToPlans(){clearPatientForm();nf.elements.departAt.value='';prepareNewForm();showTab('plan');toast('予定は変わっていません');}
+$('#formBack').addEventListener('click',backToPlans);
+function startDeparture(o,mode){
+  const edit=mode==='edit';
+  showTab('new');clearPatientForm();const f=nf.elements;
+  f.name.value=o.name;f.pid.value=o.pid||'';f.kana.value=o.kana||'';f.sex.value=o.sex||'';f.age.value=o.age||'';f.adm.value=o.adm||'任意入院';setRadio('ward',o.ward);setRadio('kind',o.kind);
+  f.departAt.value=toLocalInput(edit?o.departAt:Date.now());f.dueAt.value=toLocalInput(o.dueAt);f.dest.value=o.dest||'';f.selfTel.value=o.selfTel||'';
+  f.famName.value=o.famName||'';f.famRel.value=o.famRel||'';f.famTel.value=o.famTel||'';f.note.value=o.note||'';
+  setRadio('alone',o.alone?'1':'0');$('#compBox').hidden=!!o.alone;f.compName.value=o.compName||'';f.compRel.value=o.compRel||'';f.compTel.value=o.compTel||'';
+  nf.dataset.planId=o.id;if(edit)nf.dataset.planMode='edit';if(o.patientId)nf.dataset.patientId=o.patientId;
+  f.clothes.value=o.clothes||'';buildTagOptions();if(o.tagId)$('#tagSelect').value=o.tagId;updateConsent();
+  pendingPhoto=null;renderPhotoPrev();if(o.hasPhoto)dbGet('photos',o.id).then(b=>{if(b&&nf.dataset.planId===o.id){pendingPhoto=b;renderPhotoPrev();}});
+  const L=$('#pLoaded');L.hidden=false;L.innerHTML=(edit?`<b>${esc(o.name)}</b> さんの${esc(o.kind)}予定（${fmt(o.departAt)}）を修正しています。直したい所を変えて<b>「予定を更新」</b>を押してください。出発はまだしません。`
+    :`<b>${esc(o.name)}</b> さんの${esc(o.kind)}予定（${fmt(o.departAt)}）の出発手続きです。予定で入れた服装写真・タグはそのまま入っています。変わった所だけ直し、確認した看護師を入れて登録してください。帰院予定は予定のときのままです。`)
+    +` <button type="button" class="btn sm" id="planBack">やめて「予定」に戻る</button>`;
+  $('#planBack').addEventListener('click',backToPlans);
+  updatePlanMode();
+}
+
+/* ---------- ダイアログ ---------- */
+function openDlg(title,body,buttons){
+  $('#dlgTitle').textContent=title;$('#dlgBody').innerHTML=body;const a=$('#dlgActions');a.innerHTML='';
+  buttons.forEach(bt=>{const el=document.createElement('button');el.type='button';el.className='btn '+(bt.cls||'');el.textContent=bt.label;
+    el.addEventListener('click',async()=>{const r=bt.onClick?await bt.onClick($('#dlgForm')):true;if(r!==false)$('#dlg').close();});a.appendChild(el);});
+  attachNurseChips($('#dlgBody'));enhanceTimes($('#dlgBody'));
+  if(!$('#dlg').open)$('#dlg').showModal();
+  try{$('#dlgTitle').focus({preventScroll:true});}catch(e){}
+}
+const val=(f,n)=>(f.elements[n]?.value||'').trim();
+/* 看護師名：覚えた名前をボタンで出す */
+const nurseChip=n=>`<button type="button" class="nchip" data-nurse="${esc(n)}">${esc(n)}</button>`;
+const nurseMoreText=()=>`ほかの看護師（全${settings.nurses.length}人）`;
+function attachNurseChips(root){root.querySelectorAll('input[list="nurseList"]').forEach(inp=>{const nx=inp.nextElementSibling;if(nx&&nx.classList.contains('nchips'))nx.remove();
+  if(!settings.nurses.length)return;const d=document.createElement('div');d.className='nchips';
+  d.innerHTML=settings.nurses.slice(0,8).map(nurseChip).join('')+(settings.nurses.length>8?`<button type="button" class="nchip more" data-nmore>${nurseMoreText()}</button>`:'');inp.after(d);});}
+function closeNurseAll(box){const a=box&&box.querySelector('.nall');if(a)a.remove();const m=box&&box.querySelector('[data-nmore]');if(m)m.textContent=nurseMoreText();}
+document.addEventListener('click',e=>{const mb=e.target.closest('[data-nmore]');if(mb){e.preventDefault();const box=mb.closest('.nchips');
+    if(box.querySelector('.nall')){closeNurseAll(box);return;}
+    const a=document.createElement('div');a.className='nall';a.innerHTML=settings.nurses.map(nurseChip).join('');box.appendChild(a);mb.textContent='一覧を閉じる';return;}
+  const b=e.target.closest('[data-nurse]');if(!b)return;e.preventDefault();const box=b.closest('.nchips');const inp=box&&box.previousElementSibling;
+  if(inp&&inp.tagName==='INPUT'){inp.value=b.dataset.nurse;inp.dispatchEvent(new Event('input',{bubbles:true}));inp.classList.remove('invalid');}closeNurseAll(box);});
+
+async function doAck(o){o.ackAt=Date.now();addLog(o,'アラームを確認（対応開始）');await saveOuting(o);lastSig='';tick();toast(`アラーム音を止めました。${settings.realertMin}分後に未解決なら再度鳴ります。`);}
+
+const RC_ITEMS=[['belong','持ち物確認'],['state','帰院時の様子'],['med','服薬'],['mental','精神状態']];
+function rcText(o){if(!o.rc)return '';const parts=RC_ITEMS.map(([k,l])=>{const x=o.rc[k]||{};if(!x.ok&&!x.memo)return '';return l+(x.ok?'✓':'')+(x.memo?'：'+x.memo:'');}).filter(Boolean);if(o.rc.other)parts.push('特記：'+o.rc.other);return parts.join('／');}
+function dlgReturn(o){
+  openDlg(`帰院登録：${o.name}`,`
+    <label>帰院時刻<input type="datetime-local" name="at" value="${toLocalInput(Date.now())}"></label>
+    <label>確認した看護師<span class="req">必須</span><input name="nurse" list="nurseList"></label>
+    ${o.tagId?`<label class="consent"><input type="checkbox" name="tagBack" checked>タグ <b>${esc(o.tagId)}</b> を回収した</label>`:''}
+    <h3 style="font-size:17px;margin:12px 0 2px">帰院時の確認（任意）</h3>
+    <div class="rc">${RC_ITEMS.map(([k,l])=>`<span class="rl">${l}</span><label><input type="checkbox" name="rc_${k}">確認済</label><input name="rcm_${k}" placeholder="メモ（任意）">`).join('')}</div>
+    <label>その他特記事項<textarea name="rc_other" placeholder="任意"></textarea></label>
+    <label>メモ（遅れた理由など）<input name="memo"></label>
+    ${o.hasPhoto?'<p class="warnbox">帰院登録をすると服装写真は削除されます（元に戻せません）。</p>':''}`,
+  [{label:'やめる'},{label:'帰院を登録',cls:'ok',onClick:async f=>{
+    const nurse=val(f,'nurse');if(!nurse){toast('確認した看護師を入力してください');return false;}
+    const at=fromLocalInput(val(f,'at'))||Date.now();
+    if(at<Math.floor(o.departAt/60000)*60000){toast('帰院時刻は出発時刻（'+fmt(o.departAt)+'）より後にしてください');return false;}
+    if(at>Date.now()+5*60000){toast('帰院時刻が現在より先になっています。確認してください');return false;}
+    o.status='returned';o.returnedAt=at;o.returnNurse=nurse;
+    o.rc={other:val(f,'rc_other')};RC_ITEMS.forEach(([k])=>{o.rc[k]={ok:!!f.elements['rc_'+k].checked,memo:val(f,'rcm_'+k)};});
+    addLog(o,'帰院'+(val(f,'memo')?'：'+val(f,'memo'):''),nurse);if(rcText(o))addLog(o,'帰院時確認：'+rcText(o),nurse);rememberNurse(nurse);
+    if(o.hasPhoto){await dbDel('photos',o.id);dropPhotoURL(o.id);o.hasPhoto=false;o.photoDeletedAt=Date.now();addLog(o,'服装写真を削除（自動）');}
+    if(o.tagId){const t=tags.find(x=>x.id===o.tagId);const back=f.elements.tagBack?.checked;
+      if(t){t.outingId=null;t.status=back?'available':'missing';await saveTag(t);}addLog(o,back?`タグ ${o.tagId} 回収`:`タグ ${o.tagId} 未回収`,nurse);o.tagReturned=!!back;}
+    await saveOuting(o);lastSig='';tick();toast(`${o.name} さんの帰院を登録しました`+(o.photoDeletedAt?'（写真は削除済み）':''));
+  }}]);
+}
+
+function dlgLost(o){
+  openDlg(`はぐれ・行方不明の連絡：${o.name}`,`
+    <p class="hint" style="margin-top:0">「捜索中」に切り替え、記録を開始します。</p>
+    <label>連絡してきた人<select name="who"><option>同行の家族・関係者</option><option>本人</option><option>警察</option><option>その他</option></select></label>
+    <label>最後に確認された場所・時刻<input name="last" placeholder="例：14:20頃 〇〇駅改札付近"></label>
+    <label>連絡を受けた職員<span class="req">必須</span><input name="staff" list="nurseList"></label>
+    <label>内容<textarea name="memo"></textarea></label>
+    ${o.tagId?`<p class="warnbox">位置の確認：病院のiPhone／iPadの「探す」→「持ち物」→ <b>${esc(tags.find(t=>t.id===o.tagId)?.findName||o.tagId)}</b></p>`:'<p class="warnbox">この患者はタグを持っていません。</p>'}`,
+  [{label:'やめる'},{label:'捜索を開始',cls:'srch',onClick:async f=>{
+    const staff=val(f,'staff');if(!staff){toast('連絡を受けた職員を入力してください');return false;}
+    const now=Date.now();o.status='search';o.searchAt=now;o.ackAt=now;rememberNurse(staff);
+    addLog(o,`捜索開始（連絡：${val(f,'who')}）`+(val(f,'last')?`／最終確認：${val(f,'last')}`:'')+(val(f,'memo')?`／${val(f,'memo')}`:''),staff);
+    await saveOuting(o);lastSig='';tick();
+  }}]);
+}
+
+function dlgExtend(o,resolveSearch){
+  openDlg(resolveSearch?`所在確認・捜索終了：${o.name}`:`帰院予定の変更：${o.name}`,`
+    ${resolveSearch?'<p class="hint" style="margin-top:0">捜索を終え「外出中」に戻します。新しい帰院予定を入れてください。帰院済みなら「帰院した」を使ってください。</p>':''}
+    <label>新しい帰院予定<input type="datetime-local" name="due" value="${toLocalInput(Math.max(o.dueAt,round15(Date.now()+3600000)))}"></label>
+    <label>理由・状況<span class="req">必須</span><input name="reason" placeholder="${resolveSearch?'例：家族と合流、〇〇にいることを確認':'例：家族から電話、渋滞のため'}"></label>${memoChips(resolveSearch?'found':'extend','reason')}
+    <label>職員<span class="req">必須</span><input name="staff" list="nurseList"></label>`,
+  [{label:'やめる'},{label:'変更を保存',cls:'pri',onClick:async f=>{
+    const due=fromLocalInput(val(f,'due')),reason=val(f,'reason'),staff=val(f,'staff');
+    if(!due||!reason||!staff){toast('新しい帰院予定・理由・職員を入力してください');return false;}
+    if(due<=Date.now()){toast('新しい帰院予定は現在より後にしてください');return false;}
+    if(resolveSearch){o.status='out';addLog(o,'所在確認・捜索終了：'+reason,staff);}
+    addLog(o,`帰院予定を変更 ${fmt(o.dueAt)} → ${fmt(due)}（${reason}）`,staff);
+    o.dueAt=due;rememberNurse(staff);rememberMemo(resolveSearch?'found':'extend',reason);await saveOuting(o);lastSig='';tick();
+  }}]);
+}
+
+function logHTML(o,editable){return `<ul class="loglist">${(o.log||[]).map((l,i)=>l.x?`<li class="lx"><time>${fmt(l.at)}</time><s>${esc(l.text)}</s> <span class="sub">（${fmt(l.x)} 取消${l.xby?'・'+esc(l.xby):''}）</span></li>`:`<li><time>${fmt(l.at)}</time>${esc(l.text)}${l.by?` <span class="sub">［${esc(l.by)}］</span>`:''}${editable&&l.m?` <button type="button" class="btn sm lxbtn" data-logx="${i}">取消</button>`:''}</li>`).join('')||'<li>記録なし</li>'}</ul>`;}
+function dlgLog(o,readOnly){
+  const quick=['本人へ電話','同行者・家族へ電話','「探す」で位置を確認','病院周辺を捜索','警察へ連絡','家族へ状況報告'];
+  openDlg(`対応記録：${o.name}${o.tagId?'（'+o.tagId+'）':''}`, logHTML(o,!readOnly)+(readOnly?'':`
+    <label>職員<input name="staff" list="nurseList"></label>
+    <div class="quick" id="logQuick">${quick.map(q=>`<button type="button" class="btn sm" data-q="${esc(q)}">${esc(q)}</button>`).join('')}</div>
+    <label style="margin-top:10px">内容（確認した位置、電話の結果など）<textarea name="memo"></textarea></label>
+    <p class="hint">ボタンを押すと、下の内容欄と合わせて記録されます。間違えた記録は、上の一覧の「取消」で取り消せます（取り消し線で残ります）。</p>`),
+  readOnly?[{label:'閉じる'}]:[{label:'閉じる'},{label:'内容を記録',cls:'pri',onClick:async f=>{const m=val(f,'memo');if(!m){toast('内容を入力してください');return false;}addLog(o,m,val(f,'staff'),{m:1});rememberNurse(val(f,'staff'));await saveOuting(o);dlgLog(o);return false;}}]);
+  if(!readOnly)$$('#dlgBody [data-logx]').forEach(b=>b.addEventListener('click',async()=>{const l=o.log[+b.dataset.logx];if(!l)return;const st=val($('#dlgForm'),'staff');
+    if(!await askConfirm(`この記録を取り消しますか？\n「${l.text}」（${fmt(l.at)}）\n記録は消えずに、取り消し線を付けて残ります。`,'取り消す'))return;
+    l.x=Date.now();l.xby=st||'';await saveOuting(o);dlgLog(o);$('#dlgForm').elements.staff.value=st;toast('記録を取り消しました');}));
+  if(!readOnly)$$('#logQuick [data-q]').forEach(b=>b.addEventListener('click',async()=>{const f=$('#dlgForm');const m=val(f,'memo');addLog(o,b.dataset.q+(m?'：'+m:''),val(f,'staff'),{m:1});rememberNurse(val(f,'staff'));await saveOuting(o);const st=val(f,'staff');dlgLog(o);$('#dlgForm').elements.staff.value=st;}));
+}
+
+function dlgEdit(o){
+  const ret=o.status==='returned';
+  const opt=(arr,v)=>arr.map(x=>`<option${x===v?' selected':''}>${x}</option>`).join('');
+  openDlg(`登録内容の修正：${o.name}`,`
+    <p class="hint" style="margin-top:0">変更した内容は経過に記録されます。患者違い・テスト入力などの間違いは「誤登録として取り消す」を押してください。</p>
+    <div class="grid">
+      <label>患者氏名<input name="name" value="${esc(o.name)}"></label>
+      <label>病棟<select name="ward">${opt(WARDS,o.ward)}</select></label>
+      <label>入院形態<select name="adm">${opt(['任意入院','医療保護入院','その他'],o.adm)}</select></label>
+      <label>区分<select name="kind">${opt(['外出','外泊'],o.kind)}</select></label>
+      <label>出発時刻<input type="datetime-local" name="departAt" value="${toLocalInput(o.departAt)}"></label>
+      ${ret?`<label>帰院時刻<input type="datetime-local" name="returnedAt" value="${toLocalInput(o.returnedAt)}"></label>`:''}
+    </div>
+    <label>行き先<input name="dest" value="${esc(o.dest)}"></label>
+    <label>服装の特徴<textarea name="clothes">${esc(o.clothes)}</textarea></label>
+    <div class="grid"><label>本人の携帯番号<input name="selfTel" value="${esc(o.selfTel)}"></label>
+    ${o.alone?'':`<label>同行者の連絡先<input name="compTel" value="${esc(o.compTel)}"></label>`}
+    <label>家族の携帯番号<input name="famTel" value="${esc(o.famTel)}"></label></div>
+    <label>備考<input name="note" value="${esc(o.note)}"></label>
+    <label>修正・取消の理由<span class="req">必須</span><input name="reason" placeholder="例：出発時刻の入力間違い、別の患者で登録した"></label>
+    <label>職員<span class="req">必須</span><input name="staff" list="nurseList"></label>`,
+  [{label:'やめる'},
+   ...(o.status==='out'&&o.departAtPlanned?[{label:'出発を取り消して予定に戻す',cls:'',onClick:async f=>{const staff=val(f,'staff'),reason=val(f,'reason');
+     if(!reason||!staff){toast('理由（例：GOを押し間違えた）と職員を入力してください');return false;}
+     if(!await askConfirm(`${o.name} さんの出発を取り消し、出発前の予定（出発予定 ${fmt(o.departAtPlanned)}）に戻します。よろしいですか？`,'予定に戻す'))return false;
+     await undoDeparture(o,reason,staff);}}]:[]),
+   {label:'誤登録として取り消す',cls:'bad',onClick:async f=>{const staff=val(f,'staff'),reason=val(f,'reason');
+     if(!reason||!staff){toast('取消の理由と職員を入力してください');return false;}
+     if(!await askConfirm(`${o.name} さんのこの登録を誤登録として取り消します。一覧やアラームの対象から外れ、記録には「取消」と残ります。よろしいですか？`,'取り消す'))return false;
+     await cancelOuting(o,reason,staff);}},
+   {label:'修正を保存',cls:'pri',onClick:async f=>{const staff=val(f,'staff'),reason=val(f,'reason');
+     if(!reason||!staff){toast('修正の理由と職員を入力してください');return false;}
+     const NAMES={name:'氏名',ward:'病棟',adm:'入院形態',kind:'区分',dest:'行き先',clothes:'服装',selfTel:'本人連絡先',compTel:'同行者連絡先',famTel:'家族連絡先',note:'備考',departAt:'出発時刻',returnedAt:'帰院時刻'};
+     const ch=[];
+     for(const k of ['name','ward','adm','kind','dest','clothes','selfTel','compTel','famTel','note']){if(!f.elements[k])continue;const v=val(f,k);if(v!==(o[k]||'')){ch.push(k==='name'||k==='ward'||k==='kind'||k==='adm'?`${NAMES[k]} ${o[k]||'—'}→${v}`:NAMES[k]);o[k]=v;}}
+     const dp=fromLocalInput(val(f,'departAt'));if(!dp){toast('出発時刻を入れてください');return false;}
+     const rt=ret?fromLocalInput(val(f,'returnedAt')):null;if(ret&&!rt){toast('帰院時刻を入れてください');return false;}
+     if(ret&&rt<dp){toast('帰院時刻は出発時刻より後にしてください');return false;}
+     if(ret&&rt>Date.now()+5*60000){toast('帰院時刻が現在より先になっています');return false;}
+     if(dp>Date.now()+5*60000){toast('出発時刻が現在より先になっています');return false;}
+     if(dp!==o.departAt){ch.push(`出発時刻 ${fmt(o.departAt)}→${fmt(dp)}`);o.departAt=dp;}
+     if(ret&&rt!==o.returnedAt){ch.push(`帰院時刻 ${fmt(o.returnedAt)}→${fmt(rt)}`);o.returnedAt=rt;}
+     if(!ch.length){toast('変更はありません');return false;}
+     if(isActive(o)){const pp=patients.find(x=>x.id===o.patientId);if(pp){['selfTel','famTel'].forEach(k=>{if(f.elements[k])pp[k]=o[k];});dbPut('patients',pp);}}
+     addLog(o,`登録内容を修正（${ch.join('、')}）理由：${reason}`,staff);rememberNurse(staff);await saveOuting(o);lastSig='';tick();
+     if($('#sec-history').classList.contains('active'))renderHistory();toast('修正を保存しました');}}]);
+}
+function dlgUndo(o){
+  openDlg(`GOの取消：${o.name}`,`<p class="hint" style="margin-top:0">${fmt(o.departAt)} の出発を取り消し、出発前の予定（出発予定 ${fmt(o.departAtPlanned)}・帰院予定 ${fmt(o.dueAt)}）に戻します。${o.tagId?`タグ ${esc(o.tagId)} は予約に戻ります。`:''}取り消したことは経過に残ります。</p>
+    <label>理由<span class="req">必須</span><input name="reason" placeholder="例：GOを押し間違えた、出発が延期になった"></label>${memoChips('undo','reason')}
+    <label>職員<span class="req">必須</span><input name="staff" list="nurseList"></label>`,
+  [{label:'やめる'},{label:'予定に戻す',cls:'pri',onClick:async f=>{const reason=val(f,'reason'),staff=val(f,'staff');
+    if(!reason||!staff){toast('理由と職員を入力してください');return false;}
+    rememberMemo('undo',reason);await undoDeparture(o,reason,staff);}}]);
+}
+async function undoDeparture(o,reason,staff){
+  const was=o.departAt;o.status='planned';o.departAt=o.departAtPlanned;o.departNurse=o.planNurse||o.departNurse;delete o.departAtPlanned;delete o.planNurse;delete o.ackAt;
+  if(o.tagId){const t=tags.find(x=>x.id===o.tagId);if(t&&t.outingId===o.id){t.status='reserved';await saveTag(t);}}
+  // GOで更新した台帳の「前回の外出」をGO前に戻す（その後に別の出発で更新されていたら戻さない）
+  if(o.ptPrev){const pt=planPatient(o);if(pt&&pt.lastOutAt===o.ptPrev.setAt){const {setAt,...prev}=o.ptPrev;Object.assign(pt,prev);await dbPut('patients',pt);}delete o.ptPrev;}
+  addLog(o,`出発を取り消して予定に戻した（${fmt(was)} の出発を取消、出発予定 ${fmt(o.departAt)}）理由：${reason}`+(o.tagId?`（タグ ${o.tagId} は予約に戻した）`:''),staff);rememberNurse(staff);
+  await saveOuting(o);lastSig='';tick();renderPlans();showTab('plan');toast(`${o.name} さんを予定に戻しました`);
+}
+async function cancelOuting(o,reason,staff){
+  const was=o.status;o.status='cancelled';o.cancelledAt=Date.now();o.cancelReason=reason;
+  addLog(o,`誤登録として取消（理由：${reason}）`,staff);rememberNurse(staff);
+  if(o.tagId){const t=tags.find(x=>x.id===o.tagId);if(t&&t.outingId===o.id){t.status='available';t.outingId=null;await saveTag(t);addLog(o,`タグ ${o.tagId} を空きに戻した`);}}
+  if(o.hasPhoto){await dbDel('photos',o.id);dropPhotoURL(o.id);o.hasPhoto=false;o.photoDeletedAt=Date.now();addLog(o,'服装写真を削除（取消のため）');}
+  await saveOuting(o);lastSig='';tick();renderPlans();if($('#sec-history').classList.contains('active'))renderHistory();
+  toast(`${o.name} さんの登録を取り消しました`);
+}
+async function dlgPhoto(o){const u=await getPhotoURL(o.id);if(!u)return;openDlg(`服装写真：${o.name}`,`<img src="${u}" style="width:100%;border-radius:8px" alt="服装写真"><p class="hint">帰院登録で自動的に削除されます。</p>`,[{label:'閉じる'}]);}
+
+/* ---------- 新規登録 ---------- */
+const nf=$('#newForm');
+function buildTagOptions(){
+  const sel=$('#tagSelect');const cur=sel.value;const pid=nf.dataset.planId;
+  const av=tags.filter(t=>t.status==='available'||(pid&&t.status==='reserved'&&t.outingId===pid));
+  sel.innerHTML=`<option value="">${isPlanForm()?'タグなし（出発時に選ぶ）':'タグなし'}</option>`+av.map(t=>`<option value="${esc(t.id)}">${esc(t.id)}${t.findName&&t.findName!==t.id?'（'+esc(t.findName)+'）':''}${t.status==='reserved'?'（この予定で予約中）':''}</option>`).join('');
+  if(av.some(t=>t.id===cur))sel.value=cur;
+  $('#tagHint').textContent=tags.length?`利用可能なタグ：${tags.filter(t=>t.status==='available').length}個（全${tags.length}個）`:'タグが未登録です。「タグ管理」で登録すると選べるようになります。';
+}
+function renderPresetChips(){$$('.pchips').forEach(c=>{const l=(c.dataset.preset==='dest'?settings.destPresets:settings.relPresets)||[];c.innerHTML=l.map(t=>`<button type="button" class="nchip" data-memo="${esc(t)}" data-field="${c.dataset.field}">${esc(t)}</button>`).join('');c.hidden=!l.length;});}
+function prepareNewForm(){renderPresetChips();
+  if(!nf.elements.departAt.value)nf.elements.departAt.value=toLocalInput(Date.now());
+  buildTagOptions();
+  updateConsent();renderPhotoPrev();renderPatientChips();updatePlanMode();attachNurseChips(nf);if(!nf.dataset.patientId)renderDestList(null);
+}
+enhanceTimes(nf);nf.addEventListener('reset',()=>setTimeout(()=>nf.querySelectorAll('input[type="datetime-local"]').forEach(i=>i._tpSync&&i._tpSync()),0));
+$('#wardRadios').innerHTML=WARDS.map(w=>`<label><input type="radio" name="ward" value="${w}">${w}</label>`).join('');
+function renderDestList(p){const own=p?(p.dests||[]):[];const all=[...outings].sort((a,b)=>b.departAt-a.departAt).map(o=>o.dest).filter(Boolean);
+  $('#destList').innerHTML=[...new Set([...own,...all])].slice(0,25).map(d=>`<option value="${esc(d)}">`).join('');}
+function renderPatientChips(){
+  const q=$('#pSearch').value.trim();
+  const all=patients.filter(p=>!isDis(p)&&matchQ(p,q)).sort((a,b)=>(b.lastOutAt||0)-(a.lastOutAt||0));const lim=q?30:10;let list=all.slice(0,lim);
+  $('#pChipsMore').textContent=all.length>lim?`ほか ${all.length-lim}人は、氏名・ふりがな・IDで探してください`:(list.length>3?'← 横にずらすと続きが見られます':'');
+  $('#pChips').innerHTML=list.map(p=>{const out=outings.some(o=>isActive(o)&&o.patientId===p.id);
+    return `<button type="button" class="chip${out?' out':''}" data-pt="${p.id}"><b>${esc(p.name)}</b>${p.pid?' <span class="sub">ID '+esc(p.pid)+'</span>':''}${sexAge(p)?' <span class="sub">'+esc(sexAge(p))+'</span>':''}<small>${esc(wardText(p)||'病棟未設定')}・前回 ${p.lastOutAt?fmt(p.lastOutAt):'—'}${out?'・<b>外出中</b>':''}</small></button>`;}).join('')
+    ||(q?'<span class="hint">該当する患者がいません。下の欄に入力すると、登録時に台帳へ追加されます。</span>':(patients.some(p=>!isDis(p))?'':'<span class="hint">まだ台帳に入院中の患者がいません。初回は下の欄に入力してください。</span>'));
+}
+function setRadio(name,v){const r=[...nf.querySelectorAll(`input[name="${name}"]`)].find(x=>x.value===v);if(r)r.checked=true;}
+function fillPatient(p){
+  const f=nf.elements;
+  f.name.value=p.name||'';f.pid.value=p.pid||'';f.kana.value=p.kana||'';f.sex.value=p.sex||'';f.age.value=ageOf(p);f.adm.value=p.adm||'任意入院';setRadio('ward',p.ward);
+  f.selfTel.value=p.selfTel||'';f.famName.value=p.famName||'';f.famRel.value=p.famRel||'';f.famTel.value=p.famTel||'';
+  f.dest.value=p.lastDest||'';
+  const c=p.lastComp||{alone:true};setRadio('alone',c.alone?'1':'0');$('#compBox').hidden=!!c.alone;
+  f.compName.value=c.alone?'':(c.compName||'');f.compRel.value=c.alone?'':(c.compRel||'');f.compTel.value=c.alone?'':(c.compTel||'');
+  nf.dataset.patientId=p.id;renderDestList(p);
+  const L=$('#pLoaded');L.hidden=false;L.innerHTML=`<b>${esc(p.name)}</b> さんの前回の情報（病棟・連絡先・行き先・同行者）を入れました。変わっている所だけ直してください。服装は毎回撮影・入力してください。 <button type="button" class="btn sm" id="pUnload">取り消す</button>`;
+  $('#pUnload').addEventListener('click',clearPatientForm);
+  if(!f.departAt.value)f.departAt.value=toLocalInput(Date.now());
+  updateConsent();
+}
+function clearPatientForm(){const keep=nf.elements.departAt.value;const hadPlan=!!nf.dataset.planId;nf.reset();nf.elements.departAt.value=keep;delete nf.dataset.patientId;delete nf.dataset.planId;delete nf.dataset.planMode;$('#formBack').hidden=true;if(hadPlan){pendingPhoto=null;renderPhotoPrev();buildTagOptions();}$('#pLoaded').hidden=true;$('#compBox').hidden=true;renderDestList(null);updateConsent();}
+$('#pSearch').addEventListener('input',renderPatientChips);
+$('#pChips').addEventListener('click',e=>{const b=e.target.closest('[data-pt]');if(!b)return;const p=patients.find(x=>x.id===b.dataset.pt);if(!p)return;
+  if(outings.some(o=>isActive(o)&&o.patientId===p.id)){toast(`${p.name} さんは現在外出中です。帰院登録を確認してください。`,4500);}
+  fillPatient(p);window.scrollTo({top:nf.offsetTop-80,behavior:'smooth'});});
+async function upsertPatient(o,loadedId){
+  let p=o.pid?patients.find(x=>x.pid===o.pid):(patients.find(x=>x.id===loadedId&&x.name===o.name)||patients.find(x=>x.name===o.name&&!x.pid));
+  if(!p){p={id:uid(),count:0,dests:[],createdAt:Date.now()};patients.push(p);}
+  if(o.kana)p.kana=o.kana;if(o.sex)p.sex=o.sex;if(o.age&&o.age!==ageOf(p)){p.age=o.age;delete p.birth;}
+  Object.assign(p,{name:o.name,pid:o.pid,ward:o.ward,adm:o.adm,selfTel:o.selfTel,famName:o.famName,famRel:o.famRel,famTel:o.famTel});
+  // 前回外出日時・回数・前回の行き先・同行者は、実際に出発したとき（status:'out'）だけ更新する。予定の登録・修正では変えない
+  if(o.status==='out'){const prev=markOuting(p,o,o.departAt);if(o.departAtPlanned)o.ptPrev=prev;}
+  rememberClothes(p,o.clothes);
+  if(o.demo)p.demo=true;
+  await dbPut('patients',p);return p;
+}
+// 服装の記入（文字だけ）を患者ごとに新しい順に3件まで残す。写真は残さない
+function rememberClothes(p,t){t=String(t||'').trim();if(!p||!t)return;p.clothesHist=[t,...(p.clothesHist||[]).filter(x=>x!==t)].slice(0,3);}
+function clothesChips(p,field){const l=(p&&p.clothesHist)||[];if(!l.length)return '';
+  return `<div class="nchips mchips">${l.map(t=>`<button type="button" class="nchip" data-memo="${esc(t)}" data-field="${field}" title="${esc(t)}">${esc(t)}</button>`).join('')}</div><p class="hint" style="margin:0 0 4px">前に記入した服装です。押すと入ります。</p>`;}
+function renderClothesHist(){$('#clothesHist').innerHTML=clothesChips(formPatient(),'clothes');}
+// 台帳の「前回の外出」を出発時刻 at で更新し、更新前の値を返す（GOの取消で戻すため）
+function markOuting(p,o,at){
+  const prev={lastOutAt:p.lastOutAt||0,count:p.count||0,lastDest:p.lastDest||'',lastComp:p.lastComp||{alone:true},dests:[...(p.dests||[])],setAt:at};
+  // 1.9.0までの版で登録した予定は、登録時にすでに回数を足して前回外出日時を予定の日時（未来）にしている。その予定の出発では回数を足さない
+  const counted=!!o.departAtPlanned&&(p.lastOutAt||0)>at;
+  Object.assign(p,{lastDest:o.dest,lastComp:{alone:o.alone,compName:o.compName,compRel:o.compRel,compTel:o.compTel},lastOutAt:at,count:(p.count||0)+(counted?0:1)});
+  if(o.dest)p.dests=[o.dest,...(p.dests||[]).filter(d=>d!==o.dest)].slice(0,10);
+  return prev;
+}
+function isPlanForm(){const d=fromLocalInput(nf.elements.departAt.value);return (!nf.dataset.planId||nf.dataset.planMode==='edit')&&d&&d>Date.now()+PLAN_MIN*60000;}
+function updatePlanMode(){const plan=isPlanForm();$('#formBack').hidden=!nf.dataset.planId;$('#fsClothes').hidden=false;$('#fsTag').hidden=false;{const o0=$('#tagSelect').options[0];if(o0&&o0.value==='')o0.textContent=plan?'タグなし（出発時に選ぶ）':'タグなし';}
+  const n=$('#planNote');n.hidden=!plan;n.innerHTML=plan?'<b>出発日時が先なので「予定」として登録します。</b>服装の写真をここで撮っておけば、当日は「予定」タブの<b>「出発（GO）」</b>でタグを選んで看護師名を入れるだけです。<b>タグは「タグなし」のままでOK（出発時に選びます）</b>。ここでタグを選ぶと「予約中」になり、出発日まで他の患者には使えません。<b>帰院予定は、出発が早まっても遅れても変わりません。</b>':'';
+  $('#submitBtn').textContent=plan?(nf.dataset.planMode==='edit'?'予定を更新':'予定として登録'):'この内容で出発を登録';
+  const lb=nf.querySelector('input[name=departNurse]').closest('label');lb.firstChild.textContent=plan?'登録した看護師':'確認した看護師';}
+nf.elements.departAt.addEventListener('input',updatePlanMode);nf.elements.departAt.addEventListener('change',updatePlanMode);
+function formPatient(){const f=nf.elements;const name=f.name.value.trim(),pid=f.pid.value.trim();let p=nf.dataset.patientId&&patients.find(x=>x.id===nf.dataset.patientId);
+  if(pid)return patients.find(x=>x.pid===pid)||null;if(p&&p.name!==name)p=null;if(!p&&name)p=patients.find(x=>x.name===name&&!x.pid);return p||null;}
+function consentState(p){if(!p)return {st:'none'};if(p.consentWithdrawn)return {st:'withdrawn',date:p.consentWithdrawn};if(p.consentDate)return {st:'ok',date:p.consentDate};return {st:'none'};}
+const ymd=d=>String(d||'').replace(/-/g,'/');
+function updateConsent(){renderClothesHist();const box=$('#consentBox');const tag=$('#tagSelect').value;if(!tag){box.innerHTML='';box.hidden=true;return;}box.hidden=false;
+  const c=consentState(formPatient());const keep=box.querySelector('[name=consentDate]')?.value;const kc=box.querySelector('[name=consent]')?.checked;
+  if(c.st==='ok')box.innerHTML=`<div class="cstat ok">✓ 同意書あり（${ymd(c.date)} 取得・患者台帳に記録済み）</div>`;
+  else if(c.st==='withdrawn')box.innerHTML=`<div class="cstat ng">この患者は ${ymd(c.date)} に同意を撤回しています。タグは渡せません（タグ番号を「タグなし」にしてください）。</div>`;
+  else{box.innerHTML=`<div class="cstat need">この患者の同意書は患者台帳に未登録です。同意書を確認して取得日を入れてください。登録すると次回からは確認不要です。</div>
+    <div class="grid" style="margin-top:8px"><label>同意書の取得日<input type="date" name="consentDate" value="${keep||toDateInput(Date.now())}"></label></div>
+    <label class="consent"><input type="checkbox" name="consent"${kc?' checked':''}>同意書を確認した（医療保護入院の場合は家族等の同意も含む）</label>`;}
+}
+nf.elements.name.addEventListener('input',updateConsent);nf.elements.pid.addEventListener('input',updateConsent);
+$('#tagSelect').addEventListener('change',updateConsent);
+$$('input[name="alone"]').forEach(r=>r.addEventListener('change',()=>{$('#compBox').hidden=nf.elements.alone.value==='1';}));
+$('#dueQuick').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const base=fromLocalInput(nf.elements.departAt.value)||Date.now();const d=new Date(base);
+  if(b.dataset.h)d.setTime(base+b.dataset.h*3600000);if(b.dataset.d)d.setDate(d.getDate()+Number(b.dataset.d));nf.elements.dueAt.value=toLocalInput(round15(d.getTime()));});
+
+async function compress(src){
+  const img=await new Promise((res,rej)=>{if(src instanceof HTMLCanvasElement)return res(src);const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(src);});
+  const w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;const k=Math.min(1,1000/Math.max(w,h));
+  const c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+  if(img.src&&img.src.startsWith('blob:'))URL.revokeObjectURL(img.src);
+  return new Promise(r=>c.toBlob(r,'image/jpeg',0.75));
+}
+let pendingURL=null;
+function renderPhotoPrev(){if(pendingURL){URL.revokeObjectURL(pendingURL);pendingURL=null;}
+  if(pendingPhoto){pendingURL=URL.createObjectURL(pendingPhoto);$('#photoPrev').innerHTML=`<img class="thumb" src="${pendingURL}" alt="服装写真">`;$('#photoClear').hidden=false;}
+  else{$('#photoPrev').innerHTML='<div class="nophoto">写真なし</div>';$('#photoClear').hidden=true;}}
+$('#photoInput').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{pendingPhoto=await compress(f);renderPhotoPrev();}catch(err){toast('写真を読み込めませんでした');}});
+$('#photoClear').addEventListener('click',()=>{pendingPhoto=null;renderPhotoPrev();});
+$('#webcamBtn').addEventListener('click',async()=>{
+  let stream;try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});}catch(err){toast('カメラを起動できません（'+(err&&err.name||'不明')+'）。「写真を撮る／選ぶ」を使ってください。',5000);return;}
+  const stop=()=>stream.getTracks().forEach(t=>t.stop());
+  openDlg('服装の撮影（顔は写さない）','<video id="cam" autoplay playsinline muted></video><p class="hint">首から下が入るように撮影してください。</p>',
+    [{label:'やめる',onClick:()=>{stop();}},{label:'撮影する',cls:'pri',onClick:async()=>{const v=$('#cam');const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);stop();pendingPhoto=await compress(c);renderPhotoPrev();}}]);
+  $('#cam').srcObject=stream;$('#dlg').addEventListener('close',stop,{once:true});
+});
+
+function showFormErrors(errs){
+  nf.querySelectorAll('.invalid').forEach(el=>el.classList.remove('invalid'));
+  const box=$('#formErr');
+  if(!errs.length){box.hidden=true;return;}
+  errs.forEach(e=>e.el&&(e.el._tp||e.el).classList.add('invalid'));
+  box.innerHTML='<b>まだ登録できません。次の項目を確認してください。</b><ul>'+errs.map(e=>'<li>'+esc(e.msg)+'</li>').join('')+'</ul>';
+  box.hidden=false;
+  toast(`まだ登録できません：赤枠の${errs.length}項目を確認してください（一覧は登録ボタンの上）`,6000);
+  const first=errs[0].el||box;first.scrollIntoView({behavior:'smooth',block:'center'});
+  const inp=first.matches('input,select,textarea')?first:null;if(inp)setTimeout(()=>inp.focus({preventScroll:true}),400);
+}
+nf.addEventListener('input',e=>{const t=e.target.closest('.invalid')||(e.target.name==='ward'&&$('#wardRadios'));if(t)t.classList.remove('invalid');});
+nf.addEventListener('change',e=>{if(e.target.name==='ward')$('#wardRadios').classList.remove('invalid');if(e.target.name==='consent'||e.target.name==='tagId')$('#consentBox').classList.remove('invalid');});
+nf.addEventListener('submit',e=>e.preventDefault());
+let submitting=false;
+$('#submitBtn').addEventListener('click',async()=>{if(submitting)return;submitting=true;try{await registerOuting();}catch(err){toast('登録中にエラーが起きました：'+(err&&err.message||err),8000);}finally{submitting=false;}});
+async function registerOuting(){
+  const f=nf;
+  const name=val(f,'name'),departAt=fromLocalInput(val(f,'departAt')),dueAt=fromLocalInput(val(f,'dueAt')),nurse=val(f,'departNurse');
+  const plan=isPlanForm();const alone=f.elements.alone.value==='1',tagId=val(f,'tagId');
+  const E=[];const el=n=>f.elements[n];
+  if(!name)E.push({msg:'患者氏名を入力してください',el:el('name')});
+  if(!val(f,'pid'))E.push({msg:'患者IDを入力してください（同姓同名の取り違えを防ぐため必須です）',el:el('pid')});
+  if(!f.elements.ward.value)E.push({msg:'病棟（東1〜本3）を選んでください',el:$('#wardRadios')});
+  if(!departAt)E.push({msg:'出発日時を入力してください',el:el('departAt')});
+  if(!dueAt)E.push({msg:'帰院予定日時を入力してください（「+1時間」などのボタンでも入ります）',el:el('dueAt')});
+  else if(departAt&&dueAt<=departAt)E.push({msg:'帰院予定日時を出発日時より後にしてください',el:el('dueAt')});
+  if(!alone&&!val(f,'compName'))E.push({msg:'同行ありの場合は同行者氏名を入力してください（単独なら「単独」を選択）',el:el('compName')});
+  const fp=formPatient();
+  if(fp&&isDis(fp))E.push({msg:`${fp.name} さん（ID ${fp.pid||'なし'}）は患者台帳で「退院」になっています。再入院のときは、患者台帳の「退院」の一覧で「再入院」を押してから登録してください`,el:el('pid')});
+  const cs=consentState(fp);
+  if(tagId&&cs.st==='withdrawn')E.push({msg:'この患者は同意を撤回しています。タグ番号を「タグなし」にしてください',el:$('#consentBox')});
+  else if(tagId&&cs.st==='none'&&(!f.elements.consent?.checked||!val(f,'consentDate')))E.push({msg:`タグ ${tagId} を渡すには、同意書の取得日を入れて「同意書を確認した」にチェックしてください（渡さない場合はタグ番号を「タグなし」に）`,el:$('#consentBox')});
+  if(!nurse)E.push({msg:plan?'登録した看護師名を入力してください':'出発を確認した看護師名を入力してください',el:el('departNurse')});
+  showFormErrors(E);if(E.length)return;
+  if(outings.some(o=>isActive(o)&&o.id!==nf.dataset.planId&&(o.pid===val(f,'pid')||(nf.dataset.patientId&&o.patientId===nf.dataset.patientId)))&&!await askConfirm(`${name} さんは既に外出・外泊中として登録されています。続けますか？`))return;
+  const now=Date.now();
+  const o={id:uid(),name,pid:val(f,'pid'),kana:hira(val(f,'kana')),sex:val(f,'sex'),age:half(val(f,'age')).replace(/[^0-9]/g,''),ward:f.elements.ward.value,adm:val(f,'adm'),kind:f.elements.kind.value,departAt,dueAt,dueAtOriginal:dueAt,
+    dest:val(f,'dest'),selfTel:val(f,'selfTel'),famName:val(f,'famName'),famRel:val(f,'famRel'),famTel:val(f,'famTel'),alone,compName:alone?'':val(f,'compName'),compRel:alone?'':val(f,'compRel'),compTel:alone?'':val(f,'compTel'),
+    clothes:val(f,'clothes'),tagId,consent:!!tagId,consentDate:tagId?(cs.st==='ok'?cs.date:val(f,'consentDate')):'',departNurse:nurse,note:val(f,'note'),status:plan?'planned':'out',createdAt:now,hasPhoto:!!pendingPhoto,log:[]};
+  const planSrc=nf.dataset.planId&&outings.find(x=>x.id===nf.dataset.planId);if(planSrc){o.log=[...(planSrc.log||[])];if(!plan){o.departAtPlanned=planSrc.departAt;o.planNurse=planSrc.departNurse;}}
+  const pt=await upsertPatient(o,nf.dataset.patientId);o.patientId=pt.id;
+  if(tagId&&cs.st==='none'){pt.consentDate=o.consentDate;pt.consentLog=[...(pt.consentLog||[]),{at:Date.now(),text:`同意書取得日を ${ymd(o.consentDate)} に登録（外出登録時）`,by:nurse}];await dbPut('patients',pt);}
+  if(plan&&planSrc)addLog(o,`${o.kind}の予定を修正（出発予定 ${fmt(planSrc.departAt)}→${fmt(departAt)}、帰院予定 ${fmt(dueAt)}）`+(tagId?`（タグ ${tagId} を予約）`:'（タグは出発時に選ぶ）'),nurse);
+  else if(plan)addLog(o,`${o.kind}の予定を登録（出発予定 ${fmt(departAt)}）`+(tagId?`（タグ ${tagId} を予約）`:''),nurse);else addLog(o,`${o.kind}に出発`+(tagId?`（タグ ${tagId} 貸出・同意書 ${ymd(o.consentDate)} 取得）`:'（タグなし）'),nurse);
+  if(pendingPhoto&&!(planSrc&&planSrc.hasPhoto))addLog(o,'服装写真を登録');
+  await saveOuting(o);if(pendingPhoto)await dbPut('photos',pendingPhoto,o.id);
+  if(planSrc){if(planSrc.tagId&&planSrc.tagId!==tagId){const t0=tags.find(x=>x.id===planSrc.tagId);if(t0&&t0.outingId===planSrc.id){t0.status='available';t0.outingId=null;await saveTag(t0);}}
+    if(planSrc.hasPhoto){await dbDel('photos',planSrc.id);dropPhotoURL(planSrc.id);}
+    await dbDel('outings',planSrc.id);outings=outings.filter(x=>x!==planSrc);}
+  if(tagId){const t=tags.find(x=>x.id===tagId);if(t){t.status=plan?'reserved':'inuse';t.outingId=o.id;await saveTag(t);}}
+  outings.push(o);rememberNurse(nurse);
+  f.reset();pendingPhoto=null;$('#compBox').hidden=true;f.elements.departAt.value='';delete nf.dataset.patientId;delete nf.dataset.planId;delete nf.dataset.planMode;$('#formBack').hidden=true;$('#pLoaded').hidden=true;$('#pSearch').value='';updateConsent();attachNurseChips(nf);
+  toast(plan?(planSrc?`${name} さんの${o.kind}予定を更新しました（「予定」タブ）`:`${name} さんの${o.kind}予定を登録しました（「予定」タブ）`):`${name} さんの${o.kind}を登録しました`);lastSig='';showTab(plan?'plan':'active');tick();
+}
+
+/* ---------- 日別一覧 ---------- */
+function lateMin(o){if(o.status==='cancelled')return '';const end=o.returnedAt||(o.status==='planned'?null:(o.status!=='returned'?Date.now():null));if(!end)return '';const m=Math.floor((end-o.dueAtOriginal)/60000);return m>0?m:0;}
+const lastLog=o=>{const l=(o.log||[]).filter(x=>!x.x).slice(-1)[0];return l?`${fmt(l.at)} ${l.text}`:'';};
+// 一覧とCSVで共通の列（登録した項目をすべて）
+const COLS=[
+ ['患者氏名',o=>o.name],['ふりがな',o=>o.kana||''],['性別',o=>o.sex||''],['年齢',o=>o.age||''],['状態',o=>stLabel(o,stateOf(o,Date.now()))],['患者ID',o=>o.pid],['病棟',o=>o.ward],['入院形態',o=>o.adm],['区分',o=>o.kind],
+ ['出発',o=>fmtFull(o.departAt)+(o.status==='planned'?'（予定）':'')],['帰院予定（当初）',o=>fmtFull(o.dueAtOriginal)],['帰院予定（最終）',o=>fmtFull(o.dueAt)],
+ ['帰院',o=>fmtFull(o.returnedAt)],['遅れ(分)',o=>{const m=lateMin(o);return m===''||m===0?'':m;}],['捜索',o=>hadSearch(o)?'あり':''],
+ ['行き先',o=>o.dest],['本人携帯',o=>o.selfTel],['家族氏名',o=>o.famName],['家族続柄',o=>o.famRel],['家族携帯',o=>o.famTel],
+ ['同行',o=>o.alone?'単独':o.compName],['同行者続柄',o=>o.alone?'':o.compRel],['同行者連絡先',o=>o.alone?'':o.compTel],
+ ['服装',o=>o.clothes],['服装写真',o=>o.hasPhoto?'あり':(o.photoDeletedAt?'帰院時に削除':'なし')],
+ ['タグ',o=>o.tagId],['タグ回収',o=>o.tagId&&o.status==='returned'?(o.tagReturned?'回収':'未回収'):''],['同意書',o=>o.tagId?(o.consentDate?ymd(o.consentDate):(o.consent?'確認済':'')):''],
+ ['出発確認',o=>o.departNurse],['帰院確認',o=>o.returnNurse],['帰院時確認',rcText],['備考',o=>o.note],['最新の経過',o=>lastLog(o)]
+];
+const WIDE=new Set(['服装','行き先','備考','最新の経過','帰院時確認']);
+$('#hWard').innerHTML='<option value="">全病棟</option>'+WARDS.map(w=>`<option>${w}</option>`).join('');
+function hRange(){let a=$('#hFrom').value||toDateInput(Date.now()),b=$('#hTo').value||a;if(b<a)[a,b]=[b,a];return [dayStart(a),dayStart(b)+86400000-1,a,b];}
+function filteredHistory(){
+  const [s,e]=hRange(),q=$('#hQ').value.trim(),w=$('#hWard').value,now=Date.now();
+  return outings.filter(o=>o.departAt<=e&&(o.status==='planned'?o.dueAt:o.status==='cancelled'?(o.cancelledAt||o.departAt):(o.returnedAt||now))>=s&&(!w||o.ward===w)&&(!q||(o.name+' '+(o.tagId||'')+' '+(o.pid||'')).includes(q))).sort((a,b)=>a.departAt-b.departAt);
+}
+function dayLabel(ds){const d=new Date(dayStart(ds)),t=toDateInput(Date.now()),y=toDateInput(Date.now()-86400000);return `${d.getMonth()+1}月${d.getDate()}日(${WD[d.getDay()]})`+(ds===t?'【本日】':ds===y?'【昨日】':'');}
+function renderHistory(){
+  if(!$('#hFrom').value)$('#hFrom').value=toDateInput(Date.now());
+  const [,,a,b]=hRange(),rows=filteredHistory(),now=Date.now();
+  $('#hTitle').textContent='日別一覧　'+(a===b?dayLabel(a):dayLabel(a)+' 〜 '+dayLabel(b));
+  const valid=rows.filter(o=>o.status!=='cancelled'),nc=rows.length-valid.length;const n=k=>valid.filter(k).length;
+  $('#hSum').textContent=`${valid.length}件（外出 ${n(o=>o.kind==='外出')}・外泊 ${n(o=>o.kind==='外泊')}）　帰院済 ${n(o=>o.status==='returned')}・外出/外泊中 ${n(isActive)}・予定 ${n(o=>o.status==='planned')}　遅れ ${n(o=>lateMin(o)>0)}・捜索 ${n(hadSearch)}`+(nc?`　（誤登録の取消 ${nc}件は件数に含めない）`:'');
+  $('#hTable').innerHTML='<thead><tr><th class="rn">#</th>'+COLS.map(([h])=>`<th>${h}</th>`).join('')+'</tr></thead><tbody>'+
+   (rows.map((o,i)=>{const st=stateOf(o,now);return `<tr class="click r-${st}" data-id="${o.id}"><td class="rn">${i+1}</td>`+COLS.map(([h,f],k)=>{const v=f(o);
+     const cls=[WIDE.has(h)?'wide':'',k===0?'nm':'',h==='状態'?'st':''].filter(Boolean).join(' ');
+     return `<td${cls?` class="${cls}"`:''}>${h==='状態'?`<span class="lbl lbl-${st}">${esc(v)}</span>`:esc(v)}</td>`;}).join('')+'</tr>';}).join('')
+   ||`<tr><td class="rn"></td><td colspan="${COLS.length}">この日の外出・外泊はありません</td></tr>`)+'</tbody>';
+}
+function setDay(ds){$('#hFrom').value=ds;$('#hTo').value='';renderHistory();}
+const shiftDay=k=>{const d=new Date(dayStart($('#hFrom').value||toDateInput(Date.now())));d.setDate(d.getDate()+k);setDay(toDateInput(d.getTime()));};
+$('#hToday').addEventListener('click',()=>setDay(toDateInput(Date.now())));
+$('#hYest').addEventListener('click',()=>setDay(toDateInput(Date.now()-86400000)));
+$('#hPrev').addEventListener('click',()=>shiftDay(-1));$('#hNext').addEventListener('click',()=>shiftDay(1));
+['#hFrom','#hTo','#hQ','#hWard'].forEach(s=>$(s).addEventListener('input',renderHistory));$('#hWard').addEventListener('change',renderHistory);
+$('#hTable').addEventListener('click',e=>{const tr=e.target.closest('tr[data-id]');if(!tr)return;const o=outings.find(x=>x.id===tr.dataset.id);if(o)dlgDetail(o);});
+// 印刷：全項目を13のマスにまとめてA4横に収める
+function printHistory(){
+  const rows=filteredHistory(),[,,a,b]=hRange(),w=$('#hWard').value,q=$('#hQ').value.trim(),now=Date.now();
+  const br=arr=>arr.filter(x=>x!==undefined&&x!==null&&String(x)!=='').map(esc).join('<br>');
+  const cols=[['#',2.5],['患者氏名・ID',10],['病棟／入院形態',8],['区分／状態',7],['出発',8],['帰院予定（当初／最終）',9],['帰院／遅れ／捜索',8],['行き先',9],['本人・家族の連絡先',11],['同行',8],['服装／写真',9],['タグ（同意・回収）',6],['出発確認／帰院確認',7],['備考・最新の経過',13.5]];
+  const body=rows.map((o,i)=>{const lm=lateMin(o),st=stateOf(o,now);
+    const cells=[i+1,
+      `<span class="em">${esc(o.name)}</span>${o.pid?'<br>ID '+esc(o.pid):''}${sexAge(o)?'<br>'+esc(sexAge(o)):''}`,
+      br([wardText(o),o.adm]),
+      br([o.kind,stLabel(o,st)]),
+      esc(fmt(o.departAt))+(o.status==='planned'?'<br>（予定）':''),
+      br([fmt(o.dueAtOriginal),o.dueAt!==o.dueAtOriginal?'→ '+fmt(o.dueAt):'']),
+      br([o.returnedAt?fmt(o.returnedAt):(isActive(o)?'未帰院':'')])+(lm>0?`<br><span class="warn">${lm}分遅れ</span>`:'')+(hadSearch(o)?'<br><span class="warn">捜索あり</span>':''),
+      esc(o.dest),
+      br([o.selfTel?'本人 '+o.selfTel:'',(o.famName||o.famTel)?'家族 '+[o.famName,o.famRel?'（'+o.famRel+'）':'',o.famTel].filter(Boolean).join(' '):'']),
+      o.alone?'単独':br([o.compName+(o.compRel?'（'+o.compRel+'）':''),o.compTel]),
+      br([o.clothes,'写真：'+(o.hasPhoto?'あり':(o.photoDeletedAt?'帰院時に削除':'なし'))]),
+      o.tagId?br([o.tagId,o.consent?'同意済':'',o.status==='returned'?(o.tagReturned?'回収':'未回収'):'']):'なし',
+      br([o.departNurse,o.returnNurse]),
+      br([o.note,rcText(o)?'帰院時確認：'+rcText(o):'',o.status==='cancelled'?'取消理由：'+o.cancelReason:'',lastLog(o)])];
+    return '<tr>'+cells.map(c=>`<td>${c}</td>`).join('')+'</tr>';}).join('')||`<tr><td colspan="${cols.length}">この日の外出・外泊はありません</td></tr>`;
+  const valid=rows.filter(o=>o.status!=='cancelled');const n=k=>valid.filter(k).length;
+  $('#printArea').innerHTML=`<h1>外出・外泊 日別一覧　${esc(a===b?dayLabel(a):dayLabel(a)+' 〜 '+dayLabel(b))}${w?'　'+esc(w):'　全病棟'}${q?'　絞り込み：'+esc(q):''}</h1>
+   <div class="pmeta"><span>${valid.length}件（外出 ${n(o=>o.kind==='外出')}・外泊 ${n(o=>o.kind==='外泊')}）　帰院済 ${n(o=>o.status==='returned')}・外出/外泊中 ${n(isActive)}・予定 ${n(o=>o.status==='planned')}　遅れ ${n(o=>lateMin(o)>0)}・捜索 ${n(hadSearch)}</span><span>印刷：${esc(fmtFull(now))}</span></div>
+   <table><colgroup>${cols.map(([,wd])=>`<col style="width:${wd}%">`).join('')}</colgroup><thead><tr>${cols.map(([h])=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table>`;
+  document.body.classList.add('pm-history');
+  const done=()=>{document.body.classList.remove('pm-history');window.removeEventListener('afterprint',done);};
+  window.addEventListener('afterprint',done);
+  try{window.print();}catch(e){done();toast('この画面からは印刷できません。ファイルをSafariやChromeで直接開いて印刷してください。',6000);}
+  setTimeout(()=>{if(document.body.classList.contains('pm-history')&&!window.matchMedia('print').matches)done();},60000);
+}
+$('#hPrint').addEventListener('click',printHistory);
+$('#csvBtn').addEventListener('click',()=>{
+  const rows=filteredHistory(),[,,a,b]=hRange();
+  const data=rows.map(o=>COLS.map(([,f])=>f(o)).concat([(o.log||[]).map(l=>`${fmtFull(l.at)} ${l.text}${l.by?'['+l.by+']':''}${l.x?'（'+fmtFull(l.x)+' 取消）':''}`).join(' / ')]));
+  const csv='﻿'+[COLS.map(c=>c[0]).concat(['経過（全件）']),...data].map(r=>r.map(v=>{v=String(v??'');return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}).join(',')).join('\r\n');
+  download(`外出外泊一覧_${a}${a===b?'':'_'+b}.csv`,new Blob([csv],{type:'text/csv'}));
+});
+
+/* ---------- 月別集計 ---------- */
+let stY=null,stM=null,stWard='';
+function monthOutings(){const s0=new Date(stY,stM,1).getTime(),e=new Date(stY,stM+1,1).getTime()-1;return outings.filter(o=>o.departAt>=s0&&o.departAt<=e&&o.status!=='planned'&&o.status!=='cancelled');}
+function statRow(label,L){const late=L.filter(o=>lateMin(o)>0),n=L.length;return {label,out:L.filter(o=>o.kind==='外出').length,stay:L.filter(o=>o.kind==='外泊').length,n,late:late.length,rate:n?(Math.round(late.length/n*1000)/10).toFixed(1):'0.0',maxLate:late.length?Math.max(...late.map(lateMin)):0,search:L.filter(hadSearch).length,tag:L.filter(o=>o.tagId).length,active:L.filter(isActive).length};}
+const ST_COLS=[['区分','label'],['外出','out'],['外泊','stay'],['合計','n'],['遅れ','late'],['遅れの割合(%)','rate'],['最大の遅れ(分)','maxLate'],['捜索','search'],['タグ使用','tag'],['集計時点で外出・外泊中','active']];
+const ST_TB=[['〜10時',0,10],['10〜13時',10,13],['13〜16時',13,16],['16時〜',16,24]];
+const ST_PT=[['氏名','name'],['患者ID','pid'],['病棟','ward'],['外出','out'],['外泊','stay'],['遅れ','late'],['最大の遅れ(分)','maxLate'],['捜索','search'],['最後の外出','lastTxt']];
+const ptKey=o=>o.patientId||(o.pid?'pid:'+o.pid:'name:'+o.name);
+const stWardLabel=()=>stWard||'全病棟';
+function statsData(){
+  const all=monthOutings(),L=stWard?all.filter(o=>o.ward===stWard):all;
+  const total=statRow('合計',L),late=L.filter(o=>lateMin(o)>0).map(lateMin);
+  const ret=L.filter(o=>o.kind==='外出'&&o.status==='returned'&&o.returnedAt);
+  const dm={};L.forEach(o=>{const d=String(o.dest||'').trim();if(d)dm[d]=(dm[d]||0)+1;});
+  const pm=new Map();
+  for(const o of [...L].sort((a,b)=>a.departAt-b.departAt)){const k=ptKey(o);let r=pm.get(k);
+    if(!r){r={key:k,name:o.name,pid:o.pid||'',ward:o.ward||'',out:0,stay:0,late:0,maxLate:0,search:0,last:0};pm.set(k,r);}
+    r.name=o.name;r.pid=o.pid||r.pid;r.ward=o.ward||r.ward;r[o.kind==='外泊'?'stay':'out']++;const m=lateMin(o);if(m>0){r.late++;r.maxLate=Math.max(r.maxLate,m);}
+    if(hadSearch(o))r.search++;r.last=Math.max(r.last,o.departAt);}
+  const people=[...pm.values()].map(r=>({...r,lastTxt:fmt(r.last)})).sort((a,b)=>(b.out+b.stay)-(a.out+a.stay)||b.last-a.last);
+  return {L,total,people,nPeople:people.length,
+    avgOut:ret.length?ret.reduce((a,o)=>a+(o.returnedAt-o.departAt),0)/ret.length:null,nRet:ret.length,
+    lateAvg:late.length?Math.round(late.reduce((a,b)=>a+b,0)/late.length):0,lateMax:late.length?Math.max(...late):0,
+    wd:[0,1,2,3,4,5,6].map(d=>L.filter(o=>new Date(o.departAt).getDay()===d).length),
+    tb:ST_TB.map(([l,a,b])=>({label:l,n:L.filter(o=>{const h=new Date(o.departAt).getHours();return h>=a&&h<b;}).length})),
+    dests:Object.entries(dm).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'ja')).slice(0,5),
+    alone:L.filter(o=>o.alone).length,comp:L.filter(o=>!o.alone).length,
+    byWard:WARDS.map(w=>statRow(w,all.filter(o=>o.ward===w))),allTotal:statRow('合計',all),
+    byAdm:['任意入院','医療保護入院','その他'].map(a=>statRow(a,L.filter(o=>o.adm===a)))};
+}
+const avgTxt=d=>d.avgOut===null?'—':dur(d.avgOut);
+const stTbl=rows=>'<thead><tr>'+ST_COLS.map(c=>`<th${c[1]==='label'?'':' class="num"'}>${c[0]}</th>`).join('')+'</tr></thead><tbody>'+rows.map(r=>`<tr${r.label==='合計'?' class="tot"':''}>`+ST_COLS.map(c=>`<td class="${c[1]==='label'?'lb':'num'}">${esc(r[c[1]])}</td>`).join('')+'</tr>').join('')+'</tbody>';
+function renderStats(){if(stY===null){const n=new Date();stY=n.getFullYear();stM=n.getMonth();}
+  $('#stTitle').textContent=`${stY}年${stM+1}月の集計（${stWardLabel()}）`;
+  $('#stWard').innerHTML=['',...WARDS].map(w=>`<button type="button" class="btn${w===stWard?' on':''}" data-stw="${w}">${w||'全病棟'}</button>`).join('');
+  const d=statsData(),t=d.total;
+  const card=(k,label,v,unit,sub)=>`<div class="stcard" data-k="${k}"><div class="k">${label}</div><div class="v">${v}<small>${unit}</small></div>${sub?`<div class="s">${sub}</div>`:''}</div>`;
+  $('#stCards').innerHTML=card('n','外出・外泊',t.n,'件',`外出 ${t.out}・外泊 ${t.stay}`)+card('people','出た人数',d.nPeople,'人','実人数')
+    +card('late','遅れ',t.late,'件',`割合 ${t.rate}%`)+card('search','捜索',t.search,'件','')+card('tag','タグを渡した',t.tag,'件','');
+  $('#stTime').innerHTML=`<dl class="info" style="min-width:0"><dt>外出の平均時間</dt><dd data-k="avgOut">${avgTxt(d)}</dd>
+    <dt>遅れの平均</dt><dd data-k="lateAvg">${d.lateAvg}分</dd><dt>遅れの最大</dt><dd data-k="lateMax">${d.lateMax}分</dd></dl><p class="hint">外出の平均時間は、帰院済みの外出 ${d.nRet}件から出しています（外泊は含めません）。</p>`;
+  $('#stAlone').innerHTML=`<thead><tr><th>単独</th><th>同行</th></tr></thead><tbody><tr><td class="num" data-k="alone">${d.alone}件</td><td class="num" data-k="comp">${d.comp}件</td></tr></tbody>`;
+  $('#stDest').innerHTML='<thead><tr><th>行き先</th><th class="num">件数</th></tr></thead><tbody>'+(d.dests.map(([k,v])=>`<tr><td>${esc(k)}</td><td class="num">${v}</td></tr>`).join('')||'<tr><td colspan="2">記録がありません</td></tr>')+'</tbody>';
+  $('#stWd').innerHTML='<thead><tr>'+WD.split('').map(w=>`<th class="num">${w}</th>`).join('')+'</tr></thead><tbody><tr>'+d.wd.map(n=>`<td class="num">${n}</td>`).join('')+'</tr></tbody>';
+  $('#stTb').innerHTML='<thead><tr>'+d.tb.map(x=>`<th class="num">${x.label}</th>`).join('')+'</tr></thead><tbody><tr>'+d.tb.map(x=>`<td class="num">${x.n}</td>`).join('')+'</tr></tbody>';
+  $('#stPt').innerHTML='<thead><tr>'+ST_PT.map(([h,k],i)=>`<th class="${i===0?'nm0':['out','stay','late','maxLate','search'].includes(k)?'num':''}">${h}</th>`).join('')+'</tr></thead><tbody>'+
+    (d.people.map(r=>'<tr>'+ST_PT.map(([,k],i)=>i===0?`<td class="nm0"><a class="ptlink" data-stpt="${esc(r.key)}">${esc(r.name)}</a></td>`:`<td class="${['out','stay','late','maxLate','search'].includes(k)?'num':''}">${esc(r[k])}</td>`).join('')+'</tr>').join('')
+     ||`<tr><td class="nm0" colspan="${ST_PT.length}">この月の外出・外泊はありません</td></tr>`)+'</tbody>';
+  $('#stWardBox').hidden=!!stWard;$('#stTable').innerHTML=stTbl([...d.byWard,d.allTotal]);$('#stTable2').innerHTML=stTbl([...d.byAdm,d.total]);}
+$('#stWard').addEventListener('click',e=>{const b=e.target.closest('[data-stw]');if(!b)return;stWard=b.dataset.stw;renderStats();});
+$('#stPt').addEventListener('click',e=>{const a=e.target.closest('[data-stpt]');if(!a)return;const k=a.dataset.stpt;
+  const o=outings.find(x=>ptKey(x)===k);if(!o)return;
+  const p=patients.find(x=>x.id===o.patientId)||(o.pid?patients.find(x=>x.pid===o.pid):null)||{id:o.patientId||'',name:o.name,pid:o.pid};
+  dlgPatientHistory(p);});
+$('#stPrev').addEventListener('click',()=>{stM--;if(stM<0){stM=11;stY--;}renderStats();});
+$('#stNext').addEventListener('click',()=>{stM++;if(stM>11){stM=0;stY++;}renderStats();});
+$('#stNow').addEventListener('click',()=>{stY=null;renderStats();});
+const csvLine=r=>r.map(v=>{v=String(v??'');return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}).join(',');
+$('#stCsv').addEventListener('click',()=>{const d=statsData(),t=d.total,head=ST_COLS.map(c=>c[0]);
+  const rows=[[`${stY}年${stM+1}月の集計（${stWardLabel()}）`],['出発日がその月の外出・外泊（予定・誤登録の取消は除く）。遅れ＝当初の帰院予定より遅れたもの。'],[],
+    ['まとめ'],['外出（件）',t.out],['外泊（件）',t.stay],['合計（件）',t.n],['出た人数（実人数）',d.nPeople],['遅れ（件）',t.late],['遅れの割合(%)',t.rate],['捜索（件）',t.search],['タグを渡した（件）',t.tag],[],
+    ['時間'],['外出の平均時間（分）',d.avgOut===null?'':Math.round(d.avgOut/60000)],['平均の対象（帰院済みの外出・件）',d.nRet],['遅れの平均（分）',d.lateAvg],['遅れの最大（分）',d.lateMax],[],
+    ['曜日別の出発件数'],WD.split(''),d.wd,[],
+    ['時間帯別の出発件数'],d.tb.map(x=>x.label),d.tb.map(x=>x.n),[],
+    ['行き先の上位5'],['行き先','件数'],...d.dests,[],
+    ['単独・同行'],['単独','同行'],[d.alone,d.comp],[],
+    ['患者別'],ST_PT.map(c=>c[0]),...d.people.map(r=>ST_PT.map(([,k])=>k==='lastTxt'?fmtFull(r.last):r[k])),[],
+    ...(stWard?[]:[['病棟別'],head,...[...d.byWard,d.allTotal].map(r=>ST_COLS.map(c=>r[c[1]])),[]]),
+    ['入院形態別'],head,...[...d.byAdm,d.total].map(r=>ST_COLS.map(c=>r[c[1]]))];
+  download(`外出外泊集計_${stY}-${pad(stM+1)}${stWard?'_'+stWard:''}.csv`,new Blob(['﻿'+rows.map(csvLine).join('\r\n')],{type:'text/csv'}));});
+$('#stPrint').addEventListener('click',()=>{const d=statsData(),t=d.total;
+  const tb=(head,rows,numFrom=1)=>`<table><thead><tr>${head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((v,i)=>`<td${i<numFrom?' class="em"':''}>${esc(v)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  const st=rows=>tb(ST_COLS.map(c=>c[0]),rows.map(r=>ST_COLS.map(c=>r[c[1]])));
+  const h=x=>`<p style="font-size:10pt;font-weight:700;margin:3mm 0 1mm">${x}</p>`;
+  $('#printArea').innerHTML=`<h1>外出・外泊 月別集計　${stY}年${stM+1}月　${esc(stWardLabel())}</h1><div class="pmeta"><span>出発日がこの月の外出・外泊（予定・誤登録の取消は除く）。遅れ＝当初の帰院予定より遅れたもの。</span><span>印刷：${esc(fmtFull(Date.now()))}</span></div>
+    ${h('まとめ')}${tb(['外出','外泊','合計','出た人数（実人数）','遅れ','遅れの割合(%)','捜索','タグを渡した','外出の平均時間','遅れの平均(分)','遅れの最大(分)'],[[t.out,t.stay,t.n,d.nPeople,t.late,t.rate,t.search,t.tag,avgTxt(d)+'（帰院済み'+d.nRet+'件）',d.lateAvg,d.lateMax]],0)}
+    <div style="display:flex;gap:4mm;align-items:flex-start"><div style="flex:1">${h('曜日別の出発件数')}${tb(WD.split(''),[d.wd],0)}</div><div style="flex:1">${h('時間帯別の出発件数')}${tb(d.tb.map(x=>x.label),[d.tb.map(x=>x.n)],0)}</div><div style="flex:.6">${h('単独・同行')}${tb(['単独','同行'],[[d.alone,d.comp]],0)}</div></div>
+    ${h('行き先の上位5')}${tb(['行き先','件数'],d.dests.length?d.dests:[['記録がありません','']])}
+    ${h('患者別（回数の多い順）')}${tb(ST_PT.map(c=>c[0]),d.people.map(r=>ST_PT.map(([,k])=>r[k])))}
+    ${stWard?'':h('病棟別')+st([...d.byWard,d.allTotal])}${h('入院形態別')}${st([...d.byAdm,d.total])}`;
+  document.body.classList.add('pm-history');const done=()=>{document.body.classList.remove('pm-history');window.removeEventListener('afterprint',done);};window.addEventListener('afterprint',done);
+  try{window.print();}catch(e){done();toast('この画面からは印刷できません。ファイルをSafariやChromeで直接開いて印刷してください。',6000);}});
+
+/* ---------- 詳細・カレンダー ---------- */
+const hadSearch=o=>(o.log||[]).some(l=>!l.x&&l.text.startsWith('捜索開始'));
+function photoText(o){if(o.hasPhoto)return 'あり（帰院登録で自動削除されます）';if(o.photoDeletedAt)return `帰院時に削除済み（${fmt(o.photoDeletedAt)}）`;return 'なし';}
+function dlgDetail(o){
+  const now=Date.now(),s=stateOf(o,now),lm=lateMin(o);
+  const comp=o.alone?'単独':`${esc(o.compName)}${o.compRel?'（'+esc(o.compRel)+'）':''}${o.compTel?' '+esc(o.compTel):''}`;
+  const fam=[o.famName,o.famRel?'（'+o.famRel+'）':'',o.famTel].filter(Boolean).join(' ');
+  openDlg(`記録：${o.name}`,`<p style="margin:0 0 10px"><span class="lbl lbl-${s}">${stLabel(o,s)}</span>${hadSearch(o)?' <span class="f srch">捜索あり</span>':''}${lm>0?` <span class="f late">${lm}分遅れ</span>`:''}</p>
+   <dl class="info"><dt>病棟</dt><dd>${esc(wardText(o))}${o.pid?'（ID '+esc(o.pid)+'）':''}</dd><dt>入院形態</dt><dd>${esc(o.adm)}</dd><dt>区分</dt><dd>${esc(o.kind)}</dd>
+   <dt>出発</dt><dd>${fmt(o.departAt)}（${esc(o.departNurse)}）${o.departAtPlanned&&o.status!=='planned'?'<span class="sub">　予定 '+fmt(o.departAtPlanned)+'</span>':''}</dd><dt>帰院予定</dt><dd>${fmt(o.dueAt)}${o.dueAt!==o.dueAtOriginal?'（当初 '+fmt(o.dueAtOriginal)+'）':''}</dd>
+   <dt>帰院</dt><dd>${o.returnedAt?fmt(o.returnedAt)+'（'+esc(o.returnNurse)+'）':(o.status==='planned'?'出発前（予定）':'まだ帰院していません')}</dd>
+   <dt>行き先</dt><dd>${esc(o.dest)||'—'}</dd><dt>同行</dt><dd>${comp}</dd><dt>本人携帯</dt><dd>${esc(o.selfTel)||'—'}</dd><dt>家族</dt><dd>${esc(fam)||'—'}</dd>
+   <dt>服装</dt><dd>${esc(o.clothes)||'—'}</dd><dt>服装写真</dt><dd>${photoText(o)}</dd>
+   <dt>タグ</dt><dd>${o.tagId?esc(o.tagId)+(o.status==='returned'?(o.tagReturned?'（回収済み）':'（未回収）'):o.status==='cancelled'?'（取消で空きに戻した）':'（貸出中）')+(o.consentDate?'・同意書 '+ymd(o.consentDate):''):'なし'}</dd>${o.status==='returned'?`<dt>帰院時確認</dt><dd>${esc(rcText(o))||'—'}</dd>`:''}${o.status==='cancelled'?`<dt>取消の理由</dt><dd>${esc(o.cancelReason)}</dd>`:''}${o.note?`<dt>備考</dt><dd>${esc(o.note)}</dd>`:''}</dl>
+   <h3 style="font-size:17px;margin:14px 0 6px">経過</h3>${logHTML(o)}`,
+   o.status==='returned'?[{label:'閉じる'},{label:'記録を修正・取消',onClick:()=>{setTimeout(()=>dlgEdit(o),0);}}]:!isActive(o)?[{label:'閉じる'}]:[{label:'閉じる'},{label:'対応記録を追加',cls:'pri',onClick:()=>{setTimeout(()=>dlgLog(o),0);}}]);
+}
+function patientOutings(p){return outings.filter(o=>o.patientId===p.id||(!o.patientId&&o.name===p.name)).sort((a,b)=>b.departAt-a.departAt);}
+function dlgPatientHistory(p){
+  const list=patientOutings(p);
+  openDlg(`${p.name} さんの過去の記録（${list.length}件）`,list.map(o=>`<div class="dayrow" data-oid="${o.id}"><span class="tm">${fmt(o.departAt)}</span><span class="mt">${esc(o.kind)}・${esc(o.dest)||'行き先未記入'}${o.status==='cancelled'?' <span class="lbl lbl-cancelled">取消</span>':''}${lateMin(o)>0?' <span class="f late">'+lateMin(o)+'分遅れ</span>':''}${hadSearch(o)?' <span class="f srch">捜索</span>':''}${isActive(o)?' <span class="f out">'+esc(o.kind)+'中</span>':''}${o.status==='planned'?' <span class="f plan">予定</span>':''}</span></div>`).join('')||'<p>記録がありません</p>',[{label:'閉じる'}]);
+  $$('#dlgBody .dayrow').forEach(r=>r.addEventListener('click',()=>{const o=outings.find(x=>x.id===r.dataset.oid);if(o)dlgDetail(o);}));
+}
+let calY=null,calM=null,calSel=null;
+$('#calWard').innerHTML='<option value="">全病棟</option>'+WARDS.map(w=>`<option>${w}</option>`).join('');
+function dayStart(ds){const[y,m,d]=ds.split('-').map(Number);return new Date(y,m-1,d).getTime();}
+function outingsOnDay(ds){const s=dayStart(ds),e=s+86400000-1,w=$('#calWard').value,now=Date.now();
+  return outings.filter(o=>o.status!=='cancelled'&&o.departAt<=e&&(o.status==='planned'?o.dueAt:(o.returnedAt||now))>=s&&(!w||o.ward===w)).sort((a,b)=>a.departAt-b.departAt);}
+function renderCalendar(){
+  if(calY===null){const n=new Date();calY=n.getFullYear();calM=n.getMonth();calSel=toDateInput(n.getTime());}
+  $('#calTitle').textContent=`${calY}年${calM+1}月`;
+  const first=new Date(calY,calM,1),days=new Date(calY,calM+1,0).getDate(),today=toDateInput(Date.now());
+  let h=WD.split('').map(w=>`<div class="wd">${w}</div>`).join('');
+  for(let i=0;i<first.getDay();i++)h+='<div class="cday empty"></div>';
+  for(let d=1;d<=days;d++){const ds=`${calY}-${pad(calM+1)}-${pad(d)}`;const list=outingsOnDay(ds);const dw=new Date(calY,calM,d).getDay();
+    const late=list.some(o=>lateMin(o)>0),srch=list.some(hadSearch),out=list.some(o=>isActive(o)),plan=list.some(o=>o.status==='planned');
+    h+=`<button type="button" class="cday${dw===0?' sun':''}${dw===6?' sat':''}${ds===today?' today':''}${ds===calSel?' sel':''}" data-d="${ds}"><span class="dn">${d}</span>${list.length?`<span class="ccnt">${list.length}件</span>`:''}<span class="flags">${srch?'<i class="f srch">捜索</i>':''}${late?'<i class="f late">遅れ</i>':''}${out?'<i class="f out">外出中</i>':''}${plan?'<i class="f plan">予定</i>':''}</span></button>`;}
+  $('#calGrid').innerHTML=h;renderCalDay();
+}
+function renderCalDay(){
+  const box=$('#calDay');if(!calSel){box.innerHTML='';return;}
+  const list=outingsOnDay(calSel),d=new Date(dayStart(calSel));
+  box.innerHTML=`<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><h2 style="margin:0">${d.getMonth()+1}月${d.getDate()}日(${WD[d.getDay()]})　${list.length}件${$('#calWard').value?'（'+$('#calWard').value+'）':''}</h2><button type="button" class="btn sm" id="calToTable">この日を一覧表で見る</button></div>`+
+   (list.map(o=>`<div class="dayrow" data-oid="${o.id}"><span class="tm">${fmt(o.departAt)} → ${o.returnedAt?fmt(o.returnedAt):(o.status==='planned'?fmt(o.dueAt)+'（予定）':'未帰院')}</span><span class="nm">${esc(o.name)}</span><span class="mt">${esc(wardText(o))}・${esc(o.kind)}・${esc(o.dest)||'行き先未記入'}・${o.alone?'単独':'同行 '+esc(o.compName)}${o.tagId?'・タグ '+esc(o.tagId):''}
+     ${lateMin(o)>0?' <span class="f late">'+lateMin(o)+'分遅れ</span>':''}${hadSearch(o)?' <span class="f srch">捜索</span>':''}${isActive(o)?' <span class="f out">'+esc(o.kind)+'中</span>':''}${o.status==='planned'?' <span class="f plan">予定</span>':''}</span></div>`).join('')||'<p class="hint">この日の外出・外泊はありません。</p>');
+}
+$('#calGrid').addEventListener('click',e=>{const b=e.target.closest('[data-d]');if(!b)return;calSel=b.dataset.d;$$('#calGrid .cday').forEach(x=>x.classList.toggle('sel',x.dataset.d===calSel));renderCalDay();});
+$('#calDay').addEventListener('click',e=>{if(e.target.closest('#calToTable')){showTab('history');$('#hWard').value=$('#calWard').value;setDay(calSel);return;}const r=e.target.closest('[data-oid]');if(!r)return;const o=outings.find(x=>x.id===r.dataset.oid);if(o)dlgDetail(o);});
+$('#calPrev').addEventListener('click',()=>{calM--;if(calM<0){calM=11;calY--;}renderCalendar();});
+$('#calNext').addEventListener('click',()=>{calM++;if(calM>11){calM=0;calY++;}renderCalendar();});
+$('#calToday').addEventListener('click',()=>{calY=null;renderCalendar();});
+$('#calWard').addEventListener('change',renderCalendar);
+
+/* ---------- 患者台帳 ---------- */
+let ptView='in';
+const ptBusy=p=>outings.some(o=>(isActive(o)||o.status==='planned')&&(o.patientId===p.id||(!!o.pid&&o.pid===p.pid)));
+function renderPatients(){
+  const q=$('#ptQ').value.trim(),dis=ptView==='discharged';
+  $('#ptNIn').textContent=patients.filter(p=>!isDis(p)).length;$('#ptNOut').textContent=patients.filter(isDis).length;
+  $$('#ptSeg [data-pts]').forEach(b=>b.classList.toggle('on',b.dataset.pts===ptView));
+  const list=patients.filter(p=>isDis(p)===dis&&matchQ(p,q)).sort(dis?(a,b)=>String(b.dischargedAt||'').localeCompare(String(a.dischargedAt||'')):(a,b)=>(b.lastOutAt||0)-(a.lastOutAt||0));
+  const cons=p=>{const c=consentState(p);return (c.st==='ok'?'<span class="lbl lbl-ok">取得 '+ymd(c.date)+'</span> <button class="btn sm" data-ptwd="'+p.id+'">撤回</button>'
+    :(c.st==='withdrawn'?'<span class="lbl lbl-overdue">撤回 '+ymd(c.date)+'</span>':'<span class="lbl lbl-returned">未登録</span>')+' <button class="btn sm" data-ptcd="'+p.id+'">取得日を入れる</button>');};
+  const ops=p=>dis?`<button class="btn sm" data-ptedit="${p.id}">修正</button> <button class="btn sm pri" data-ptre="${p.id}">再入院</button> <button class="btn sm" data-pthist="${p.id}">過去の記録</button>`
+    :`<button class="btn sm pri" data-ptgo="${p.id}">この患者で登録</button> <button class="btn sm" data-ptedit="${p.id}">修正</button> <button class="btn sm" data-ptdis="${p.id}">退院</button> <button class="btn sm" data-pthist="${p.id}">過去の記録</button>`;
+  $('#ptTable').innerHTML=`<thead><tr><th class="nm0">氏名（ふりがな）</th><th>操作</th><th>患者ID</th><th>性別・年齢</th><th>病棟</th>${dis?'<th>退院日</th>':''}<th>同意書</th><th>入院形態</th><th>家族</th><th>家族の連絡先</th><th>本人の携帯</th><th>前回の行き先</th><th>外出回数</th><th>最終外出</th></tr></thead><tbody>`+
+   (list.map(p=>`<tr><td class="nm0"><b>${esc(p.name)}</b>${p.kana?'<br><span class="sub">'+esc(p.kana)+'</span>':''}</td>
+     <td>${ops(p)}</td>
+     <td>${esc(p.pid)}</td><td>${esc(sexAge(p))}</td><td>${esc(wardText(p))}</td>${dis?`<td>${esc(ymd(p.dischargedAt))}</td>`:''}<td>${cons(p)}</td><td>${esc(p.adm||'')}</td>
+     <td>${esc([p.famName,p.famRel?'（'+p.famRel+'）':''].filter(Boolean).join(''))}</td><td>${esc(p.famTel||'')}</td><td>${esc(p.selfTel||'')}</td><td>${esc(p.lastDest||'')}</td><td style="text-align:right">${p.count||0}</td><td>${p.lastOutAt?fmt(p.lastOutAt):''}</td></tr>`).join('')
+    ||`<tr><td class="nm0" colspan="${dis?14:13}">${q?'該当する患者がいません':dis?'退院した患者はいません':'台帳に入院中の患者がいません'}</td></tr>`)+'</tbody>';
+  $('#ptCount').textContent=`${list.length}人${q?'（絞り込み中）':''}`;
+}
+$('#ptSeg').addEventListener('click',e=>{const b=e.target.closest('[data-pts]');if(!b)return;ptView=b.dataset.pts;renderPatients();});
+$('#ptQ').addEventListener('input',renderPatients);
+
+/* ---------- 患者台帳：CSV取り込み ---------- */
+const CSV_MAP={name:['氏名','患者氏名','名前','患者名'],kana:['ふりがな','フリガナ','かな','カナ','よみがな','ヨミガナ','読み'],pid:['患者id','id','患者番号','カルテ番号','診察券番号','患者no'],
+ sex:['性別'],age:['年齢'],birth:['生年月日','誕生日'],famName:['家族氏名','家族名','家族の氏名','キーパーソン','連絡先氏名','家族'],famRel:['続柄','家族続柄','家族の続柄'],
+ famTel:['家族連絡先','家族電話','家族携帯','家族の携帯番号','家族電話番号','連絡先','電話番号'],selfTel:['本人連絡先','本人電話','本人携帯','本人の携帯番号'],
+ ward:['病棟'],adm:['入院形態']};
+const CSV_LABEL={name:'氏名',kana:'ふりがな',pid:'患者ID',sex:'性別',age:'年齢',birth:'生年月日',famName:'家族氏名',famRel:'続柄',famTel:'家族連絡先',selfTel:'本人連絡先',ward:'病棟',adm:'入院形態'};
+function decodeCsv(buf){const u=new Uint8Array(buf);
+  try{let t=new TextDecoder('utf-8',{fatal:true}).decode(u);return t.replace(/^﻿/,'');}catch(e){}
+  try{return new TextDecoder('shift_jis').decode(u);}catch(e){return new TextDecoder('utf-8').decode(u);}}
+function parseCsv(t){const rows=[];let row=[],cell='',q=false;
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c==='"'){if(t[i+1]==='"'){cell+='"';i++;}else q=false;}else cell+=c;}
+    else if(c==='"')q=true;else if(c===','||c==='\t'){row.push(cell);cell='';}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;row.push(cell);rows.push(row);row=[];cell='';}
+    else cell+=c;}
+  if(cell!==''||row.length){row.push(cell);rows.push(row);}
+  return rows.filter(r=>r.some(x=>String(x).trim()!==''));}
+const ERA={'明治':1867,'大正':1911,'昭和':1925,'平成':1988,'令和':2018,'M':1867,'T':1911,'S':1925,'H':1988,'R':2018};
+function parseBirth(v){v=half(v);if(!v)return '';let m=v.match(/^(\d{4})[\/\-.年](\d{1,2})[\/\-.月](\d{1,2})日?$/);if(m)return `${m[1]}-${pad(m[2])}-${pad(m[3])}`;
+  m=v.match(/^(明治|大正|昭和|平成|令和|[MTSHR])\s*(\d{1,2}|元)[\/\-.年](\d{1,2})[\/\-.月](\d{1,2})日?$/i);if(m){const y=ERA[m[1].toUpperCase()]||ERA[m[1]];return `${y+(m[2]==='元'?1:+m[2])}-${pad(m[3])}-${pad(m[4])}`;}
+  m=v.match(/^(\d{4})(\d{2})(\d{2})$/);if(m)return `${m[1]}-${m[2]}-${m[3]}`;return null;}
+const telN=v=>half(v).replace(/[－ー―‐−‑]/g,'-').replace(/\s/g,'');
+function normSex(v){v=half(v).toUpperCase();if(!v)return '';if(/^(男|男性|M|MALE|1)$/.test(v))return '男';if(/^(女|女性|F|FEMALE|2)$/.test(v))return '女';return 'その他';}
+function readPatientCsv(text){
+  const rows=parseCsv(text);if(rows.length<2)return {error:'見出しの行とデータの行が見つかりません。1行目に「氏名」「患者ID」などの見出しを入れてください。'};
+  const head=rows[0].map(h=>half(h).replace(/\s/g,'').toLowerCase());const col={};const unused=[];
+  head.forEach((h,i)=>{const k=Object.keys(CSV_MAP).find(k=>CSV_MAP[k].some(a=>a.toLowerCase()===h));if(k&&col[k]===undefined)col[k]=i;else if(h)unused.push(rows[0][i]);});
+  if(col.pid===undefined||col.name===undefined)return {error:'見出しに「氏名」と「患者ID」の列が必要です。ひな形CSVの1行目と同じ見出しにしてください。'};
+  const out=[],bad=[],seen={};
+  rows.slice(1).forEach((r,ri)=>{const g=k=>col[k]===undefined?'':String(r[col[k]]||'').trim();const line=ri+2;
+    const d={pid:half(g('pid')),name:g('name').replace(/　/g,' ').replace(/\s+/g,' '),kana:hira(g('kana')).replace(/　/g,' ').replace(/\s+/g,' '),sex:normSex(g('sex')),
+      age:half(g('age')).replace(/[^0-9]/g,''),famName:g('famName').replace(/　/g,' '),famRel:g('famRel'),famTel:telN(g('famTel')),selfTel:telN(g('selfTel')),
+      ward:half(g('ward')),adm:g('adm')};
+    const b=g('birth');if(b){const pb=parseBirth(b);if(pb===null){bad.push(`${line}行目：生年月日「${b}」を読み取れません（例 1980/4/1）`);}else d.birth=pb;}
+    if(!d.pid||!d.name){bad.push(`${line}行目：${!d.name?'氏名':'患者ID'}が空欄のため取り込めません`);return;}
+    if(d.ward&&!WARDS.includes(d.ward))bad.push(`${line}行目：病棟「${d.ward}」はアプリの病棟（${WARDS.join('・')}）にないため、病棟は空欄にします`),d.ward='';
+    if(seen[d.pid])bad.push(`${line}行目：患者ID ${d.pid} が${seen[d.pid]}行目と重複しています（後の行を使います）`);seen[d.pid]=line;
+    const i=out.findIndex(x=>x.pid===d.pid);if(i>=0)out[i]=d;else out.push(d);});
+  return {rows:out,bad,cols:Object.keys(col).map(k=>CSV_LABEL[k]),unused};
+}
+$('#ptCsvBtn').addEventListener('click',()=>{$('#ptCsvFile').value='';$('#ptCsvFile').click();});
+$('#ptCsvTpl').addEventListener('click',()=>{
+  const csv='﻿'+['氏名,ふりがな,患者ID,性別,年齢,家族氏名,続柄,家族連絡先,本人連絡先,病棟,入院形態','(見本) 外出 太郎,がいしゅつ たろう,A0001,男,45,(見本) 外出 花子,妻,090-0000-0000,,東1,任意入院'].join('\r\n')+'\r\n';
+  download('患者台帳_取り込み用ひな形.csv',new Blob([csv],{type:'text/csv'}));});
+$('#ptCsvFile').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;
+  const r=readPatientCsv(decodeCsv(await file.arrayBuffer()));
+  if(r.error){openDlg('CSVを取り込めません',`<p>${esc(r.error)}</p><p class="hint">Excelでは「ファイル」→「名前を付けて保存」→ ファイルの種類「CSV（コンマ区切り）」または「CSV UTF-8」で保存してください。</p>`,[{label:'閉じる'}]);return;}
+  const F=['name','kana','sex','age','birth','famName','famRel','famTel','selfTel','ward','adm'];
+  let nNew=0,nUpd=0,nSame=0;r.rows.forEach(d=>{const p=patients.find(x=>x.pid===d.pid);if(!p){nNew++;return;}
+    (F.some(k=>d[k]&&String(d[k])!==String(p[k]||''))?nUpd++:nSame++);});
+  const nDis=r.rows.filter(d=>isDis(patients.find(x=>x.pid===d.pid))).length;
+  const prev=r.rows.slice(0,8).map(d=>`<tr><td>${esc(d.name)}<br><span class="sub">${esc(d.kana)}</span></td><td>${esc(d.pid)}</td><td>${esc([d.sex,d.birth?ageOf(d)+'歳':(d.age?d.age+'歳':'')].filter(Boolean).join(' '))}</td><td>${esc([d.famName,d.famRel?'（'+d.famRel+'）':'',d.famTel].filter(Boolean).join(' '))}</td><td>${isDis(patients.find(x=>x.pid===d.pid))?'更新（退院中）':patients.some(x=>x.pid===d.pid)?'更新':'新規'}</td></tr>`).join('');
+  openDlg(`CSVの取り込み：${file.name}`,`
+    <p style="margin-top:0"><b>新規 ${nNew}人</b>・<b>更新 ${nUpd}人</b>・変更なし ${nSame}人${r.bad.length?`・<span style="color:var(--bad)"><b>確認 ${r.bad.length}件</b></span>`:''}</p>
+    ${nDis?`<p class="warnbox" id="csvDis">退院中の${nDis}人は情報だけ更新します（退院のまま）。再入院のときは、患者台帳の「退院」の一覧で「再入院」を押してください。</p>`:''}
+    <p class="hint" style="margin:0">読み取った列：${esc(r.cols.join('、'))}${r.unused.length?`<br>使わない列：${esc(r.unused.join('、'))}`:''}</p>
+    ${r.bad.length?`<div class="warnbox" style="max-height:120px;overflow:auto;margin-top:6px">${r.bad.slice(0,30).map(esc).join('<br>')}${r.bad.length>30?'<br>ほか '+(r.bad.length-30)+'件':''}</div>`:''}
+    <div class="tablewrap" style="margin-top:8px"><table><tr><th>氏名</th><th>ID</th><th>性別・年齢</th><th>家族・連絡先</th><th></th></tr>${prev}</table></div>
+    ${r.rows.length>8?`<p class="hint">ほか ${r.rows.length-8}人</p>`:''}
+    <label class="consent" style="margin-top:8px"><input type="checkbox" name="keep" checked>CSVの空欄では台帳の内容を消さない（おすすめ）</label>
+    <p class="hint">同じ患者IDの人は、CSVの内容で上書きします。外出の記録・同意書の記録は変わりません。</p>`,
+  [{label:'やめる'},{label:`${nNew+nUpd}人を取り込む`,cls:'pri',onClick:async f=>{
+    const keep=f.elements.keep.checked;let c=0;
+    for(const d of r.rows){let p=patients.find(x=>x.pid===d.pid);
+      if(!p){p={id:uid(),pid:d.pid,count:0,dests:[],createdAt:Date.now()};patients.push(p);}
+      for(const k of F){if(d[k]||!keep){p[k]=d[k]||'';}}
+      if(d.birth)delete p.age;else if(d.age)delete p.birth;
+      p.importedAt=Date.now();await dbPut('patients',p);c++;}
+    renderPatients();renderPatientChips();toast(`患者台帳に ${c}人を取り込みました`);}}]);
+});
+/* ---------- 患者台帳：台帳の記録・修正・退院・再入院・同意 ---------- */
+function ptLog(p,text,by){p.ledger=[...(p.ledger||[]),{at:Date.now(),text,by:by||''}];}
+function ptLedgerHTML(p){const L=[...(p.ledger||[]),...(p.consentLog||[])].sort((a,b)=>a.at-b.at);
+  return '<ul class="loglist">'+(L.map(l=>`<li><time>${fmt(l.at)}</time>${esc(l.text)}${l.by?` <span class="sub">［${esc(l.by)}］</span>`:''}</li>`).join('')||'<li>記録なし</li>')+'</ul>';}
+const ADMS=['任意入院','医療保護入院','その他'];
+const optHTML=(arr,v)=>(v&&!arr.includes(v)?[v,...arr]:arr).map(x=>`<option${x===v?' selected':''}>${esc(x)}</option>`).join('');
+const wardRadiosHTML=v=>`<div class="radios wards">${WARDS.map(w=>`<label><input type="radio" name="ward" value="${w}"${w===v?' checked':''}>${w}</label>`).join('')}</div>`;
+const STAFF_IN='<label>職員<span class="req">必須</span><input name="staff" list="nurseList"></label>';
+const PT_FIELDS=[['name','氏名'],['kana','ふりがな'],['pid','患者ID'],['sex','性別'],['age','年齢'],['ward','病棟'],['adm','入院形態'],['selfTel','本人の携帯'],['famName','家族の氏名'],['famRel','続柄'],['famTel','家族の電話']];
+function dlgPtEdit(p){
+  const relChips=(settings.relPresets||[]).length?`<span class="nchips mchips">${settings.relPresets.map(t=>`<button type="button" class="nchip" data-memo="${esc(t)}" data-field="famRel">${esc(t)}</button>`).join('')}</span>`:'';
+  openDlg(`患者情報の修正：${p.name}`,`<p class="hint" style="margin-top:0">変えた所は下の「台帳の記録」に残ります。すでに登録した外出・外泊の記録（その時の病棟など）は書き換えません。</p>
+    <div class="grid">
+      <label>患者氏名<span class="req">必須</span><input name="name" value="${esc(p.name)}"></label>
+      <label>ふりがな<input name="kana" value="${esc(p.kana)}"></label>
+      <label>患者ID<span class="req">必須</span><input name="pid" value="${esc(p.pid)}"></label>
+      <label>性別<select name="sex">${optHTML(['','男','女','その他'],p.sex||'')}</select></label>
+      <label>年齢<input name="age" inputmode="numeric" value="${esc(ageOf(p))}"></label>
+      <label>入院形態<select name="adm">${optHTML(ADMS,p.adm||'任意入院')}</select></label>
+    </div>
+    <div style="margin:2px 0 10px"><span class="hint">病棟<span class="req">必須</span></span>${wardRadiosHTML(p.ward)}</div>
+    <div class="grid">
+      <label>本人の携帯番号<input name="selfTel" inputmode="tel" value="${esc(p.selfTel)}"></label>
+      <label>家族の氏名<input name="famName" value="${esc(p.famName)}"></label>
+      <label>家族の続柄<input name="famRel" value="${esc(p.famRel)}">${relChips}</label>
+      <label>家族の携帯番号<input name="famTel" inputmode="tel" value="${esc(p.famTel)}"></label>
+    </div>
+    ${STAFF_IN}
+    <h3 style="font-size:16px;margin:12px 0 4px">台帳の記録</h3>${ptLedgerHTML(p)}
+    <p style="text-align:right;margin:4px 0 0"><button type="button" class="linkbtn" id="ptDelBtn">この患者を台帳から削除する</button></p>`,
+  [{label:'やめる'},{label:'修正を保存',cls:'pri',onClick:async f=>{
+    const nv={};PT_FIELDS.forEach(([k])=>{nv[k]=val(f,k);});
+    nv.name=nv.name.replace(/　/g,' ').replace(/\s+/g,' ');nv.kana=hira(nv.kana);nv.pid=half(nv.pid);nv.age=half(nv.age).replace(/[^0-9]/g,'');
+    if(!nv.name||!nv.pid){toast('患者氏名と患者IDを入れてください');return false;}
+    if(!nv.ward){toast('病棟を選んでください');return false;}
+    const other=patients.find(x=>x!==p&&x.pid===nv.pid);
+    if(other){toast(`患者ID ${nv.pid} は、ほかの患者（${other.name}${isDis(other)?'・退院の一覧':''}）で使われています。保存していません。IDを確かめてください。`,7000);return false;}
+    const staff=val(f,'staff');if(!staff){toast('職員を入力してください');return false;}
+    const cur=k=>k==='age'?ageOf(p):String(p[k]||'');
+    const ch=PT_FIELDS.filter(([k])=>nv[k]!==cur(k));
+    if(!ch.length){toast('変更はありません');return false;}
+    ptLog(p,'修正：'+ch.map(([k,l])=>`${l} ${cur(k)||'—'} → ${nv[k]||'—'}`).join('、'),staff);
+    ch.forEach(([k])=>{if(k==='age'){p.age=nv.age;delete p.birth;}else p[k]=nv[k];});
+    rememberNurse(staff);await dbPut('patients',p);renderPatients();toast(`${p.name} さんの情報を修正しました`);}}]);
+  $('#ptDelBtn').addEventListener('click',async()=>{
+    if(!await askConfirm(`${p.name} さんを患者台帳から削除しますか？\n外出の記録は残りますが、台帳の記録（退院・修正・同意書）は消えます。\n退院のときは「退院」を使ってください。`,'削除する'))return;
+    await dbDel('patients',p.id);patients=patients.filter(x=>x!==p);$('#dlg').close();renderPatients();toast('台帳から削除しました');});
+}
+function dlgDischarge(p){
+  if(ptBusy(p)){openDlg(`退院にできません：${p.name}`,'<p style="margin-top:0">外出・外泊中または予定があるため退院にできません。先に帰院・予定の取消をしてください。</p>',[{label:'閉じる'}]);return;}
+  openDlg(`退院：${p.name}`,`<p class="hint" style="margin-top:0">「退院」の一覧に移します。「＋ 新規登録」の呼び出しには出なくなります。過去の外出の記録は消えません。また入院したときは「退院」の一覧の「再入院」で戻せます。</p>
+    <label>退院日<span class="req">必須</span><input type="date" name="ddate" value="${toDateInput(Date.now())}"></label>${STAFF_IN}`,
+  [{label:'やめる'},{label:'退院にする',cls:'pri',onClick:async f=>{const d=val(f,'ddate'),staff=val(f,'staff');
+    if(!d){toast('退院日を入れてください');return false;}if(!staff){toast('職員を入力してください');return false;}
+    if(ptBusy(p)){toast('外出・外泊中または予定があるため退院にできません。先に帰院・予定の取消をしてください',6000);return false;}
+    p.status='discharged';p.dischargedAt=d;ptLog(p,`退院（退院日 ${ymd(d)}・${p.ward||'病棟なし'}）`,staff);rememberNurse(staff);await dbPut('patients',p);renderPatients();toast(`${p.name} さんを「退院」の一覧に移しました`);}}]);
+}
+function dlgReadmit(p){
+  openDlg(`再入院：${p.name}`,`<p class="hint" style="margin-top:0">「入院中」の一覧に戻します。病棟と入院形態を確かめてください。</p>
+    <div style="margin-bottom:10px"><span class="hint">病棟<span class="req">必須</span></span>${wardRadiosHTML(p.ward)}</div>
+    <label>入院形態<select name="adm">${optHTML(ADMS,p.adm||'任意入院')}</select></label>${STAFF_IN}`,
+  [{label:'やめる'},{label:'再入院にする',cls:'pri',onClick:async f=>{const ward=val(f,'ward'),adm=val(f,'adm'),staff=val(f,'staff');
+    if(!ward){toast('病棟を選んでください');return false;}if(!staff){toast('職員を入力してください');return false;}
+    ptLog(p,`再入院（${ward}・${adm}）`+(p.ward&&p.ward!==ward?`　病棟 ${p.ward} → ${ward}`:'')+(p.adm&&p.adm!==adm?`　入院形態 ${p.adm} → ${adm}`:''),staff);
+    p.status='in';p.ward=ward;p.adm=adm;delete p.dischargedAt;rememberNurse(staff);await dbPut('patients',p);renderPatients();toast(`${p.name} さんを「入院中」に戻しました（${ward}）`);}}]);
+}
+function dlgWithdraw(p){
+  openDlg(`同意の撤回：${p.name}`,`<p class="warnbox" style="margin-top:0">同意の撤回を記録します。この患者にはタグを渡せなくなります。</p>
+    <label>撤回日<span class="req">必須</span><input type="date" name="wdate" value="${toDateInput(Date.now())}"></label>${STAFF_IN}`,
+  [{label:'やめる'},{label:'撤回を記録',cls:'bad',onClick:async f=>{const wd=val(f,'wdate'),staff=val(f,'staff');
+    if(!wd){toast('撤回日を入れてください');return false;}if(!staff){toast('職員を入力してください');return false;}
+    p.consentWithdrawn=wd;p.consentLog=[...(p.consentLog||[]),{at:Date.now(),text:`同意の撤回（${ymd(wd)}）を記録`,by:staff}];
+    rememberNurse(staff);await dbPut('patients',p);renderPatients();toast('同意の撤回を記録しました');
+    if(outings.some(o=>isActive(o)&&o.patientId===p.id&&o.tagId))toast('この患者は現在タグを持って外出中です。帰院時にタグを回収してください。',6000);}}]);
+}
+function dlgConsentDate(p){
+  openDlg(`同意書の取得日：${p.name}`,`<p class="hint" style="margin-top:0">タグを持って外出することへの同意書を確かめて、取得日を入れてください。記録すると、外出登録のたびの確認が不要になります。</p>
+    ${p.consentWithdrawn?`<p class="warnbox">${ymd(p.consentWithdrawn)} に同意の撤回が記録されています。新しく同意書をもらったときだけ入れてください。</p>`:''}
+    <label>同意書の取得日<span class="req">必須</span><input type="date" name="cdate" value="${toDateInput(Date.now())}"></label>${STAFF_IN}`,
+  [{label:'やめる'},{label:'取得日を保存',cls:'pri',onClick:async f=>{const cd=val(f,'cdate'),staff=val(f,'staff');
+    if(!cd){toast('取得日を入れてください');return false;}if(!staff){toast('職員を入力してください');return false;}
+    const was=p.consentWithdrawn;p.consentDate=cd;p.consentWithdrawn='';
+    p.consentLog=[...(p.consentLog||[]),{at:Date.now(),text:`同意書取得日を ${ymd(cd)} に登録`+(was?'（撤回の記録を解除）':''),by:staff}];
+    rememberNurse(staff);await dbPut('patients',p);renderPatients();toast('同意書の取得日を記録しました');}}]);
+}
+$('#ptTable').addEventListener('click',e=>{
+  const b=e.target.closest('[data-ptgo],[data-ptedit],[data-ptdis],[data-ptre],[data-pthist],[data-ptwd],[data-ptcd]');if(!b)return;
+  const k=Object.keys(b.dataset)[0],p=patients.find(x=>x.id===b.dataset[k]);if(!p)return;
+  if(k==='ptgo'){showTab('new');clearPatientForm();fillPatient(p);return;}
+  ({ptedit:dlgPtEdit,ptdis:dlgDischarge,ptre:dlgReadmit,pthist:dlgPatientHistory,ptwd:dlgWithdraw,ptcd:dlgConsentDate})[k](p);
+});
+
+/* ---------- タグ管理 ---------- */
+function renderTags(){
+  $('#tTable').innerHTML=`<tr><th>タグ番号</th><th>「探す」での名前</th><th>状態</th><th>貸出先</th><th>シリアル</th><th>電池交換日</th><th></th></tr>`+
+  (tags.map(t=>{const o=t.outingId&&outings.find(x=>x.id===t.outingId);
+    const st=(t.status==='inuse'||t.status==='reserved')?`<b>${TAG_ST[t.status]}</b>`:`<select data-tst="${esc(t.id)}">${['available','missing','maint'].map(k=>`<option value="${k}" ${t.status===k?'selected':''}>${TAG_ST[k]}</option>`).join('')}</select>`;
+    return `<tr><td><b>${esc(t.id)}</b></td><td><input data-tname="${esc(t.id)}" value="${esc(t.findName)}" style="width:150px"></td><td>${st}</td><td>${o?esc(o.name)+(t.status==='reserved'?'（'+fmt(o.departAt)+' 出発予定）':'（'+fmt(o.dueAt)+'まで）'):''}</td><td><input data-tser="${esc(t.id)}" value="${esc(t.serial)}" style="width:150px"></td><td><input type="date" data-tbat="${esc(t.id)}" value="${esc(t.battery)}"></td><td>${(t.status==='inuse'||t.status==='reserved')?'':`<button class="btn sm" data-tdel="${esc(t.id)}">削除</button>`}</td></tr>`;}).join('')||'<tr><td colspan="7">タグが登録されていません</td></tr>');
+}
+async function addTag(id,findName,serial,battery){id=id.trim();if(!id)return false;if(tags.some(t=>t.id===id))return false;const t={id,findName:(findName||id).trim(),serial:serial||'',battery:battery||'',status:'available',outingId:null};tags.push(t);tags.sort(tagSort);await saveTag(t);return true;}
+$('#tAdd').addEventListener('click',async()=>{const ok=await addTag($('#tNewId').value,$('#tNewName').value,$('#tNewSerial').value,$('#tNewBat').value);if(!ok){toast('タグ番号が空か、既に登録されています');return;}['#tNewId','#tNewName','#tNewSerial','#tNewBat'].forEach(s=>$(s).value='');renderTags();toast('タグを追加しました');});
+$('#tBulk').addEventListener('click',async()=>{const a=+$('#tBulkFrom').value,b=+$('#tBulkTo').value;if(!(a>=1&&b>=a&&b-a<100)){toast('番号の範囲を確認してください');return;}let n=0;for(let i=a;i<=b;i++){if(await addTag('T-'+pad(i)))n++;}renderTags();toast(`${n}個追加しました`);});
+$('#tTable').addEventListener('change',async e=>{const el=e.target;let t;
+  if(el.dataset.tst){t=tags.find(x=>x.id===el.dataset.tst);t.status=el.value;}
+  else if(el.dataset.tname){t=tags.find(x=>x.id===el.dataset.tname);t.findName=el.value.trim()||t.id;}
+  else if(el.dataset.tser){t=tags.find(x=>x.id===el.dataset.tser);t.serial=el.value.trim();}
+  else if(el.dataset.tbat){t=tags.find(x=>x.id===el.dataset.tbat);t.battery=el.value;}
+  if(t){await saveTag(t);toast('保存しました',1500);}});
+$('#tTable').addEventListener('click',async e=>{const b=e.target.closest('[data-tdel]');if(!b)return;if(!await askConfirm(`タグ ${b.dataset.tdel} を削除しますか？`))return;await dbDel('tags',b.dataset.tdel);tags=tags.filter(t=>t.id!==b.dataset.tdel);renderTags();});
+
+/* ---------- 設定・データ ---------- */
+function renderSettings(){updateSwInfo();renderThemePanel();$('#sDest').value=(settings.destPresets||[]).join('\n');$('#sRel').value=(settings.relPresets||[]).join('\n');$('#sPre').value=settings.preMin;$('#sRe').value=settings.realertMin;$('#sVol').value=settings.volume;$('#sEsc').value=settings.escalateMin;$('#sIdle').value=settings.idleMin;$('#sBk').value=settings.backupHour;$('#sQf').value=settings.quietFrom;$('#sQt').value=settings.quietTo;$('#sPh').value=(settings.printHours||[]).join(',');$('#sMask').checked=!!settings.mask;renderNurseMgr();
+  $('#gapList').innerHTML=(settings.gaps||[]).map(g=>`<li><time>${fmt(g.from)} 〜 ${fmt(g.to)}</time>約${dur(g.to-g.from)}${g.closed?'（アプリを閉じていた）':''}</li>`).join('')||'<li>記録はありません</li>';
+  if(navigator.storage&&navigator.storage.persisted)navigator.storage.persisted().then(p=>{$('#storageInfo').textContent=p?'この端末では保存データが自動削除されにくい設定になっています。':'注意：ブラウザの容量整理でデータが消える可能性があります。CSVを定期的に出力してください。';});}
+$('#sSave').addEventListener('click',async()=>{settings.preMin=Math.max(0,+$('#sPre').value||0);settings.realertMin=Math.max(1,+$('#sRe').value||10);settings.volume=Math.max(0,Math.min(1,+$('#sVol').value));settings.escalateMin=Math.max(1,+$('#sEsc').value||10);settings.idleMin=Math.max(0,+$('#sIdle').value||0);settings.backupHour=Math.min(23,Math.max(0,+$('#sBk').value||0));settings.quietFrom=Math.min(23,Math.max(0,+$('#sQf').value||0));settings.quietTo=Math.min(23,Math.max(0,+$('#sQt').value||0));settings.printHours=$('#sPh').value.split(/[,、 ]+/).map(Number).filter(n=>n>=0&&n<=23);settings.mask=$('#sMask').checked;await saveSettings();lastSig='';tick();toast('設定を保存しました');});
+function renderNurseMgr(){$('#nurseMgr').innerHTML=settings.nurses.map((n,i)=>`<span>${esc(n)}<button type="button" data-ndel="${i}" aria-label="${esc(n)}を消す">×</button></span>`).join('')||'<span style="border:none;padding:0;background:none" class="hint">まだ登録されていません</span>';}
+$('#nurseMgr').addEventListener('click',async e=>{const b=e.target.closest('[data-ndel]');if(!b)return;settings.nurses.splice(+b.dataset.ndel,1);await saveSettings();renderNurseList();renderNurseMgr();});
+$('#nurseAddBtn').addEventListener('click',()=>{const n=$('#nurseAdd').value.trim();if(!n)return;rememberNurse(n);$('#nurseAdd').value='';renderNurseMgr();});
+$('#nurseBulkBtn').addEventListener('click',async()=>{
+  const names=[...new Set($('#nurseBulk').value.split(/\r?\n/).map(x=>x.replace(/　/g,' ').replace(/\s+/g,' ').trim()).filter(Boolean))];
+  if(!names.length){toast('名前を1行に1人ずつ書いてください');return;}
+  const fresh=names.filter(n=>!settings.nurses.includes(n)),dup=names.length-fresh.length;
+  const add=fresh.slice(0,Math.max(0,NURSE_MAX-settings.nurses.length)),over=fresh.length-add.length;
+  settings.nurses=[...settings.nurses,...add];await saveSettings();renderNurseList();renderNurseMgr();attachNurseChips(nf);
+  if(!over)$('#nurseBulk').value='';
+  toast(`${add.length}人を登録しました（全${settings.nurses.length}人）`+(dup?`。すでに登録済みの${dup}人は重ねていません`:'')+(over?`。${NURSE_MAX}人を超えるため${over}人は登録していません（使わない名前を×で消してください）`:''),over?8000:4000);});
+$('#sPresetSave').addEventListener('click',async()=>{const L=v=>[...new Set(v.split(/\r?\n/).map(x=>x.trim()).filter(Boolean))].slice(0,30);settings.destPresets=L($('#sDest').value);settings.relPresets=L($('#sRel').value);await saveSettings();renderPresetChips();renderSettings();toast('よく使う選択肢を保存しました');});
+$('#sTest').addEventListener('click',()=>{ensureAudio();setTimeout(()=>{if(!alarm())toast('音を出せません。端末の音量・ミュートを確認してください');},150);});
+async function doBackup(){const data={app:'gaishutsu_kanri',variant:'shisaku',appVersion:APP_VERSION,version:1,exportedAt:Date.now(),settings,tags,patients,outings:outings.map(o=>({...o,hasPhoto:false}))};download(`外出管理バックアップ_${toDateInput(Date.now())}.json`,new Blob([JSON.stringify(data)],{type:'application/json'}));settings.lastBackupDay=toDateInput(Date.now());await saveSettings();$('#bkBar').hidden=true;toast('バックアップを保存しました（ダウンロード先を確認してください）',5000);}
+$('#bkOut').addEventListener('click',doBackup);
+$('#bkNow').addEventListener('click',doBackup);
+$('#prNow').addEventListener('click',()=>{$('#printBtn').click();});
+$('#prLater').addEventListener('click',async()=>{const now=Date.now();const h=(settings.printHours||[]).filter(x=>new Date(now).getHours()>=x).slice(-1)[0];settings.prDoneKey=toDateInput(now)+':'+h;await saveSettings();$('#prBar').hidden=true;});
+$('#bkLater').addEventListener('click',async()=>{settings.bkDismissDay=toDateInput(Date.now());await saveSettings();$('#bkBar').hidden=true;});
+$('#bkIn').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{const d=JSON.parse(await f.text());if(d.app!=='gaishutsu_kanri')throw 0;
+  if(!await askConfirm('現在のデータをバックアップの内容で置き換えます（写真は復元されません）。よろしいですか？'))return;
+  await dbClear('outings');await dbClear('tags');await dbClear('photos');await dbClear('patients');for(const p of (d.patients||[]))await dbPut('patients',p);for(const t of d.tags)await saveTag(t);for(const o of d.outings)await saveOuting(o);settings={...settings,...d.settings};await saveSettings();
+  Object.keys(photoURL).forEach(dropPhotoURL);await loadAll();
+  // 1.10.0 以前のバックアップ（印なし）なら、行き先の3つを足す処理をもう一度だけ動かす（すでにあるものは重ねない）
+  if(!(d.settings&&d.settings.destAdded1110)){settings.destAdded1110=false;await addPresets1110();}
+  applyTheme();mirrorTheme();lastSig='';tick();renderSettings();renderPresetChips();toast('復元しました');}catch(err){toast('このファイルは読み込めません');}});
+$('#wipe').addEventListener('click',async()=>{if(!await askConfirm('すべての記録・患者台帳・タグ・写真を削除します。元に戻せません。'))return;if(!await askConfirm('本当に削除しますか？'))return;
+  await dbClear('outings');await dbClear('tags');await dbClear('photos');await dbClear('patients');Object.keys(photoURL).forEach(dropPhotoURL);outings=[];tags=[];patients=[];lastSig='';tick();toast('削除しました');});
+$('#demoIn').addEventListener('click',async()=>{
+  if(patients.some(x=>x.demo)||outings.some(x=>x.demo)){toast('デモデータはすでに入っています。入れ直す時は先に「デモデータを消す」を押してください。',5000);return;}
+  for(let i=1;i<=5;i++)await addTag('T-'+pad(i));
+  const now=Date.now(),M=60000,H=3600000,D=86400000;
+  // 東1病棟の入院患者50人（すべて架空）
+  let seed=20261109;const rnd=()=>{seed=(seed*1103515245+12345)%2147483648;return seed/2147483648;};const pick=a=>a[Math.floor(rnd()*a.length)];
+  const SN=[['山田','やまだ'],['佐藤','さとう'],['鈴木','すずき'],['田中','たなか'],['高橋','たかはし'],['伊藤','いとう'],['渡辺','わたなべ'],['中村','なかむら'],['小林','こばやし'],['加藤','かとう'],['吉田','よしだ'],['山本','やまもと'],['松本','まつもと'],['井上','いのうえ'],['木村','きむら'],['林','はやし'],['清水','しみず'],['森','もり'],['池田','いけだ'],['橋本','はしもと'],['石川','いしかわ'],['前田','まえだ'],['藤田','ふじた'],['岡田','おかだ'],['後藤','ごとう']];
+  const GM=[['一郎','いちろう'],['健太','けんた'],['大輔','だいすけ'],['誠','まこと'],['浩二','こうじ'],['隆','たかし'],['修','おさむ'],['和也','かずや'],['直樹','なおき'],['正人','まさと'],['勇','いさむ'],['亮','りょう'],['翔太','しょうた']];
+  const GF=[['花子','はなこ'],['恵子','けいこ'],['由美','ゆみ'],['真理子','まりこ'],['幸子','さちこ'],['陽子','ようこ'],['美咲','みさき'],['裕子','ゆうこ'],['智子','ともこ'],['京子','きょうこ'],['直美','なおみ'],['彩','あや']];
+  const GMo=[['健一','けんいち'],['正夫','まさお'],['茂','しげる'],['博','ひろし'],['清','きよし'],['和夫','かずお']],GFo=[['和子','かずこ'],['節子','せつこ'],['洋子','ようこ'],['弘子','ひろこ'],['久美子','くみこ']];
+  const DEST=['自宅','実家','病院周辺の散歩','近くのコンビニ','〇〇駅周辺で買い物'];
+  const list=[];
+  for(let k=0;k<50;k++){
+    const sn=SN[k%SN.length];const male=rnd()<0.5;let g=male?pick(GM):pick(GF);while(list.some(x=>x.name===`(デモ) ${sn[0]} ${g[0]}`))g=male?pick(GM):pick(GF);const age=20+Math.floor(rnd()*66);
+    // 続柄は年齢に合わせる（若い人は親、中年は配偶者・親・きょうだい、高齢は配偶者・子）
+    const opts=age<40?['母','父','母','姉','兄']:age<60?[male?'妻':'夫','母','姉','兄','弟']:[male?'妻':'夫','娘','息子','娘'];
+    const rel=pick(opts);const rf=['母','妻','姉','妹','娘'].includes(rel);
+    const fam=(rel==='母'||rel==='父'||rel==='妻'||rel==='夫')&&age>=45?(rf?pick(GFo):pick(GMo)):(rf?pick(GF):pick(GM));
+    const famSur=(rel==='姉'||rel==='娘')&&rnd()<0.4?pick(SN)[0]:sn[0];
+    const p={id:uid(),pid:'D'+(1001+k),name:`(デモ) ${sn[0]} ${g[0]}`,kana:`${sn[1]} ${g[1]}`,sex:male?'男':'女',age:String(age),ward:'東1',
+      adm:rnd()<0.7?'任意入院':'医療保護入院',selfTel:rnd()<0.4?`090-0000-${2000+k}`:'',famName:`${famSur} ${fam[0]}`,famRel:rel,famTel:`090-0000-${1000+k}`,
+      consentDate:rnd()<0.75?toDateInput(now-(10+Math.floor(rnd()*120))*D):'',consentWithdrawn:'',consentLog:[],dests:[],count:0,lastOutAt:0,lastDest:'',lastComp:{alone:true},createdAt:now,demo:true};
+    if(k<14){p.count=1+Math.floor(rnd()*4);p.lastOutAt=now-(1+k)*D/2;p.lastDest=pick(DEST);p.dests=[p.lastDest];}
+    if(p.consentDate)p.consentLog=[{at:now-30*D,text:'同意書取得日を '+ymd(p.consentDate)+' に登録',by:'(デモ) 看護師A'}];
+    list.push(p);await dbPut('patients',p);patients.push(p);}
+  // 外出・外泊中3人と予定1人（台帳の患者から）
+  const P=n=>list[n];const famOf=p=>({famName:p.famName,famRel:p.famRel,famTel:p.famTel,selfTel:p.selfTel});
+  const demo=[{pt:P(0),kind:'外出',departAt:now-150*M,dueAt:now-18*M,dest:'〇〇駅周辺で買い物',alone:true,clothes:'紺のダウン、灰色のズボン、白いスニーカー'},
+    {pt:P(1),kind:'外出',departAt:now-110*M,dueAt:now+9*M,dest:'自宅',alone:false,comp:true,clothes:'ベージュのコート、黒いバッグ'},
+    {pt:P(2),kind:'外泊',departAt:now-20*H,dueAt:now+26*H,dest:'実家（明石市）',alone:false,comp:true,clothes:'緑のパーカー、ジーンズ'}];
+  for(const d of demo){const p=d.pt;p.consentDate=p.consentDate||toDateInput(now-40*D);const t=tags.find(x=>x.status==='available');
+    const o={id:uid(),name:p.name,pid:p.pid,kana:p.kana,sex:p.sex,age:p.age,ward:p.ward,adm:p.adm,kind:d.kind,departAt:d.departAt,dueAt:d.dueAt,dueAtOriginal:d.dueAt,dest:d.dest,alone:!d.comp,
+      compName:d.comp?p.famName:'',compRel:d.comp?p.famRel:'',compTel:d.comp?p.famTel:'',...famOf(p),clothes:d.clothes,note:'',tagId:t?t.id:'',consent:!!t,consentDate:t?p.consentDate:'',departNurse:'(デモ) 看護師A',status:'out',createdAt:now,hasPhoto:false,demo:true,log:[]};
+    addLog(o,`${o.kind}に出発（デモ）`+(t?`（タグ ${t.id} 貸出）`:''),'(デモ) 看護師A');o.patientId=(await upsertPatient(o,null)).id;if(t){t.status='inuse';t.outingId=o.id;await saveTag(t);}await saveOuting(o);outings.push(o);}
+  {const p=P(3);p.consentDate=p.consentDate||toDateInput(now-30*D);const dep=now+90*M;
+   const o={id:uid(),name:p.name,pid:p.pid,kana:p.kana,sex:p.sex,age:p.age,ward:p.ward,adm:p.adm,kind:'外泊',departAt:dep,dueAt:dep+26*H,dueAtOriginal:dep+26*H,dest:'自宅（明石市）',alone:false,compName:p.famName,compRel:p.famRel,compTel:p.famTel,...famOf(p),clothes:'',note:'',tagId:'',consent:false,departNurse:'(デモ) 看護師A',status:'planned',createdAt:now,hasPhoto:false,demo:true,log:[]};
+   addLog(o,`外泊の予定を登録（出発予定 ${fmt(dep)}）`,'(デモ) 看護師A');o.patientId=(await upsertPatient(o,null)).id;await saveOuting(o);outings.push(o);}
+  for(const p of list)await dbPut('patients',p);
+  lastSig='';showTab('active');tick();toast('デモデータを入れました（東1病棟の入院患者50人・外出中3人・予定1件）',5000);});
+$('#demoOut').addEventListener('click',async()=>{for(const o of outings.filter(x=>x.demo)){await dbDel('outings',o.id);await dbDel('photos',o.id);dropPhotoURL(o.id);const t=tags.find(x=>x.outingId===o.id);if(t){t.status='available';t.outingId=null;await saveTag(t);}}
+  for(const p of patients.filter(x=>x.demo))await dbDel('patients',p.id);patients=patients.filter(x=>!x.demo);
+  outings=outings.filter(x=>!x.demo);lastSig='';tick();toast('デモデータを消しました');});
+
+/* ---------- 毎秒の見回り ---------- */
+let lastSig='';let titleFlip=false;
+let lastTickAt=Date.now(),lastAliveSave=0,lastInteract=Date.now(),lastChime=0;
+function isQuiet(now){const h=new Date(now).getHours(),a=settings.quietFrom,b=settings.quietTo;if(a===b)return false;return a<b?(h>=a&&h<b):(h>=a||h<b);}
+function recordGap(a,b,closed){settings.gaps=[{from:a,to:b,closed:!!closed},...(settings.gaps||[])].slice(0,20);saveSettings();
+  const act=outings.filter(isActive).length;
+  $('#gapMsg').textContent=`⚠ ${fmt(a)} 〜 ${fmt(b)}（約${dur(b-a)}）、アプリが${closed?'閉じていました':'止まっていました（画面が消えた・他のアプリに切り替えた等）'}。この間アラームは鳴りません。`+(act?`外出・外泊中の ${act}人に、帰院時刻を過ぎた人がいないか確認してください。`:'');
+  $('#gapBar').hidden=false;}
+$('#gapOk').addEventListener('click',()=>{$('#gapBar').hidden=true;});
+['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,()=>{lastInteract=Date.now();}));
+$('#watchOv').addEventListener('click',()=>{$('#watchOv').hidden=true;lastInteract=Date.now();ensureAudio();toast('見守り確認をしました');});
+async function tick(){
+  const now=Date.now();
+  applyTheme(now);   // 「自動」のときは時刻をまたいだら開いたまま切り替わる
+  if(now-lastTickAt>120000)recordGap(lastTickAt,now,false);
+  if(lastTickAt-now>120000){$('#gapMsg').textContent=`⚠ iPadの時計が ${dur(lastTickAt-now)} 戻りました（${fmt(lastTickAt)} → ${fmt(now)}）。アラームの時刻がずれます。iPadの「設定」→「一般」→「日付と時刻」を「自動設定」にしてください。`;$('#gapBar').hidden=false;}
+  lastTickAt=now;
+  if(now-lastAliveSave>60000){lastAliveSave=now;settings.lastAlive=now;saveSettings();}const d=new Date(now);$('#clock').textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  const act=outings.filter(o=>isActive(o));
+  // 時刻超過を記録に一度だけ残す
+  for(const o of act){if(stateOf(o,now)==='overdue'&&o.overdueLoggedFor!==o.dueAt){o.overdueLoggedFor=o.dueAt;addLog(o,'帰院予定時刻を超過（アラーム）');saveOuting(o);}}
+  const sig=act.map(o=>o.id+':'+stateOf(o,now)+':'+(o.hasPhoto?1:0)+':'+(isMasked(o)?1:0)+':'+(isOpen(o)?1:0)).join('|')+'#'+settings.preMin+':'+settings.mask+':'+settings.activeView;
+  if(sig!==lastSig){lastSig=sig;await renderActive();}
+  else{$$('[data-count]').forEach(el=>{const o=outings.find(x=>x.id===el.dataset.count);if(o)el.textContent=countText(o,now);});updateTimeline(now);}
+  const alerts=act.filter(o=>isAlert(o,now));
+  const ban=$('#banner');
+  const sounding=alerts.filter(o=>needsSound(o,now));let urgent=false;
+  for(const o of sounding){const start=o.status==='search'?o.searchAt:o.dueAt;const base=(o.ackAt&&o.ackAt>=start)?o.ackAt+settings.realertMin*60000:start;
+    if(now-base>=settings.escalateMin*60000){urgent=true;if(o.escalatedFor!==base){o.escalatedFor=base;addLog(o,`アラームが${settings.escalateMin}分以上確認されないため、強い警告に切り替え`);saveOuting(o);}}}
+  ban.classList.toggle('urgent',urgent);
+  if(alerts.length){ban.classList.add('on');$('#bannerMsg').textContent=(urgent?'【至急・アラーム未確認】 ':'⚠ ')+alerts.map(o=>`${o.tagId||'タグなし'} ${shownName(o)}（${stateOf(o,now)==='search'?'捜索中':dur(now-o.dueAt)+'超過'}）`).join('　');
+    titleFlip=!titleFlip;document.title=titleFlip?'⚠ 帰院確認が必要です':'外出・外泊管理';}
+  else{ban.classList.remove('on');document.title='外出・外泊管理';}
+  $('#bannerAck').style.display=sounding.length?'':'none';
+  if(sounding.length&&now-lastBeep>=(urgent?2000:4000)){lastBeep=now;urgent?alarmUrgent():alarm();}
+  // 見守り確認：外出・外泊中の人がいて、しばらく画面に触れていないとき（アラーム中は出さない）
+  const wo=$('#watchOv');
+  if(settings.idleMin>0&&act.length&&!alerts.length&&now-lastInteract>=settings.idleMin*60000){
+    if(wo.hidden){wo.hidden=false;$('#watchMsg').textContent=`外出・外泊中の患者が ${act.length}人います。${settings.idleMin}分以上画面に触れていないため、アプリが動いているかの確認です。画面をタップしてください。`+(isQuiet(now)?'（夜間のため音は鳴らしません）':'');}
+    if(now-lastChime>=30000&&!isQuiet(now)){lastChime=now;chime();}
+  }else if(!wo.hidden&&(alerts.length||!act.length))wo.hidden=true;
+  const today=toDateInput(now);
+  // 一覧印刷のお知らせ（朝夕）
+  const ph=(settings.printHours||[]).filter(h=>new Date(now).getHours()>=h).slice(-1)[0];const prKey=ph===undefined?'':today+':'+ph;
+  if(prKey&&act.length&&settings.prDoneKey!==prKey){$('#prMsg').textContent=`${ph}時の控え：外出・外泊中の一覧（${act.length}人）を印刷して詰所に置いてください（iPadが止まった時の備え）。`;$('#prBar').hidden=false;}else $('#prBar').hidden=true;
+  // バックアップのお知らせ
+  $('#bkBar').hidden=!(outings.length&&new Date(now).getHours()>=settings.backupHour&&settings.lastBackupDay!==today&&settings.bkDismissDay!==today);
+}
+$('#startOv').addEventListener('click',()=>{ensureAudio();keepAwake();$('#startOv').style.display='none';setTimeout(()=>{if(!soundReady())toast('音が出ない状態です。上の赤いボタンを押してください',5000);},400);});
+$('#bannerGo').addEventListener('click',()=>showTab('active'));
+$('#bannerAck').addEventListener('click',async()=>{const now=Date.now();for(const o of outings.filter(x=>needsSound(x,now))){o.ackAt=now;addLog(o,'アラームを確認（対応開始）');await saveOuting(o);}lastSig='';tick();toast(`アラーム音を止めました。${settings.realertMin}分後に未解決なら再度鳴ります。`);});
+$('#soundBtn').addEventListener('click',()=>{ensureAudio();setTimeout(()=>{if(soundReady())toast('アラーム音が鳴る状態です');},200);});
+
+/* ---------- iPad単独動作（オフライン対応） ---------- */
+const APP_VERSION='2.0.1';
+{const av=document.getElementById('aboutVer');if(av)av.textContent=APP_VERSION;}
+function updateSwInfo(){const el=$('#swInfo');if(!el)return;
+  const standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+  const ctl=navigator.serviceWorker&&navigator.serviceWorker.controller;
+  el.textContent=`アプリの版：${APP_VERSION}　／　オフラインで起動：${ctl?'できます':'まだ準備中（一度ネットにつないで開き直してください）'}　／　${standalone?'ホーム画面のアプリとして起動中':'ブラウザで表示中（ホーム画面に追加するとアプリとして使えます）'}`;}
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1')){
+  navigator.serviceWorker.register('sw.js').then(reg=>{
+    reg.addEventListener('updatefound',()=>{const w=reg.installing;if(!w)return;w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller)toast('新しい版を受け取りました。アプリを閉じて開き直すと反映されます。',7000);});});
+    updateSwInfo();
+  }).catch(()=>updateSwInfo());
+  navigator.serviceWorker.addEventListener('controllerchange',updateSwInfo);
+}
+
+/* ---------- 起動 ---------- */
+(async()=>{
+  try{db=await openDB();}catch(e){document.body.innerHTML='<p style="padding:24px">このブラウザでは保存機能が使えません（IndexedDB）。Microsoft Edge / Google Chrome / Safari の通常ウィンドウで開いてください。</p>';return;}
+  try{if(navigator.storage&&navigator.storage.persist)await navigator.storage.persist();}catch(e){}
+  await loadAll();
+  applyTheme();mirrorTheme();
+  if(settings.lastAlive&&Date.now()-settings.lastAlive>120000)recordGap(settings.lastAlive,Date.now(),true);
+  lastTickAt=Date.now();
+  for(const o of outings){if(o.status==='out'&&o.departAt>Date.now()+PLAN_MIN*60000){o.status='planned';
+    if(o.tagId){const t=tags.find(x=>x.id===o.tagId);if(t&&t.outingId===o.id){t.status='available';t.outingId=null;await saveTag(t);}addLog(o,`出発前のため予定に変更（タグ ${o.tagId} の確保を解除）`);o.tagId='';o.consent=false;}
+    else addLog(o,'出発前のため予定に変更');
+    if(o.hasPhoto){await dbDel('photos',o.id);o.hasPhoto=false;}await saveOuting(o);}}
+  await addPresets1110();
+  if(!tags.length&&!settings.tagsSeeded){for(let i=1;i<=5;i++)await addTag('T-'+pad(i));settings.tagsSeeded=true;await saveSettings();}
+  renderNurseList();attachNurseChips(nf);updateSoundBtn();await tick();setInterval(tick,1000);
+})();
+</script>
+</body>
+</html>
