@@ -73,6 +73,8 @@ header h1{font-size:21px;margin:0;flex:1;min-width:160px;letter-spacing:.03em;wh
 #soundBtn{font:inherit;font-size:15px;font-weight:700;padding:8px 14px;min-height:44px;border-radius:22px;border:1px solid var(--fline);background:var(--btn);color:var(--ink);cursor:pointer;box-shadow:var(--hl);white-space:nowrap}
 /* 音が出ない時の警告：どちらの配色でも不透明の赤で点滅（弱めない） */
 #soundBtn.off{background:#c62828;color:#fff;border:2px solid #fff;box-shadow:0 0 0 2px #c62828,0 4px 14px rgba(198,40,40,.45);animation:blink 1s steps(2) infinite}
+/* 2.1.0：音を無効にしている・音量0のとき：「音が出ません」と同じ強さの警告（両配色で不透明の赤・点滅） */
+#soundBtn.mute,#soundBtn.vol0{background:#c62828;color:#fff;border:2px solid #fff;box-shadow:0 0 0 2px #c62828,0 4px 14px rgba(198,40,40,.45);animation:blink 1s steps(2) infinite}
 @keyframes blink{50%{opacity:.45}}
 #themeBtn{font:inherit;font-size:15px;font-weight:700;padding:8px 14px;min-height:44px;border-radius:22px;border:1px solid var(--fline);background:var(--btn);color:var(--ink);cursor:pointer;box-shadow:var(--hl);white-space:nowrap}
 .thmrange{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:12px 0 4px;font-size:16px}
@@ -83,6 +85,15 @@ html[data-glass="off"] .glass,html[data-glass="off"] .card,html[data-glass="off"
 #banner.on{display:flex;animation:flash 1s steps(2) infinite}
 @keyframes flash{0%,100%{background:#c62828}50%{background:#7a0f0f}}
 #banner .msg{flex:1;min-width:220px}
+/* 2.1.0：アラーム音を無効にしている間、全タブで出し続ける帯（閉じられない。両配色で不透明の赤） */
+#muteBar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px 16px;background:#b71c1c;color:#fff;font-size:17px;font-weight:800;border-top:2px solid #fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
+#muteBar[hidden]{display:none!important}
+#muteBar .msg{flex:1;min-width:220px;line-height:1.5}
+#muteBar button{font:inherit;font-size:16px;padding:8px 18px;min-height:44px;border-radius:14px;border:2px solid #fff;background:#fff;color:#a31515;font-weight:800;cursor:pointer;white-space:nowrap}
+#startMute{max-width:560px;padding:14px 18px;border-radius:18px;background:#b71c1c;color:#fff;font-size:18px;font-weight:800;line-height:1.6;border:2px solid #fff;box-shadow:0 0 0 2px #b71c1c,0 8px 22px rgba(183,28,28,.35)}
+#startMute .mnote{display:block;color:#fff;font-size:15px;font-weight:700;margin-top:4px}
+.volwarn{display:block;margin-top:6px;padding:6px 10px;border-radius:10px;background:#c62828;color:#fff;font-size:15px;font-weight:800}
+.volwarn[hidden]{display:none!important}
 #banner button{font:inherit;font-size:16px;padding:8px 16px;min-height:44px;border-radius:14px;border:2px solid #fff;background:#fff;color:#a31515;font-weight:800;cursor:pointer}
 nav{display:flex;gap:4px;margin:10px auto 0;max-width:1168px;padding:5px;border-radius:27px;flex-wrap:wrap;background:var(--glass);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid var(--edge);box-shadow:var(--hl),var(--shadow)}
 nav button{font:inherit;font-size:16px;font-weight:600;padding:0 14px;min-height:44px;border:1px solid transparent;background:transparent;border-radius:22px;cursor:pointer;color:var(--ink);white-space:nowrap;flex:1 1 auto;display:inline-flex;align-items:center;justify-content:center;gap:2px}
@@ -204,7 +215,7 @@ dl.info dt{color:var(--sub)}dl.info dd{margin:0;font-weight:600;word-break:break
 .panel{background:var(--glass2);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border-radius:18px;padding:16px;border:1px solid var(--edge);box-shadow:var(--hl),var(--shadow)}
 .about{display:grid;grid-template-columns:max-content 1fr;gap:8px 18px;margin:4px 0 0;font-size:15px;line-height:1.6}
 .about dt{color:var(--sub);font-weight:700;white-space:nowrap}
-.about dd{margin:0}
+.about dd{margin:0;word-break:auto-phrase}
 .nw{white-space:nowrap;display:inline-block}
 .seg{display:inline-flex;flex-wrap:wrap;gap:6px}
 .seg .btn.on{background:var(--pri);color:#fff;border-color:var(--pri);font-weight:700}
@@ -378,6 +389,12 @@ fieldset{min-width:0}
  #banner{font-size:15px;padding:8px 12px;gap:8px}
  #banner .msg{min-width:0;flex:1 1 100%}
  #banner button{font-size:14px;padding:6px 10px}
+ #muteBar{font-size:14px;padding:8px 12px;gap:8px}
+ #muteBar .msg{min-width:0;flex:1 1 100%}
+ #muteBar button{font-size:14px;padding:6px 12px;min-height:40px}
+ #startMute{font-size:16px;padding:12px 14px}
+ .about{grid-template-columns:1fr;gap:2px 0}
+ .about dd{margin-bottom:8px}
  .notice{font-size:13px;padding:6px 12px;gap:6px}
  .notice .msg{min-width:0;flex:1 1 100%}
  nav{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:4px;margin:8px 8px 0;gap:3px;scrollbar-width:none;border-radius:26px}
@@ -414,7 +431,7 @@ fieldset{min-width:0}
  #printArea tr{break-inside:avoid}
  #printArea .em{font-weight:700}
  #printArea .warn{font-weight:700;text-decoration:underline}
- header,nav,#banner,.actions,.toolbar,.guide,.thumb,.nophoto,.foot,#toast{display:none!important}
+ header,nav,#banner,#muteBar,.actions,.toolbar,.guide,.thumb,.nophoto,.foot,#toast{display:none!important}
  .printhead{display:block;font-size:14px;margin-bottom:8px}
  body{background:#fff;font-size:12pt}
  .card{break-inside:avoid;animation:none!important;box-shadow:none!important}
@@ -426,6 +443,7 @@ fieldset{min-width:0}
 <div id="startOv" role="button" tabindex="0">
   <div class="big">外出・外泊管理</div>
   <div class="tapbtn">タップして開始</div>
+  <div id="startMute" hidden role="alert">⚠ <span class="nw">アラーム音を無効にしています。</span><span class="nw">帰院予定を過ぎても</span><span class="nw">音が鳴りません。</span><span class="mnote"><span class="nw">開始したあと、画面上の赤い帯の</span><span class="nw">「有効に戻す」で戻せます。</span></span></div>
   <ul>
     <li>帰院予定時刻を過ぎると、<b>この端末（iPad等）</b>で音と画面表示でお知らせします。タグからは鳴りません。</li>
     <li>音を出すため、開くたびにこの画面をタップしてください。</li>
@@ -451,6 +469,7 @@ fieldset{min-width:0}
   <button type="button" id="bannerGo">一覧を見る</button>
   <button type="button" id="bannerAck">アラーム音を止める（対応開始）</button>
 </div>
+<div id="muteBar" hidden role="alert"><span class="msg">🔇 <span class="nw">アラーム音を無効にしています。</span><span class="nw">帰院予定を過ぎても</span><span class="nw">音が鳴りません。</span></span><button type="button" id="muteOn">有効に戻す</button></div>
 <div class="notice" id="gapBar" hidden><span class="msg" id="gapMsg"></span><button type="button" class="btn sm" id="gapOk">確認した</button></div>
 <div class="notice" id="prBar" hidden><span class="msg" id="prMsg"></span><button type="button" class="btn sm pri" id="prNow">一覧を印刷</button><button type="button" class="btn sm" id="prLater">閉じる</button></div>
 <div class="notice" id="bkBar" hidden><span class="msg">本日のバックアップ（データの保存）がまだです。</span><button type="button" class="btn sm pri" id="bkNow">バックアップを保存</button><button type="button" class="btn sm" id="bkLater">今日は閉じる</button></div>
@@ -691,7 +710,7 @@ fieldset{min-width:0}
     <div class="grid">
       <label>帰院予定の何分前から黄色表示にするか<input type="number" min="0" max="120" id="sPre"></label>
       <label>アラーム確認後、何分で再アラームするか<input type="number" min="1" max="120" id="sRe"></label>
-      <label>アラーム音量（0〜1）<input type="number" min="0" max="1" step="0.1" id="sVol"></label>
+      <label>アラーム音量（0〜1）<input type="number" min="0" max="1" step="0.1" id="sVol"><span class="volwarn" id="sVolWarn" hidden>⚠ <span class="nw">音量が0のため、</span><span class="nw">アラーム音は鳴りません</span></span></label>
       <label>アラームが確認されないとき、何分で強い警告にするか<input type="number" min="1" max="120" id="sEsc"></label>
       <label>見守り確認：画面に触れない時間が何分続いたら確認を出すか（0で出さない）<input type="number" min="0" max="240" id="sIdle"></label>
       <label>バックアップのお知らせを出す時刻（時）<input type="number" min="0" max="23" id="sBk"></label>
@@ -755,7 +774,8 @@ fieldset{min-width:0}
       <dt>作成</dt><dd>黒田 優</dd>
       <dt>目的</dt><dd>入院患者さんの外出・外泊を見守り、帰院の遅れに早く気づき、対応の経過を記録に残すためのアプリです。外出・外泊の許可や判断は、これまでどおり看護師と医師が行います。</dd>
       <dt>記録の保存</dt><dd>記録はこのiPadの中だけに保存し、外部には送信しません。作成者も記録を預かりません。</dd>
-      <dt>ご意見・不具合</dt><dd>黒田 優まで。いただいたご意見は改修に反映し、新しい版でお知らせします。</dd>
+      <dt>ご意見・不具合</dt><dd>いただいたご意見は、反映すべきかどうか判断してからの採用になります。また、不具合があれば随時知らせてください。</dd>
+      <dt>このアプリの外部への発信について</dt><dd>作者（黒田優）の許可なく、学会や研究会での発表、宣伝、問い合わせへの対応など外部への発信は控えてください。許可なくこのような行為をしたことが判明した場合、取り下げ、アプリの使用中止なども検討いたします。</dd>
     </dl>
   </div>
 </section>
@@ -923,12 +943,19 @@ function countText(o,now){
 let actx=null,lastBeep=0;
 function ensureAudio(){try{if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume().then(updateSoundBtn);}catch(e){}updateSoundBtn();}
 function soundReady(){return actx&&actx.state==='running';}
-function updateSoundBtn(){const b=$('#soundBtn');if(soundReady()){b.classList.remove('off');b.textContent='🔔 アラーム音：有効';}else{b.classList.add('off');b.textContent='🔇 音が出ません：ここを押す';}}
+// 2.1.0：音の状態。優先順位は 音が出ません（ブラウザが未許可）＞ 無効（設定で止めている）＞ 音量0 ＞ 有効
+function soundState(){if(!soundReady())return 'blocked';if(settings.soundOff)return 'mute';if(!(settings.volume>0))return 'vol0';return 'on';}
+const SOUND_TXT={blocked:'🔇 音が出ません：ここを押す',mute:'🔇 アラーム音：無効',vol0:'🔇 アラーム音：音量0（鳴りません）',on:'🔔 アラーム音：有効'};
+function updateSoundBtn(){const b=$('#soundBtn');if(!b)return;const s=soundState();
+  if(b.dataset.state!==s){b.dataset.state=s;b.className=s==='on'?'':s==='blocked'?'off':s;b.textContent=SOUND_TXT[s];}
+  const m=!!settings.soundOff;for(const id of ['#muteBar','#startMute']){const el=$(id);if(el&&el.hidden===m)el.hidden=!m;}}
+// アプリが鳴らす音（アラーム・再アラーム・強い警告・見守り確認）は、無効にしている間すべて止める
+function soundOn(){return soundReady()&&!settings.soundOff;}
 function tone(f,st,d,vol){const o=actx.createOscillator(),g=actx.createGain();o.type='square';o.frequency.value=f;const v=Math.max(0,Math.min(1,vol??settings.volume))*0.45;
   g.gain.setValueAtTime(0,st);g.gain.linearRampToValueAtTime(v,st+0.01);g.gain.setValueAtTime(v,st+d-0.02);g.gain.linearRampToValueAtTime(0,st+d);o.connect(g);g.connect(actx.destination);o.start(st);o.stop(st+d+0.05);}
-function alarmUrgent(){if(!soundReady())return false;const t=actx.currentTime+0.05;for(let i=0;i<4;i++){tone(1320,t+i*0.3,0.13,1);tone(990,t+i*0.3+0.15,0.13,1);}return true;}
-function chime(){if(!soundReady())return false;const t=actx.currentTime+0.05;tone(660,t,0.25,Math.min(0.5,settings.volume));tone(880,t+0.3,0.35,Math.min(0.5,settings.volume));return true;}
-function alarm(){if(!soundReady())return false;const t=actx.currentTime+0.05;for(let i=0;i<3;i++){tone(880,t+i*0.5,0.2);tone(660,t+i*0.5+0.22,0.2);}return true;}
+function alarmUrgent(){if(!soundOn())return false;const t=actx.currentTime+0.05;for(let i=0;i<4;i++){tone(1320,t+i*0.3,0.13,1);tone(990,t+i*0.3+0.15,0.13,1);}return true;}
+function chime(){if(!soundOn())return false;const t=actx.currentTime+0.05;tone(660,t,0.25,Math.min(0.5,settings.volume));tone(880,t+0.3,0.35,Math.min(0.5,settings.volume));return true;}
+function alarm(){if(!soundOn())return false;const t=actx.currentTime+0.05;for(let i=0;i<3;i++){tone(880,t+i*0.5,0.2);tone(660,t+i*0.5+0.22,0.2);}return true;}
 try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch(e){}
 /* 画面オン維持（Wake Lock：iPadOS 16.4以降のSafari等） */
 let wakeLock=null;
@@ -1965,10 +1992,10 @@ $('#tTable').addEventListener('change',async e=>{const el=e.target;let t;
 $('#tTable').addEventListener('click',async e=>{const b=e.target.closest('[data-tdel]');if(!b)return;if(!await askConfirm(`タグ ${b.dataset.tdel} を削除しますか？`))return;await dbDel('tags',b.dataset.tdel);tags=tags.filter(t=>t.id!==b.dataset.tdel);renderTags();});
 
 /* ---------- 設定・データ ---------- */
-function renderSettings(){updateSwInfo();renderThemePanel();$('#sDest').value=(settings.destPresets||[]).join('\n');$('#sRel').value=(settings.relPresets||[]).join('\n');$('#sPre').value=settings.preMin;$('#sRe').value=settings.realertMin;$('#sVol').value=settings.volume;$('#sEsc').value=settings.escalateMin;$('#sIdle').value=settings.idleMin;$('#sBk').value=settings.backupHour;$('#sQf').value=settings.quietFrom;$('#sQt').value=settings.quietTo;$('#sPh').value=(settings.printHours||[]).join(',');$('#sMask').checked=!!settings.mask;renderNurseMgr();
+function renderSettings(){updateSwInfo();renderThemePanel();$('#sDest').value=(settings.destPresets||[]).join('\n');$('#sRel').value=(settings.relPresets||[]).join('\n');$('#sPre').value=settings.preMin;$('#sRe').value=settings.realertMin;$('#sVol').value=settings.volume;updateVolWarn();$('#sEsc').value=settings.escalateMin;$('#sIdle').value=settings.idleMin;$('#sBk').value=settings.backupHour;$('#sQf').value=settings.quietFrom;$('#sQt').value=settings.quietTo;$('#sPh').value=(settings.printHours||[]).join(',');$('#sMask').checked=!!settings.mask;renderNurseMgr();
   $('#gapList').innerHTML=(settings.gaps||[]).map(g=>`<li><time>${fmt(g.from)} 〜 ${fmt(g.to)}</time>約${dur(g.to-g.from)}${g.closed?'（アプリを閉じていた）':''}</li>`).join('')||'<li>記録はありません</li>';
   if(navigator.storage&&navigator.storage.persisted)navigator.storage.persisted().then(p=>{$('#storageInfo').textContent=p?'この端末では保存データが自動削除されにくい設定になっています。':'注意：ブラウザの容量整理でデータが消える可能性があります。CSVを定期的に出力してください。';});}
-$('#sSave').addEventListener('click',async()=>{settings.preMin=Math.max(0,+$('#sPre').value||0);settings.realertMin=Math.max(1,+$('#sRe').value||10);settings.volume=Math.max(0,Math.min(1,+$('#sVol').value));settings.escalateMin=Math.max(1,+$('#sEsc').value||10);settings.idleMin=Math.max(0,+$('#sIdle').value||0);settings.backupHour=Math.min(23,Math.max(0,+$('#sBk').value||0));settings.quietFrom=Math.min(23,Math.max(0,+$('#sQf').value||0));settings.quietTo=Math.min(23,Math.max(0,+$('#sQt').value||0));settings.printHours=$('#sPh').value.split(/[,、 ]+/).map(Number).filter(n=>n>=0&&n<=23);settings.mask=$('#sMask').checked;await saveSettings();lastSig='';tick();toast('設定を保存しました');});
+$('#sSave').addEventListener('click',async()=>{settings.preMin=Math.max(0,+$('#sPre').value||0);settings.realertMin=Math.max(1,+$('#sRe').value||10);settings.volume=Math.max(0,Math.min(1,+$('#sVol').value));settings.escalateMin=Math.max(1,+$('#sEsc').value||10);settings.idleMin=Math.max(0,+$('#sIdle').value||0);settings.backupHour=Math.min(23,Math.max(0,+$('#sBk').value||0));settings.quietFrom=Math.min(23,Math.max(0,+$('#sQf').value||0));settings.quietTo=Math.min(23,Math.max(0,+$('#sQt').value||0));settings.printHours=$('#sPh').value.split(/[,、 ]+/).map(Number).filter(n=>n>=0&&n<=23);settings.mask=$('#sMask').checked;await saveSettings();updateSoundBtn();updateVolWarn();lastSig='';tick();toast('設定を保存しました');});
 function renderNurseMgr(){$('#nurseMgr').innerHTML=settings.nurses.map((n,i)=>`<span>${esc(n)}<button type="button" data-ndel="${i}" aria-label="${esc(n)}を消す">×</button></span>`).join('')||'<span style="border:none;padding:0;background:none" class="hint">まだ登録されていません</span>';}
 $('#nurseMgr').addEventListener('click',async e=>{const b=e.target.closest('[data-ndel]');if(!b)return;settings.nurses.splice(+b.dataset.ndel,1);await saveSettings();renderNurseList();renderNurseMgr();});
 $('#nurseAddBtn').addEventListener('click',()=>{const n=$('#nurseAdd').value.trim();if(!n)return;rememberNurse(n);$('#nurseAdd').value='';renderNurseMgr();});
@@ -1981,7 +2008,7 @@ $('#nurseBulkBtn').addEventListener('click',async()=>{
   if(!over)$('#nurseBulk').value='';
   toast(`${add.length}人を登録しました（全${settings.nurses.length}人）`+(dup?`。すでに登録済みの${dup}人は重ねていません`:'')+(over?`。${NURSE_MAX}人を超えるため${over}人は登録していません（使わない名前を×で消してください）`:''),over?8000:4000);});
 $('#sPresetSave').addEventListener('click',async()=>{const L=v=>[...new Set(v.split(/\r?\n/).map(x=>x.trim()).filter(Boolean))].slice(0,30);settings.destPresets=L($('#sDest').value);settings.relPresets=L($('#sRel').value);await saveSettings();renderPresetChips();renderSettings();toast('よく使う選択肢を保存しました');});
-$('#sTest').addEventListener('click',()=>{ensureAudio();setTimeout(()=>{if(!alarm())toast('音を出せません。端末の音量・ミュートを確認してください');},150);});
+$('#sTest').addEventListener('click',()=>{ensureAudio();if(settings.soundOff){toast('アラーム音を無効にしています。画面上の赤い帯の「有効に戻す」で戻せます',5000);return;}setTimeout(()=>{if(!alarm())toast('音を出せません。端末の音量・ミュートを確認してください');},150);});
 async function doBackup(){const data={app:'gaishutsu_kanri',variant:'shisaku',appVersion:APP_VERSION,version:1,exportedAt:Date.now(),settings,tags,patients,outings:outings.map(o=>({...o,hasPhoto:false}))};download(`外出管理バックアップ_${toDateInput(Date.now())}.json`,new Blob([JSON.stringify(data)],{type:'application/json'}));settings.lastBackupDay=toDateInput(Date.now());await saveSettings();$('#bkBar').hidden=true;toast('バックアップを保存しました（ダウンロード先を確認してください）',5000);}
 $('#bkOut').addEventListener('click',doBackup);
 $('#bkNow').addEventListener('click',doBackup);
@@ -2070,7 +2097,8 @@ async function tick(){
   for(const o of sounding){const start=o.status==='search'?o.searchAt:o.dueAt;const base=(o.ackAt&&o.ackAt>=start)?o.ackAt+settings.realertMin*60000:start;
     if(now-base>=settings.escalateMin*60000){urgent=true;if(o.escalatedFor!==base){o.escalatedFor=base;addLog(o,`アラームが${settings.escalateMin}分以上確認されないため、強い警告に切り替え`);saveOuting(o);}}}
   ban.classList.toggle('urgent',urgent);
-  if(alerts.length){ban.classList.add('on');$('#bannerMsg').textContent=(urgent?'【至急・アラーム未確認】 ':'⚠ ')+alerts.map(o=>`${o.tagId||'タグなし'} ${shownName(o)}（${stateOf(o,now)==='search'?'捜索中':dur(now-o.dueAt)+'超過'}）`).join('　');
+  updateSoundBtn();
+  if(alerts.length){ban.classList.add('on');$('#bannerMsg').textContent=(urgent?'【至急・アラーム未確認】 ':'⚠ ')+(settings.soundOff?'（音は無効） ':'')+alerts.map(o=>`${o.tagId||'タグなし'} ${shownName(o)}（${stateOf(o,now)==='search'?'捜索中':dur(now-o.dueAt)+'超過'}）`).join('　');
     titleFlip=!titleFlip;document.title=titleFlip?'⚠ 帰院確認が必要です':'外出・外泊管理';}
   else{ban.classList.remove('on');document.title='外出・外泊管理';}
   $('#bannerAck').style.display=sounding.length?'':'none';
@@ -2091,10 +2119,28 @@ async function tick(){
 $('#startOv').addEventListener('click',()=>{ensureAudio();keepAwake();$('#startOv').style.display='none';setTimeout(()=>{if(!soundReady())toast('音が出ない状態です。上の赤いボタンを押してください',5000);},400);});
 $('#bannerGo').addEventListener('click',()=>showTab('active'));
 $('#bannerAck').addEventListener('click',async()=>{const now=Date.now();for(const o of outings.filter(x=>needsSound(x,now))){o.ackAt=now;addLog(o,'アラームを確認（対応開始）');await saveOuting(o);}lastSig='';tick();toast(`アラーム音を止めました。${settings.realertMin}分後に未解決なら再度鳴ります。`);});
-$('#soundBtn').addEventListener('click',()=>{ensureAudio();setTimeout(()=>{if(soundReady())toast('アラーム音が鳴る状態です');},200);});
+/* 2.1.0：アラーム音の有効／無効の切り替え */
+function updateVolWarn(){const w=$('#sVolWarn'),v=$('#sVol');if(w&&v)w.hidden=!(+v.value<=0);}
+$('#sVol').addEventListener('input',updateVolWarn);
+async function setSoundOff(off){settings.soundOff=!!off;await saveSettings();updateSoundBtn();lastSig='';tick();}
+function tryAlarm(){ensureAudio();setTimeout(()=>{if(!alarm())toast('音を出せません。端末の音量・ミュートを確認してください');},150);}
+async function soundOnAgain(){await setSoundOff(false);toast('アラーム音を有効にしました');tryAlarm();}
+function dlgSoundOff(){openDlg('アラーム音を無効に切り替えますか？','<p style="margin:0;font-size:17px;line-height:1.7"><span class="nw">無効の間は、</span><span class="nw">帰院予定を過ぎても</span><span class="nw">音が鳴りません。</span><span class="nw">画面の赤い表示と</span><span class="nw">点滅は続きます。</span></p>',
+  [{label:'試しに鳴らす',onClick:()=>{tryAlarm();return false;}},{label:'やめる'},{label:'無効にする',cls:'bad',onClick:async()=>{await setSoundOff(true);toast('アラーム音を無効にしました');}}]);}
+function dlgVol0(){openDlg('アラーム音量が0です','<p style="margin:0;font-size:17px;line-height:1.7"><span class="nw">設定のアラーム音量が0のため</span><span class="nw">鳴りません。</span></p><p class="hint">「設定」の「アラーム音量（0〜1）」を0より大きくして「設定を保存」を押すと鳴るようになります。（確認されないまま「強い警告」に切り替わったときだけは、これまでどおり最大の音量で鳴ります）</p>',
+  [{label:'閉じる'},{label:'設定を開く',cls:'pri',onClick:()=>{showTab('settings');setTimeout(()=>{const v=$('#sVol');v.scrollIntoView({block:'center'});try{v.focus({preventScroll:true});}catch(e){}},60);}}]);}
+// 押した瞬間に見えていた表示で動く（押すと同時に音が許可され、表示が変わることがあるため）
+let soundBtnSeen=null;
+$('#soundBtn').addEventListener('pointerdown',()=>{soundBtnSeen=$('#soundBtn').dataset.state||'blocked';});
+$('#soundBtn').addEventListener('click',()=>{const was=soundBtnSeen||$('#soundBtn').dataset.state||soundState();soundBtnSeen=null;ensureAudio();
+  if(was==='blocked'){setTimeout(()=>{const s=soundState();if(s==='on')toast('アラーム音が鳴る状態です');else if(s==='mute')toast('音を出せる状態になりました。ただし、アラーム音は無効にしています');else if(s==='vol0')toast('音を出せる状態になりました。ただし、アラーム音量が0のため鳴りません');},200);return;}
+  if(was==='mute'){soundOnAgain();return;}
+  if(was==='vol0'){dlgVol0();return;}
+  dlgSoundOff();});
+$('#muteOn').addEventListener('click',()=>{ensureAudio();soundOnAgain();});
 
 /* ---------- iPad単独動作（オフライン対応） ---------- */
-const APP_VERSION='2.0.1';
+const APP_VERSION='2.1.0';
 {const av=document.getElementById('aboutVer');if(av)av.textContent=APP_VERSION;}
 function updateSwInfo(){const el=$('#swInfo');if(!el)return;
   const standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
