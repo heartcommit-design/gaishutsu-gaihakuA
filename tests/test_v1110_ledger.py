@@ -50,6 +50,8 @@ def main():
                 chip.first.click(); pg.wait_for_timeout(150)
             else:
                 pg.fill('input[name=name]', name); pg.fill('input[name=pid]', pid)
+            # 見本（患者欄のたたみ）：呼び出しで患者欄がたたまれていたら「変更」で開いてから病棟を選ぶ
+            if pg.locator('#pOpen').is_visible(): pg.click('#pOpen')
             pg.click(f'#wardRadios label:has-text("{ward}")')
             if hours is not None:
                 pg.evaluate(SET, ['input[name=departAt]', pg.evaluate(f"toLocalInput(round15(Date.now()+{hours}*3600000))")])

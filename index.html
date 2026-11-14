@@ -372,6 +372,52 @@ fieldset{min-width:0}
 #printArea{display:none}
 @page{size:297mm 210mm;margin:8mm}
 
+/* ---------- 見本：新規登録を分かりやすく（必須の見分け・下の登録バー・患者欄のたたみ） ---------- */
+:root,html[data-theme="light"]{--rq:#8f5600;--rqon:#fff;--rqbg:rgba(255,222,150,.34);--rqline:#d8901a;--rqtx:#6b4100}
+html[data-theme="dark"]{--rq:#ffc457;--rqon:#3d2600;--rqbg:rgba(255,196,87,.10);--rqline:#ffc457;--rqtx:#ffd27a}
+#newForm .req{display:inline-block;font-size:13px;font-weight:800;line-height:1.5;padding:0 7px;border-radius:6px;background:var(--rq);color:var(--rqon);margin-left:8px;vertical-align:1px;white-space:nowrap}
+#newForm .rq{border-left:5px solid var(--rqline);background:var(--rqbg);border-radius:12px;padding:6px 10px 8px;font-size:16px;font-weight:800;color:var(--ink);transition:background .2s,border-color .2s}
+#newForm .rq.done{border-left-color:var(--okline);background:transparent}
+#newForm .rq input,#newForm .rq select{font-weight:400}
+#newForm .rq.rqempty input:not([type=radio]),#newForm .rq.rqempty select{border-color:var(--rqline)}
+#newForm .rqh{display:block}
+#newForm .rqst{margin-left:8px;font-size:13px;font-weight:800;white-space:nowrap;color:var(--rqtx)}
+#newForm .rq.done .rqst{color:var(--oktx)}
+#newForm .opt{display:inline-block;margin-left:6px;font-size:12.5px;font-weight:400;line-height:1.5;padding:0 6px;border-radius:6px;border:1px solid var(--line);color:var(--muted);vertical-align:1px;white-space:nowrap}
+#newForm .rq.flash{animation:rqflash .9s ease 2}
+@keyframes rqflash{50%{box-shadow:0 0 0 4px var(--rqline)}}
+#pSum{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;margin-top:12px;padding:10px 12px 10px 14px;border-radius:14px;border:1px solid var(--okline);border-left:5px solid var(--okline);background:var(--okbg)}
+#pSum .pst{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 18px;font-size:17px}
+#pSum .pst b{font-size:19px}
+#pSum .pst>*{white-space:nowrap}
+#pSum .pok{color:var(--oktx);font-weight:800;font-size:14px;white-space:nowrap}
+#pSum .btn{min-width:88px}
+#regBar{position:fixed;left:0;right:0;bottom:0;z-index:40;padding:0 12px calc(10px + env(safe-area-inset-bottom,0px));pointer-events:none}
+#regBar .rbin{pointer-events:auto;max-width:1168px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:10px 10px 10px 14px;border-radius:20px;background:var(--dlg);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid var(--edge);box-shadow:var(--hl),0 10px 30px rgba(10,20,35,.25)}
+#regBar .rbst{flex:1;min-width:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#regBar .rbcnt{white-space:nowrap;font-size:17px;font-weight:800;padding:6px 14px;border-radius:999px;background:var(--rq);color:var(--rqon)}
+#regBar .rbcnt.all{background:var(--ok);color:var(--onok)}
+#regBar .rbmiss{display:contents}
+#regBar .rblab{font-size:14px;color:var(--sub);white-space:nowrap;margin-left:2px}
+#regBar .rbmiss button{font:inherit;font-size:15px;font-weight:700;min-height:44px;padding:6px 12px;border-radius:12px;border:2px solid var(--rqline);background:var(--rqbg);color:var(--ink);white-space:nowrap;cursor:pointer}
+#regBar #rbBtn{flex:none;white-space:nowrap;font-size:19px;padding:12px 24px}
+body.rbon{padding-bottom:var(--rbh,90px)}
+body.rbon #toast{bottom:calc(var(--rbh,90px) + 12px)}
+@media (max-width:600px){
+ #regBar{padding:0 6px calc(6px + env(safe-area-inset-bottom,0px))}
+ #regBar .rbin{flex-direction:column;align-items:stretch;gap:8px;padding:8px 10px;border-radius:16px}
+ #regBar .rbst{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+ #regBar .rbst::-webkit-scrollbar{display:none}
+ #regBar .rbcnt{font-size:15px;padding:5px 10px}
+ #regBar .rbmiss button{font-size:14px;padding:4px 10px}
+ #regBar #rbBtn{width:100%;font-size:18px;padding:10px 16px}
+ #newForm .rq{padding:6px 8px 8px}
+ #pSum .pst{gap:2px 12px;font-size:16px;flex:1 1 100%}
+ #pSum .pok{flex:1}
+ #regBar .rblab{display:none}
+}
+@media print{#regBar{display:none!important}body.rbon{padding-bottom:0}}
+
 /* ---------- スマホ（幅600px以下） ---------- */
 @media (max-width:600px){
  .crow{display:flex;flex-wrap:wrap}
@@ -510,7 +556,9 @@ fieldset{min-width:0}
     <fieldset><legend>患者</legend>
       <label>前回の情報を呼び出す<input id="pSearch" placeholder="氏名・ふりがな・IDの一部を入力（空欄なら最近外出した10人を表示）"></label>
       <div class="chips onerow" id="pChips"></div><div class="hint" id="pChipsMore" style="margin:2px 0 0"></div>
+      <div class="psum" id="pSum" hidden></div>
       <div class="loaded" id="pLoaded" hidden></div>
+      <div id="pFields">
       <div class="grid" style="margin-top:12px">
         <label>患者氏名<span class="req">必須</span><input name="name" required></label>
         <label>患者ID<span class="req">必須</span><input name="pid"></label>
@@ -519,8 +567,9 @@ fieldset{min-width:0}
         <label>年齢<input name="age" inputmode="numeric" placeholder="例：45"></label>
         <label>入院形態<select name="adm"><option>任意入院</option><option>医療保護入院</option><option>その他</option></select></label>
       </div>
-      <div style="margin-top:10px"><span class="hint">病棟<span class="req">必須</span></span>
+      <div style="margin-top:10px" id="wardBox"><span class="rqh">病棟<span class="req">必須</span></span>
         <div class="radios wards" id="wardRadios"></div></div>
+      </div>
     </fieldset>
     <fieldset><legend>外出の内容</legend>
       <div class="radios" id="kindRadios">
@@ -789,6 +838,11 @@ fieldset{min-width:0}
 <dialog id="dlg"><div class="dlgin"><h3 id="dlgTitle" tabindex="-1" autofocus style="outline:none"></h3><form id="dlgForm" onsubmit="return false"><div id="dlgBody"></div><div class="dlgActions" id="dlgActions"></div></form></div></dialog>
 <dialog id="cdlg"><div class="dlgin"><h3 id="cdlgMsg" style="font-size:18px;line-height:1.6;white-space:pre-line"></h3><div class="dlgActions"><button type="button" class="btn" id="cdlgNo">やめる</button><button type="button" class="btn bad" id="cdlgYes">はい</button></div></div></dialog>
 <div id="printArea"></div>
+<!-- 見本：新規登録の下に固定する登録バー（新規登録タブの間だけ出る） -->
+<div id="regBar" hidden><div class="rbin">
+  <div class="rbst"><b class="rbcnt" id="rbCnt"></b><span class="rbmiss" id="rbMiss"></span></div>
+  <button type="button" class="btn pri big" id="rbBtn">この内容で出発を登録</button>
+</div></div>
 <div id="toast"></div>
 
 <script>
@@ -1452,7 +1506,7 @@ function clearPatientForm(){const keep=nf.elements.departAt.value;const hadPlan=
 $('#pSearch').addEventListener('input',renderPatientChips);
 $('#pChips').addEventListener('click',e=>{const b=e.target.closest('[data-pt]');if(!b)return;const p=patients.find(x=>x.id===b.dataset.pt);if(!p)return;
   if(outings.some(o=>isActive(o)&&o.patientId===p.id)){toast(`${p.name} さんは現在外出中です。帰院登録を確認してください。`,4500);}
-  fillPatient(p);window.scrollTo({top:nf.offsetTop-80,behavior:'smooth'});});
+  fillPatient(p);pFold();window.scrollTo({top:nf.offsetTop-80,behavior:'smooth'});});
 async function upsertPatient(o,loadedId){
   let p=o.pid?patients.find(x=>x.pid===o.pid):(patients.find(x=>x.id===loadedId&&x.name===o.name)||patients.find(x=>x.name===o.name&&!x.pid));
   if(!p){p={id:uid(),count:0,dests:[],createdAt:Date.now()};patients.push(p);}
@@ -1502,6 +1556,50 @@ $$('input[name="alone"]').forEach(r=>r.addEventListener('change',()=>{$('#compBo
 $('#dueQuick').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const base=fromLocalInput(nf.elements.departAt.value)||Date.now();const d=new Date(base);
   if(b.dataset.h)d.setTime(base+b.dataset.h*3600000);if(b.dataset.d)d.setDate(d.getDate()+Number(b.dataset.d));nf.elements.dueAt.value=toLocalInput(round15(d.getTime()));});
 
+/* ---------- 見本：必須の見分け・下の登録バー・患者欄のたたみ ---------- */
+const RQ=[{k:'name',lab:'患者氏名'},{k:'pid',lab:'患者ID'},{k:'ward',lab:'病棟'},{k:'departAt',lab:'出発日時'},{k:'dueAt',lab:'帰院予定日時'},{k:'departNurse'},{k:'compName',lab:'同行者氏名',cond:()=>nf.elements.alone.value==='0'}];
+function rqBox(k){return k==='ward'?$('#wardBox'):nf.elements[k].closest('label');}
+function rqFilled(k){return !!String((k==='ward'?nf.elements.ward.value:nf.elements[k].value)||'').trim();}
+function rqLabel(k){return k==='departNurse'?(isPlanForm()?'登録した看護師':'確認した看護師'):RQ.find(r=>r.k===k).lab;}
+RQ.forEach(r=>{const b=rqBox(r.k);b.classList.add('rq');const st=document.createElement('span');st.className='rqst';b.querySelector('.req').after(st);});
+nf.querySelectorAll('label').forEach(l=>{if(l.classList.contains('rq')||l.closest('.radios')||l.classList.contains('consent')||l.classList.contains('btn')||l.querySelector('#pSearch')||!l.querySelector('input,select,textarea'))return;
+  const t=l.firstChild;if(t&&t.nodeType===3){const o=document.createElement('span');o.className='opt';o.textContent='任意';t.after(o);}});
+let rqSig='';
+function updateRq(){
+  let n=0,tot=0;const miss=[];
+  RQ.forEach(r=>{const b=rqBox(r.k);const on=!r.cond||r.cond();const f=on&&rqFilled(r.k);
+    b.classList.toggle('done',f);b.classList.toggle('rqempty',on&&!f);b.querySelector('.rqst').textContent=f?'✓ 入力済み':'未入力';
+    if(on){tot++;if(f)n++;else miss.push(r.k);}});
+  const sig=n+'/'+tot+':'+miss.map(rqLabel).join(',');
+  if(sig!==rqSig){rqSig=sig;const c=$('#rbCnt');
+    if(!miss.length){c.textContent='✓ 必須はすべて入力済み';c.classList.add('all');}else{c.textContent=`必須 ${n}／${tot}`;c.classList.remove('all');}
+    $('#rbMiss').innerHTML=miss.length?'<span class="rblab">未入力：</span>'+miss.map(k=>`<button type="button" data-go="${k}">${esc(rqLabel(k))}</button>`).join(''):'';}
+  const bt=$('#submitBtn').textContent;if($('#rbBtn').textContent!==bt)$('#rbBtn').textContent=bt;
+  const bar=$('#regBar');if(!bar.hidden)document.body.style.setProperty('--rbh',bar.offsetHeight+'px');
+}
+function updateRegBar(){const on=$('#sec-new').classList.contains('active');$('#regBar').hidden=!on;document.body.classList.toggle('rbon',on);if(on)updateRq();}
+new MutationObserver(updateRegBar).observe($('#sec-new'),{attributes:true,attributeFilter:['class']});
+new MutationObserver(()=>updateRq()).observe($('#submitBtn'),{childList:true,characterData:true,subtree:true});
+nf.addEventListener('input',()=>setTimeout(updateRq,0));nf.addEventListener('change',()=>setTimeout(updateRq,0));
+nf.addEventListener('reset',()=>{pExpand();setTimeout(updateRq,0);});
+window.addEventListener('resize',updateRq);
+setInterval(()=>{if(!$('#regBar').hidden)updateRq();},1000);   // 呼び出し・ボタンで値が入った時（input が起きない時）も追う
+$('#rbBtn').addEventListener('click',()=>$('#submitBtn').click());
+$('#rbMiss').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)goField(b.dataset.go);});
+function goField(k){const box=rqBox(k);if($('#pFields').contains(box))pExpand();
+  let t;if(k==='ward')t=nf.querySelector('#wardRadios input');else{const i=nf.elements[k];t=i._tp&&i.hidden?(i._tp.querySelector('.tp-d').value?i._tp.querySelector('.tp-t'):i._tp.querySelector('.tp-d')):i;}
+  box.scrollIntoView({behavior:'smooth',block:'center'});
+  box.classList.remove('flash');void box.offsetWidth;box.classList.add('flash');
+  setTimeout(()=>t&&t.focus({preventScroll:true}),350);}
+// 患者を呼び出したら、患者欄を1行にたたむ（必須の氏名・ID・病棟がそろっている時だけ）。入力欄は消さずに隠すだけ
+function pFold(){const f=nf.elements;if(!(f.name.value.trim()&&f.pid.value.trim()&&f.ward.value)){pExpand();return;}
+  const sa=[f.sex.value,f.age.value?f.age.value+'歳':''].filter(Boolean).join(' ');
+  $('#pSum').innerHTML=`<div class="pst"><b>${esc(f.name.value)}</b><span>ID ${esc(f.pid.value)}</span>${sa?`<span>${esc(sa)}</span>`:''}<span>${esc(f.ward.value)}・${esc(f.adm.value)}</span></div><span class="pok">✓ 入力済み</span><button type="button" class="btn" id="pOpen">変更</button>`;
+  $('#pSum').hidden=false;$('#pFields').hidden=true;
+  $('#pOpen').addEventListener('click',()=>{pExpand();nf.elements.name.focus({preventScroll:true});});
+  updateRq();}
+function pExpand(){$('#pSum').hidden=true;$('#pFields').hidden=false;}
+
 async function compress(src){
   const img=await new Promise((res,rej)=>{if(src instanceof HTMLCanvasElement)return res(src);const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(src);});
   const w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;const k=Math.min(1,1000/Math.max(w,h));
@@ -1527,6 +1625,7 @@ function showFormErrors(errs){
   nf.querySelectorAll('.invalid').forEach(el=>el.classList.remove('invalid'));
   const box=$('#formErr');
   if(!errs.length){box.hidden=true;return;}
+  if(errs.some(e=>e.el&&$('#pFields').contains(e.el)))pExpand();
   errs.forEach(e=>e.el&&(e.el._tp||e.el).classList.add('invalid'));
   box.innerHTML='<b>まだ登録できません。次の項目を確認してください。</b><ul>'+errs.map(e=>'<li>'+esc(e.msg)+'</li>').join('')+'</ul>';
   box.hidden=false;
@@ -1973,7 +2072,7 @@ function dlgConsentDate(p){
 $('#ptTable').addEventListener('click',e=>{
   const b=e.target.closest('[data-ptgo],[data-ptedit],[data-ptdis],[data-ptre],[data-pthist],[data-ptwd],[data-ptcd]');if(!b)return;
   const k=Object.keys(b.dataset)[0],p=patients.find(x=>x.id===b.dataset[k]);if(!p)return;
-  if(k==='ptgo'){showTab('new');clearPatientForm();fillPatient(p);return;}
+  if(k==='ptgo'){showTab('new');clearPatientForm();fillPatient(p);pFold();return;}
   ({ptedit:dlgPtEdit,ptdis:dlgDischarge,ptre:dlgReadmit,pthist:dlgPatientHistory,ptwd:dlgWithdraw,ptcd:dlgConsentDate})[k](p);
 });
 
