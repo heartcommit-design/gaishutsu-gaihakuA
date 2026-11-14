@@ -370,7 +370,7 @@ fieldset{min-width:0}
 #wakeBadge{font-size:14px;font-weight:700;padding:6px 12px;border-radius:16px;white-space:nowrap}
 #wakeBadge.on{background:var(--okbg);color:var(--oktx);border:1px solid var(--okline)}#wakeBadge.off{background:#c62828;color:#fff;border:2px solid #fff;box-shadow:0 0 0 1px #c62828}
 #printArea{display:none}
-@page{size:A4 landscape;margin:8mm}
+@page{size:297mm 210mm;margin:8mm}
 
 /* ---------- スマホ（幅600px以下） ---------- */
 @media (max-width:600px){
@@ -2166,7 +2166,7 @@ $('#soundBtn').addEventListener('click',()=>{const was=soundBtnSeen||$('#soundBt
 $('#muteOn').addEventListener('click',()=>{ensureAudio();soundOnAgain();});
 
 /* ---------- iPad単独動作（オフライン対応） ---------- */
-const APP_VERSION='2.2.0';
+const APP_VERSION='2.2.1';
 {const av=document.getElementById('aboutVer');if(av)av.textContent=APP_VERSION;}
 function updateSwInfo(){const el=$('#swInfo');if(!el)return;
   const standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
