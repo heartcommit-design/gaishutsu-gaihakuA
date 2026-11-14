@@ -23,7 +23,7 @@ def main():
     sw = open(os.path.join(APP, 'sw.js'), encoding='utf-8').read()
     man = json.load(open(os.path.join(APP, 'manifest.webmanifest'), encoding='utf-8'))
     v = re.search(r"APP_VERSION='([\d.]+)'", html).group(1)
-    assert v == '2.2.1', v
+    assert v == '2.2.2', v
     assert re.search(r"const CACHE = '([^']+)'", sw).group(1) == f'gaishutsu-shisaku-v{v}'
     assert "const DB_NAME='gaishutsu_kanri_shisaku'" in html
     assert "indexedDB.open('gaishutsu_kanri'" not in html, '現行の DB 名で開いている'
@@ -63,7 +63,7 @@ def main():
         keys = pg.evaluate('caches.keys()')
         print('caches', keys)
         assert 'gaishutsu-v1.12.0' in keys, '現行のキャッシュが消された'
-        assert 'gaishutsu-shisaku-v2.2.1' in keys
+        assert 'gaishutsu-shisaku-v2.2.2' in keys
         assert 'gaishutsu-shisaku-v1.0.0' not in keys, '新版の古いキャッシュが残っている'
         assert pg.evaluate("caches.open('gaishutsu-v1.12.0').then(c=>c.match('/genkou')).then(r=>r&&r.text())") == 'genkou'
 

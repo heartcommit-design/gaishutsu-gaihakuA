@@ -1104,7 +1104,12 @@ $('#activeList').addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');if(!b)return;const id=b.closest('.card').dataset.id;const o=outings.find(x=>x.id===id);if(!o)return;
   ({open:o=>{openUntil[o.id]=Date.now()+120000;lastSig='';tick();},close:o=>{delete openUntil[o.id];lastSig='';tick();},undo:dlgUndo,return:dlgReturn,ack:doAck,lost:dlgLost,found:o=>dlgExtend(o,true),log:dlgLog,extend:o=>dlgExtend(o,false),edit:dlgEdit,photo:dlgPhoto,reveal:o=>{revealUntil[o.id]=Date.now()+30000;lastSig='';tick();}})[b.dataset.act](o);
 });
-$('#printBtn').addEventListener('click',async()=>{showTab('active');$('#printHead').textContent='外出・外泊中一覧　印刷：'+fmtFull(Date.now());const now=Date.now();const h=(settings.printHours||[]).filter(x=>new Date(now).getHours()>=x).slice(-1)[0];if(h!==undefined){settings.prDoneKey=toDateInput(now)+':'+h;await saveSettings();$('#prBar').hidden=true;}printFull=true;await renderActive();try{window.print();}catch(e){toast('この画面からは印刷できません。SafariやChromeで直接開いてください。',6000);}printFull=false;lastSig='';tick();});
+// 2.2.2：日別一覧・集計の印刷の間だけ body に pm-history を付ける。iPad では印刷の画面（用紙の向きの切り替えなど）を
+// 開いている間に afterprint が先に来て、向きを変えた時に別の内容（外出・外泊中の一覧）に変わってしまうため、
+// afterprint では外さず、「次に画面に触れた時」または「別の印刷を始めた時」に外す（pm-history は印刷時の見た目にだけ効く）。
+function pmHistoryOff(){document.body.classList.remove('pm-history');document.removeEventListener('pointerdown',pmHistoryOff,true);}
+function pmHistoryOn(){pmHistoryOff();document.body.classList.add('pm-history');setTimeout(()=>{if(document.body.classList.contains('pm-history'))document.addEventListener('pointerdown',pmHistoryOff,true);},800);return pmHistoryOff;}
+$('#printBtn').addEventListener('click',async()=>{pmHistoryOff();showTab('active');$('#printHead').textContent='外出・外泊中一覧　印刷：'+fmtFull(Date.now());const now=Date.now();const h=(settings.printHours||[]).filter(x=>new Date(now).getHours()>=x).slice(-1)[0];if(h!==undefined){settings.prDoneKey=toDateInput(now)+':'+h;await saveSettings();$('#prBar').hidden=true;}printFull=true;await renderActive();try{window.print();}catch(e){toast('この画面からは印刷できません。SafariやChromeで直接開いてください。',6000);}printFull=false;lastSig='';tick();});
 
 /* ---------- 予定 ---------- */
 async function renderPlans(){
@@ -1638,11 +1643,8 @@ function printHistory(){
   $('#printArea').innerHTML=`<h1>外出・外泊 日別一覧　${esc(a===b?dayLabel(a):dayLabel(a)+' 〜 '+dayLabel(b))}${w?'　'+esc(w):'　全病棟'}${q?'　絞り込み：'+esc(q):''}</h1>
    <div class="pmeta"><span>${valid.length}件（外出 ${n(o=>o.kind==='外出')}・外泊 ${n(o=>o.kind==='外泊')}）　帰院済 ${n(o=>o.status==='returned')}・外出/外泊中 ${n(isActive)}・予定 ${n(o=>o.status==='planned')}　遅れ ${n(o=>lateMin(o)>0)}・捜索 ${n(hadSearch)}</span><span>印刷：${esc(fmtFull(now))}</span></div>
    <table><colgroup>${cols.map(([,wd])=>`<col style="width:${wd}%">`).join('')}</colgroup><thead><tr>${cols.map(([h])=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table>`;
-  document.body.classList.add('pm-history');
-  const done=()=>{document.body.classList.remove('pm-history');window.removeEventListener('afterprint',done);};
-  window.addEventListener('afterprint',done);
+  const done=pmHistoryOn();
   try{window.print();}catch(e){done();toast('この画面からは印刷できません。ファイルをSafariやChromeで直接開いて印刷してください。',6000);}
-  setTimeout(()=>{if(document.body.classList.contains('pm-history')&&!window.matchMedia('print').matches)done();},60000);
 }
 $('#hPrint').addEventListener('click',printHistory);
 $('#csvBtn').addEventListener('click',()=>{
@@ -1732,7 +1734,7 @@ $('#stPrint').addEventListener('click',()=>{const d=statsData(),t=d.total;
     ${h('行き先の上位5')}${tb(['行き先','件数'],d.dests.length?d.dests:[['記録がありません','']])}
     ${h('患者別（回数の多い順）')}${tb(ST_PT.map(c=>c[0]),d.people.map(r=>ST_PT.map(([,k])=>r[k])))}
     ${stWard?'':h('病棟別')+st([...d.byWard,d.allTotal])}${h('入院形態別')}${st([...d.byAdm,d.total])}`;
-  document.body.classList.add('pm-history');const done=()=>{document.body.classList.remove('pm-history');window.removeEventListener('afterprint',done);};window.addEventListener('afterprint',done);
+  const done=pmHistoryOn();
   try{window.print();}catch(e){done();toast('この画面からは印刷できません。ファイルをSafariやChromeで直接開いて印刷してください。',6000);}});
 
 /* ---------- 詳細・カレンダー ---------- */
@@ -2166,7 +2168,7 @@ $('#soundBtn').addEventListener('click',()=>{const was=soundBtnSeen||$('#soundBt
 $('#muteOn').addEventListener('click',()=>{ensureAudio();soundOnAgain();});
 
 /* ---------- iPad単独動作（オフライン対応） ---------- */
-const APP_VERSION='2.2.1';
+const APP_VERSION='2.2.2';
 {const av=document.getElementById('aboutVer');if(av)av.textContent=APP_VERSION;}
 function updateSwInfo(){const el=$('#swInfo');if(!el)return;
   const standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

@@ -2,7 +2,7 @@
 // 新版は現行（gaishutsu-v…）と同じドメインに置かれても混ざらないよう、別の名前のキャッシュを使う。
 // 古いキャッシュを消すときも、新版自身のもの（gaishutsu-shisaku- で始まる）だけを消す。
 const PREFIX = 'gaishutsu-shisaku-';
-const CACHE = 'gaishutsu-shisaku-v2.2.1';
+const CACHE = 'gaishutsu-shisaku-v2.2.2';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-180.png', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))); });
 self.addEventListener('activate', e => {
