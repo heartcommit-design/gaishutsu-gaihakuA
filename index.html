@@ -613,6 +613,7 @@ fieldset{min-width:0}
     <button class="btn" type="button" id="hPrint">印刷</button>
     <button class="btn" type="button" id="csvBtn">CSV出力（Excel用）</button>
   </div>
+  <p class="hint printHint" style="margin-top:0">印刷の画面で「方向」が縦向きになっている時は、横向きに切り替えてください。</p>
   <p class="hint" id="hSum" style="margin-top:0"></p>
   <div class="xlwrap"><table class="xl" id="hTable"></table></div>
   <p class="hint">その日に外出・外泊していた患者（予定を含む）を1行ずつ表示します。期間で見たいときは「〜」の右に終わりの日を入れてください。行を押すと詳しい記録と対応経過が開きます。写真は帰院時に削除されるため、表には残りません。</p>
@@ -629,6 +630,7 @@ fieldset{min-width:0}
     <button class="btn" type="button" id="stPrint">印刷</button>
     <button class="btn" type="button" id="stCsv">CSV出力（Excel用）</button>
   </div>
+  <p class="hint printHint" style="margin-top:0">印刷の画面で「方向」が縦向きになっている時は、横向きに切り替えてください。</p>
   <div class="seg" id="stWard"></div>
   <p class="hint">出発日がその月の外出・外泊を数えます（予定・誤登録の取消は除く）。「遅れ」は当初の帰院予定より遅れて帰院したもの（まだ帰院していない場合は現時点での遅れ）です。</p>
   <div class="stcards" id="stCards"></div>
@@ -2168,7 +2170,7 @@ $('#soundBtn').addEventListener('click',()=>{const was=soundBtnSeen||$('#soundBt
 $('#muteOn').addEventListener('click',()=>{ensureAudio();soundOnAgain();});
 
 /* ---------- iPad単独動作（オフライン対応） ---------- */
-const APP_VERSION='2.2.2';
+const APP_VERSION='2.2.3';
 {const av=document.getElementById('aboutVer');if(av)av.textContent=APP_VERSION;}
 function updateSwInfo(){const el=$('#swInfo');if(!el)return;
   const standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
