@@ -386,12 +386,18 @@ html[data-theme="dark"]{--rq:#ffc457;--rqon:#3d2600;--rqbg:rgba(255,196,87,.10);
 #newForm .opt{display:inline-block;margin-left:6px;font-size:12.5px;font-weight:400;line-height:1.5;padding:0 6px;border-radius:6px;border:1px solid var(--line);color:var(--muted);vertical-align:1px;white-space:nowrap}
 #newForm .rq.flash{animation:rqflash .9s ease 2}
 @keyframes rqflash{50%{box-shadow:0 0 0 4px var(--rqline)}}
-#pSum{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;margin-top:12px;padding:10px 12px 10px 14px;border-radius:14px;border:1px solid var(--okline);border-left:5px solid var(--okline);background:var(--okbg)}
-#pSum .pst{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 18px;font-size:17px}
+#pSum,#cSum{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;margin-top:12px;padding:10px 12px 10px 14px;border-radius:14px;border:1px solid var(--okline);border-left:5px solid var(--okline);background:var(--okbg)}
+#pSum .pst,#cSum .pst{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 18px;font-size:17px}
 #pSum .pst b{font-size:19px}
-#pSum .pst>*{white-space:nowrap}
-#pSum .pok{color:var(--oktx);font-weight:800;font-size:14px;white-space:nowrap}
-#pSum .btn{min-width:88px}
+#pSum .pst>*,#cSum .pst>*{white-space:nowrap}
+#cSum .pst{font-size:16px;gap:2px 14px}
+#cSum .ch{font-weight:800;color:var(--legend)}
+#cSum .na{color:var(--sub)}
+#cSum .sep{color:var(--sub)}
+#noteCell{display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start}
+#noteCell>label{width:100%}
+#pSum .pok,#cSum .pok{color:var(--oktx);font-weight:800;font-size:14px;white-space:nowrap}
+#pSum .btn,#cSum .btn{min-width:88px}
 #regBar{position:fixed;left:0;right:0;bottom:0;z-index:40;padding:0 12px calc(10px + env(safe-area-inset-bottom,0px));pointer-events:none}
 #regBar .rbin{pointer-events:auto;max-width:1168px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:10px 10px 10px 14px;border-radius:20px;background:var(--dlg);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid var(--edge);box-shadow:var(--hl),0 10px 30px rgba(10,20,35,.25)}
 #regBar .rbst{flex:1;min-width:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -412,8 +418,9 @@ body.rbon #toast{bottom:calc(var(--rbh,90px) + 12px)}
  #regBar .rbmiss button{font-size:14px;padding:4px 10px}
  #regBar #rbBtn{width:100%;font-size:18px;padding:10px 16px}
  #newForm .rq{padding:6px 8px 8px}
- #pSum .pst{gap:2px 12px;font-size:16px;flex:1 1 100%}
- #pSum .pok{flex:1}
+ #pSum .pst,#cSum .pst{gap:2px 12px;font-size:16px;flex:1 1 100%}
+ #pSum .pok,#cSum .pok{flex:1}
+ #cSum .sep{display:none}
  #regBar .rblab{display:none}
 }
 @media print{#regBar{display:none!important}body.rbon{padding-bottom:0}}
@@ -593,6 +600,8 @@ body.rbon #toast{bottom:calc(var(--rbh,90px) + 12px)}
         <label>行き先<input name="dest" list="destList" placeholder="例：自宅、〇〇駅周辺の買い物"><span class="nchips mchips pchips" data-preset="dest" data-field="dest"></span></label>
       </div>
       <p class="hint">よく使う行き先はボタンで入ります（「設定」で登録）。前回の情報を呼び出すと前回の行き先が入り、入力欄を押すと過去の行き先からも選べます。</p>
+      <div class="psum csum" id="cSum" hidden></div>
+      <div id="cFields">
       <div class="grid" style="margin-top:10px">
         <label>本人の携帯番号<input name="selfTel" inputmode="tel"></label>
       </div>
@@ -600,6 +609,7 @@ body.rbon #toast{bottom:calc(var(--rbh,90px) + 12px)}
         <label>家族の氏名<input name="famName"></label>
         <label>家族の続柄<input name="famRel" placeholder="例：母、夫"><span class="nchips mchips pchips" data-preset="rel" data-field="famRel"></span></label>
         <label>家族の携帯番号<input name="famTel" inputmode="tel"></label>
+      </div>
       </div>
       <div style="margin-top:10px">
         <span class="hint">同行者</span>
@@ -638,7 +648,7 @@ body.rbon #toast{bottom:calc(var(--rbh,90px) + 12px)}
     <fieldset><legend>出発確認</legend>
       <div class="grid">
         <label>確認した看護師<span class="req">必須</span><input name="departNurse" list="nurseList" required></label>
-        <label>備考<input name="note"></label>
+        <div id="noteCell"><button type="button" class="btn" id="noteAdd">＋ 備考を書く（任意）</button><label id="noteLab">備考<input name="note"></label></div>
       </div>
     </fieldset>
     <div class="errbox" id="formErr" role="alert" hidden></div>
@@ -1286,7 +1296,7 @@ function startDeparture(o,mode){
     :`<b>${esc(o.name)}</b> さんの${esc(o.kind)}予定（${fmt(o.departAt)}）の出発手続きです。予定で入れた服装写真・タグはそのまま入っています。変わった所だけ直し、確認した看護師を入れて登録してください。帰院予定は予定のときのままです。`)
     +` <button type="button" class="btn sm" id="planBack">やめて「予定」に戻る</button>`;
   $('#planBack').addEventListener('click',backToPlans);
-  updatePlanMode();
+  updatePlanMode();cFold();noteAuto();
 }
 
 /* ---------- ダイアログ ---------- */
@@ -1506,7 +1516,7 @@ function clearPatientForm(){const keep=nf.elements.departAt.value;const hadPlan=
 $('#pSearch').addEventListener('input',renderPatientChips);
 $('#pChips').addEventListener('click',e=>{const b=e.target.closest('[data-pt]');if(!b)return;const p=patients.find(x=>x.id===b.dataset.pt);if(!p)return;
   if(outings.some(o=>isActive(o)&&o.patientId===p.id)){toast(`${p.name} さんは現在外出中です。帰院登録を確認してください。`,4500);}
-  fillPatient(p);pFold();window.scrollTo({top:nf.offsetTop-80,behavior:'smooth'});});
+  fillPatient(p);pFold();cFold();window.scrollTo({top:nf.offsetTop-80,behavior:'smooth'});});
 async function upsertPatient(o,loadedId){
   let p=o.pid?patients.find(x=>x.pid===o.pid):(patients.find(x=>x.id===loadedId&&x.name===o.name)||patients.find(x=>x.name===o.name&&!x.pid));
   if(!p){p={id:uid(),count:0,dests:[],createdAt:Date.now()};patients.push(p);}
@@ -1581,7 +1591,7 @@ function updateRegBar(){const on=$('#sec-new').classList.contains('active');$('#
 new MutationObserver(updateRegBar).observe($('#sec-new'),{attributes:true,attributeFilter:['class']});
 new MutationObserver(()=>updateRq()).observe($('#submitBtn'),{childList:true,characterData:true,subtree:true});
 nf.addEventListener('input',()=>setTimeout(updateRq,0));nf.addEventListener('change',()=>setTimeout(updateRq,0));
-nf.addEventListener('reset',()=>{pExpand();setTimeout(updateRq,0);});
+nf.addEventListener('reset',()=>{pExpand();setTimeout(()=>{noteAuto();updateRq();},0);});
 window.addEventListener('resize',updateRq);
 setInterval(()=>{if(!$('#regBar').hidden)updateRq();},1000);   // 呼び出し・ボタンで値が入った時（input が起きない時）も追う
 $('#rbBtn').addEventListener('click',()=>$('#submitBtn').click());
@@ -1598,7 +1608,20 @@ function pFold(){const f=nf.elements;if(!(f.name.value.trim()&&f.pid.value.trim(
   $('#pSum').hidden=false;$('#pFields').hidden=true;
   $('#pOpen').addEventListener('click',()=>{pExpand();nf.elements.name.focus({preventScroll:true});});
   updateRq();}
-function pExpand(){$('#pSum').hidden=true;$('#pFields').hidden=false;}
+function pExpand(){$('#pSum').hidden=true;$('#pFields').hidden=false;cExpand();}
+// 4. 連絡先：1つでも入っていれば要約にたたむ（空なら開いたまま）。備考：空なら「＋ 備考を書く」ボタンだけにする
+function cFold(){const f=nf.elements;const v=k=>f[k].value.trim();
+  if(!(v('selfTel')||v('famName')||v('famRel')||v('famTel'))){cExpand();return;}
+  const na=t=>`<span class="na">${t}：未登録</span>`;
+  const fam=v('famName')||v('famRel')||v('famTel')?`<span>家族 ${v('famName')?esc(v('famName')):'（氏名未登録）'}${v('famRel')?'（'+esc(v('famRel'))+'）':''}${v('famTel')?' '+esc(v('famTel')):''}</span>${v('famTel')?'':na('家族の携帯')}`:na('家族');
+  $('#cSum').innerHTML=`<div class="pst"><span class="ch">連絡先</span>${v('selfTel')?`<span>本人 ${esc(v('selfTel'))}</span>`:na('本人の携帯')}<span class="sep">／</span>${fam}</div><span class="pok">✓ 入力済み</span><button type="button" class="btn" id="cOpen">変更</button>`;
+  $('#cSum').hidden=false;$('#cFields').hidden=true;
+  $('#cOpen').addEventListener('click',()=>{cExpand();nf.elements.selfTel.focus({preventScroll:true});});}
+function cExpand(){$('#cSum').hidden=true;$('#cFields').hidden=false;}
+function noteAuto(){const has=!!nf.elements.note.value.trim();$('#noteLab').hidden=!has;$('#noteAdd').hidden=has;}
+$('#noteAdd').addEventListener('click',()=>{$('#noteLab').hidden=false;$('#noteAdd').hidden=true;nf.elements.note.focus();});
+noteAuto();
+
 
 async function compress(src){
   const img=await new Promise((res,rej)=>{if(src instanceof HTMLCanvasElement)return res(src);const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(src);});
@@ -1625,7 +1648,7 @@ function showFormErrors(errs){
   nf.querySelectorAll('.invalid').forEach(el=>el.classList.remove('invalid'));
   const box=$('#formErr');
   if(!errs.length){box.hidden=true;return;}
-  if(errs.some(e=>e.el&&$('#pFields').contains(e.el)))pExpand();
+  if(errs.some(e=>e.el&&$('#pFields').contains(e.el)))pExpand();if(errs.some(e=>e.el&&$('#cFields').contains(e.el)))cExpand();
   errs.forEach(e=>e.el&&(e.el._tp||e.el).classList.add('invalid'));
   box.innerHTML='<b>まだ登録できません。次の項目を確認してください。</b><ul>'+errs.map(e=>'<li>'+esc(e.msg)+'</li>').join('')+'</ul>';
   box.hidden=false;
@@ -2072,7 +2095,7 @@ function dlgConsentDate(p){
 $('#ptTable').addEventListener('click',e=>{
   const b=e.target.closest('[data-ptgo],[data-ptedit],[data-ptdis],[data-ptre],[data-pthist],[data-ptwd],[data-ptcd]');if(!b)return;
   const k=Object.keys(b.dataset)[0],p=patients.find(x=>x.id===b.dataset[k]);if(!p)return;
-  if(k==='ptgo'){showTab('new');clearPatientForm();fillPatient(p);pFold();return;}
+  if(k==='ptgo'){showTab('new');clearPatientForm();fillPatient(p);pFold();cFold();return;}
   ({ptedit:dlgPtEdit,ptdis:dlgDischarge,ptre:dlgReadmit,pthist:dlgPatientHistory,ptwd:dlgWithdraw,ptcd:dlgConsentDate})[k](p);
 });
 
