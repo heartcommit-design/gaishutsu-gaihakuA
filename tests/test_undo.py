@@ -12,7 +12,7 @@ async def main():
         await pg.click('nav button[data-tab=new]')
         await pg.fill('input[name=name]','予定 太郎'); await pg.fill('input[name=pid]','Y1'); await pg.click('#wardRadios label:has-text("東1")')
         await pg.evaluate(setdt,['departAt',await pg.evaluate("toLocalInput(Date.now()+86400000)")])
-        await pg.click('#dueQuick button[data-d="1"]'); await pg.select_option('#tagSelect','T-02'); await pg.check('#consentBox input[name=consent]')
+        await pg.click('#kindRadios label:has-text("外泊")'); await pg.click('#dueQuick button[data-d="1"]'); await pg.select_option('#tagSelect','T-02'); await pg.check('#consentBox input[name=consent]')  # 見本A：日付のボタン（明日など）は外泊の時だけ出る
         await pg.fill('input[name=departNurse]','看護 A'); await pg.click('#submitBtn'); await pg.wait_for_timeout(600)
         o=await pg.evaluate("outings.find(o=>o.pid==='Y1')"); print('1 plan', o['status'], o['tagId'], await pg.evaluate("tags.find(t=>t.id==='T-02').status"))
         # back button from departure route

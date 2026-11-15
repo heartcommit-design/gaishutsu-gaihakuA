@@ -425,6 +425,85 @@ body.rbon #toast{bottom:calc(var(--rbh,90px) + 12px)}
 }
 @media print{#regBar{display:none!important}body.rbon{padding-bottom:0}}
 
+/* ---------- 見本B：新規登録の見た目（落ち着いた濃紺・余白と細い罫線・高さと角丸の統一） ---------- */
+:root,html[data-theme="light"]{--nv:#1b2b4b;--nvtx:#fff;--acc:#0f7882;--surf:rgba(255,255,255,.80);--hair:rgba(20,35,58,.10);--hair2:rgba(20,35,58,.22);--segbg:rgba(20,35,58,.06);--segon:#fff;--soft:0 1px 2px rgba(16,24,40,.05),0 10px 30px rgba(16,24,40,.07);--rqsoft:rgba(216,144,26,.10)}
+html[data-theme="dark"]{--nv:#e3eaf6;--nvtx:#0f1b30;--acc:#62cfd6;--surf:rgba(20,32,52,.78);--hair:rgba(255,255,255,.10);--hair2:rgba(255,255,255,.24);--segbg:rgba(255,255,255,.07);--segon:rgba(255,255,255,.17);--soft:0 1px 2px rgba(0,0,0,.20),0 12px 32px rgba(0,0,0,.28);--rqsoft:rgba(255,196,87,.10)}
+#sec-new>h2{font-size:22px;font-weight:700;letter-spacing:.06em;margin:10px 6px 16px}
+#sec-new #newForm.panel{background:var(--surf);border:1px solid var(--edge);border-radius:24px;padding:4px 32px 22px;box-shadow:var(--hl),var(--soft)}
+#newForm fieldset{border:0;border-top:1px solid var(--hair);border-radius:0;margin:0;padding:26px 2px 28px}
+#newForm>fieldset:first-of-type{border-top:0}
+#newForm fieldset::after{content:"";display:table;clear:both}
+#newForm legend{float:left;width:100%;padding:0;margin:0 0 18px;display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;letter-spacing:.08em;color:var(--ink)}
+#newForm legend+*{clear:both}
+#newForm legend::before{content:"";flex:none;width:22px;height:22px;background:var(--acc);-webkit-mask:center/contain no-repeat;mask:center/contain no-repeat}
+#newForm>fieldset:nth-of-type(1)>legend::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='3.6'/%3E%3Cpath d='M4.8 20c.6-3.6 3.5-5.8 7.2-5.8s6.6 2.2 7.2 5.8'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='3.6'/%3E%3Cpath d='M4.8 20c.6-3.6 3.5-5.8 7.2-5.8s6.6 2.2 7.2 5.8'/%3E%3C/svg%3E")}
+#newForm>fieldset:nth-of-type(2)>legend::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.6'/%3E%3Cpath d='M12 7.4V12l3.2 2'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.6'/%3E%3Cpath d='M12 7.4V12l3.2 2'/%3E%3C/svg%3E")}
+#newForm>fieldset:nth-of-type(3)>legend::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='7' width='18' height='13' rx='3'/%3E%3Cpath d='M8.6 7l1.5-2.6h3.8L15.4 7'/%3E%3Ccircle cx='12' cy='13.4' r='3.4'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='7' width='18' height='13' rx='3'/%3E%3Cpath d='M8.6 7l1.5-2.6h3.8L15.4 7'/%3E%3Ccircle cx='12' cy='13.4' r='3.4'/%3E%3C/svg%3E")}
+#newForm>fieldset:nth-of-type(4)>legend::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21s-6.6-6-6.6-11.2a6.6 6.6 0 0 1 13.2 0C18.6 15 12 21 12 21z'/%3E%3Ccircle cx='12' cy='9.8' r='2.4'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21s-6.6-6-6.6-11.2a6.6 6.6 0 0 1 13.2 0C18.6 15 12 21 12 21z'/%3E%3Ccircle cx='12' cy='9.8' r='2.4'/%3E%3C/svg%3E")}
+#newForm>fieldset:nth-of-type(5)>legend::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.6'/%3E%3Cpath d='M8.2 12.3l2.6 2.6 5-5.4'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.6'/%3E%3Cpath d='M8.2 12.3l2.6 2.6 5-5.4'/%3E%3C/svg%3E")}
+#newForm label{font-size:15px;color:var(--sub);letter-spacing:.02em}
+#newForm input:not([type=radio]):not([type=checkbox]):not([type=file]),#newForm select{min-height:48px;border-radius:12px;border-color:var(--hair2);font-variant-numeric:tabular-nums}
+#newForm textarea{border-radius:12px;border-color:var(--hair2)}
+#newForm input:focus,#newForm select:focus,#newForm textarea:focus{outline:3px solid color-mix(in srgb,var(--acc) 28%,transparent);border-color:var(--acc)}
+#newForm .grid{gap:14px 20px}
+#newForm .btn{border-radius:12px;min-height:48px;border-color:var(--hair2)}
+#newForm .btn.sm{min-height:44px;font-size:15px;padding:6px 14px}
+#sec-new .btn.pri,#regBar .btn.pri{background:var(--nv);border-color:var(--nv);color:var(--nvtx);letter-spacing:.06em;box-shadow:0 6px 18px rgba(16,24,40,.18)}
+#newForm .nchip{min-height:44px;border-radius:12px;padding:6px 14px;font-size:15px;border-color:var(--hair2)}
+#newForm .nchips{gap:8px;margin:10px 0 4px}
+/* 選択肢：区切りのある1本の帯（セグメント） */
+#newForm .radios{display:inline-flex;gap:4px;padding:4px;margin-top:6px;border-radius:14px;background:var(--segbg)}
+#newForm .radios label{border:0;background:transparent;min-height:44px;border-radius:10px;padding:8px 22px;justify-content:center;font-size:17px;color:var(--ink);font-weight:600;letter-spacing:.04em;position:relative}
+#newForm .radios label:has(input:checked){background:var(--segon);box-shadow:0 1px 3px rgba(16,24,40,.14);font-weight:800;color:var(--ink)}
+#newForm .radios input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+#newForm .radios label:has(input:focus-visible){outline:3px solid var(--acc)}
+#newForm .radios.wards{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));width:100%}
+#newForm .radios.wards label{min-width:0;padding:8px 4px;font-weight:700}
+#newForm #kindRadios label{min-width:120px}
+/* 必須：細い線＋小さな印＋文字 */
+#newForm .rq{background:transparent;border-left:3px solid var(--rqline);border-radius:0;padding:2px 0 6px 16px;font-size:16px;font-weight:700;color:var(--ink)}
+#newForm .rq.rqempty{background:linear-gradient(90deg,var(--rqsoft),transparent 70%)}
+#newForm .rq.done{border-left-color:var(--hair2);background:transparent}
+#newForm .req{background:transparent;color:var(--rqtx);border:1px solid var(--rqline);font-size:12.5px;font-weight:700;padding:0 7px;border-radius:999px;letter-spacing:.06em}
+#newForm .rqst{font-size:13px;letter-spacing:.04em}
+#newForm .rq.rqempty .rqst::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--rqline);margin-right:5px;vertical-align:1px}
+#newForm .opt{border-color:var(--hair2);border-radius:999px;font-size:12.5px;letter-spacing:.06em}
+#newForm .hint{color:var(--sub)}
+#pSum,#cSum{background:var(--segbg);border:1px solid var(--hair);border-left:3px solid var(--okline);border-radius:14px}
+#newForm .loaded{border-radius:14px;border-color:var(--hair)}
+/* 時刻：出発と帰院を左右にそろえる */
+.tgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px 28px;margin-top:22px}
+.tcol{min-width:0}
+.tcol .thead{display:block;margin:0;font-size:16px;font-weight:700;color:var(--ink);letter-spacing:.04em}
+.tgrid{margin-bottom:6px}
+#newForm .tgrid+.grid{margin-top:26px!important}
+#newForm div>.hint+.radios{display:flex;width:fit-content}
+#newForm div>span.hint:first-child{display:block}
+.tres{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;min-height:52px;margin:6px 0 12px;color:var(--ink);font-variant-numeric:tabular-nums}
+.tres .d{font-size:18px;font-weight:600;letter-spacing:.02em;white-space:nowrap}
+.tres .t{font-size:34px;font-weight:700;letter-spacing:.02em;line-height:1.1;white-space:nowrap}
+.tres .s{font-size:14px;font-weight:600;color:var(--sub);white-space:nowrap}
+.tres .s.warn{color:var(--rqtx)}
+.tres .e{font-size:16px;font-weight:600;color:var(--muted);align-self:center}
+.tres .plan{align-self:center;white-space:nowrap;font-size:15px;font-weight:800;letter-spacing:.04em;padding:5px 14px;border-radius:999px;background:var(--planbg);color:var(--plantx);border:1px solid var(--infoline)}
+.tbtns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.tbtns.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.tbtns+.tbtns{margin-top:8px}
+#dueQuick .tbtns+.tbtns{margin-top:8px}
+.tb{font:inherit;font-size:16px;font-weight:600;min-height:48px;padding:4px 6px;border-radius:12px;border:1px solid var(--hair2);background:var(--field);color:var(--ink);cursor:pointer;white-space:nowrap;font-variant-numeric:tabular-nums;letter-spacing:.02em;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:var(--hl)}
+.tb small{font-size:13px;font-weight:500;color:var(--sub)}
+.tb.on{background:var(--nv);border-color:var(--nv);color:var(--nvtx);font-weight:800}
+.tb.on small{color:inherit;opacity:.8}
+.tman{margin-top:12px}
+.tman .tp{margin-top:0}
+#depCol.isplan .tres .t{color:var(--plantx)}
+/* 下の登録バー */
+#regBar .rbin{border-radius:18px;box-shadow:var(--hl),var(--soft)}
+#regBar .rbcnt{background:var(--rqsoft);color:var(--rqtx);border:1px solid var(--rqline);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+#regBar .rbcnt.all{background:var(--okbg);color:var(--oktx);border-color:var(--okline)}
+#regBar .rbmiss button{border-width:1px;background:transparent;font-weight:600}
+@media (max-width:760px){.tgrid{grid-template-columns:minmax(0,1fr)}#newForm .radios.wards{grid-template-columns:repeat(4,minmax(0,1fr))}#sec-new #newForm.panel{padding:4px 14px 18px}}
+
 /* ---------- スマホ（幅600px以下） ---------- */
 @media (max-width:600px){
  .crow{display:flex;flex-wrap:wrap}
@@ -583,18 +662,24 @@ body.rbon #toast{bottom:calc(var(--rbh,90px) + 12px)}
         <label><input type="radio" name="kind" value="外出" checked>外出</label>
         <label><input type="radio" name="kind" value="外泊">外泊</label>
       </div>
-      <div class="grid" style="margin-top:10px">
-        <label>出発日時<span class="req">必須</span><input type="datetime-local" name="departAt" required></label>
-        <label>帰院予定日時<span class="req">必須</span><input type="datetime-local" name="dueAt" required></label>
-      </div>
-      <div class="quick" id="dueQuick">
-        <span class="hint" style="margin:8px 4px 0 0">出発から：</span>
-        <button type="button" class="btn sm" data-h="1">+1時間</button>
-        <button type="button" class="btn sm" data-h="2">+2時間</button>
-        <button type="button" class="btn sm" data-h="3">+3時間</button>
-        <button type="button" class="btn sm" data-h="4">+4時間</button>
-        <button type="button" class="btn sm" data-d="1">翌日 同時刻</button>
-        <button type="button" class="btn sm" data-d="2">2日後 同時刻</button>
+      <div class="tgrid">
+        <div class="tcol" id="depCol">
+          <label class="thead">出発日時<span class="req">必須</span><input type="datetime-local" name="departAt" required></label>
+          <div class="tres" id="depRes"></div>
+          <div class="tbtns" id="depQuick"><button type="button" class="tb" data-m="0">今から</button><button type="button" class="tb" data-m="10">10分後</button><button type="button" class="tb" data-m="20">20分後</button><button type="button" class="tb" data-m="30">30分後</button><button type="button" class="tb" data-m="60">1時間後</button><button type="button" class="tb" data-m="120">2時間後</button><button type="button" class="tb" data-m="180">3時間後</button><button type="button" class="tb" data-tmr="1">明日</button></div>
+          <div class="tbtns" id="depTimes" hidden><button type="button" class="tb" data-t="09:00">09:00</button><button type="button" class="tb" data-t="10:00">10:00</button><button type="button" class="tb" data-t="13:00">13:00</button><button type="button" class="tb" data-t="15:00">15:00</button></div>
+          <div class="tman" id="depMan"></div>
+        </div>
+        <div class="tcol" id="dueCol">
+          <label class="thead">帰院予定日時<span class="req">必須</span><input type="datetime-local" name="dueAt" required></label>
+          <div class="tres" id="dueRes"></div>
+          <div id="dueQuick">
+            <div class="tbtns" data-kind="外出"><button type="button" class="tb" data-h="1">+1時間</button><button type="button" class="tb" data-h="2">+2時間</button><button type="button" class="tb" data-h="3">+3時間</button><button type="button" class="tb" data-h="4">+4時間</button><button type="button" class="tb" data-h="6">+6時間</button><button type="button" class="tb" data-h="8">+8時間</button><button type="button" class="tb" data-h="10">+10時間</button></div>
+            <div class="tbtns c3" data-kind="外泊" hidden><button type="button" class="tb" data-d="1">明日</button><button type="button" class="tb" data-d="2">明後日</button><button type="button" class="tb" data-d="3">3日後</button></div>
+            <div class="tbtns" data-kind="外泊" hidden><button type="button" class="tb" data-t="10:00">10:00</button><button type="button" class="tb" data-t="13:00">13:00</button><button type="button" class="tb" data-t="15:00">15:00</button><button type="button" class="tb" data-t="17:00">17:00</button></div>
+          </div>
+          <div class="tman" id="dueMan"></div>
+        </div>
       </div>
       <div class="grid" style="margin-top:10px">
         <label>行き先<input name="dest" list="destList" placeholder="例：自宅、〇〇駅周辺の買い物"><span class="nchips mchips pchips" data-preset="dest" data-field="dest"></span></label>
@@ -1563,19 +1648,62 @@ function updateConsent(){renderClothesHist();const box=$('#consentBox');const ta
 nf.elements.name.addEventListener('input',updateConsent);nf.elements.pid.addEventListener('input',updateConsent);
 $('#tagSelect').addEventListener('change',updateConsent);
 $$('input[name="alone"]').forEach(r=>r.addEventListener('change',()=>{$('#compBox').hidden=nf.elements.alone.value==='1';}));
-$('#dueQuick').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const base=fromLocalInput(nf.elements.departAt.value)||Date.now();const d=new Date(base);
-  if(b.dataset.h)d.setTime(base+b.dataset.h*3600000);if(b.dataset.d)d.setDate(d.getDate()+Number(b.dataset.d));nf.elements.dueAt.value=toLocalInput(round15(d.getTime()));});
+
+
+/* ---------- 見本A：出発・帰院の時刻ボタン ---------- */
+// 選択欄（日付・時刻・細かく入力）は各列の下へ移す。入力欄（name=departAt/dueAt）と値の読み取りは同じ
+$('#depMan').append(nf.elements.departAt._tp);$('#dueMan').append(nf.elements.dueAt._tp);
+let depPick=null,depSetting=false;
+const tkDayStart=t=>{const d=new Date(t);d.setHours(0,0,0,0);return d.getTime();};
+const tkAddDays=(t,n)=>{const d=new Date(t);d.setDate(d.getDate()+n);return d.getTime();};
+const tkHmOf=t=>{const d=new Date(t);return pad(d.getHours())+':'+pad(d.getMinutes());};
+const tkAtHM=(day,x)=>{const d=new Date(day);const [h,m]=x.split(':').map(Number);d.setHours(h,m,0,0);return d.getTime();};
+const tkMdOf=t=>{const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()}(${'日月火水木金土'[d.getDay()]})`;};
+function tkRelDay(t){const k=Math.round((tkDayStart(t)-tkDayStart(Date.now()))/86400000);return {'-1':'昨日','0':'今日','1':'明日','2':'明後日'}[k]||(k>2?k+'日後':'');}
+function tkDurText(ms){const m=Math.round(ms/60000),d=Math.floor(m/1440),h=Math.floor(m%1440/60),mm=m%60;return (d?d+'日':'')+(h?h+'時間':'')+(mm?mm+'分':'')||'0分';}
+function tkSetDT(name,t){const i=nf.elements[name];depSetting=name==='departAt';i.value=toLocalInput(t);i.dispatchEvent(new Event('input',{bubbles:true}));i.dispatchEvent(new Event('change',{bubbles:true}));depSetting=false;}
+nf.elements.departAt.addEventListener('input',()=>{if(!depSetting)depPick=null;});
+nf.addEventListener('reset',()=>{depPick=null;});
+$('#depQuick').addEventListener('click',e=>{const b=e.target.closest('.tb');if(!b)return;
+  if(b.dataset.tmr){const cur=fromLocalInput(nf.elements.departAt.value)||Date.now();tkSetDT('departAt',tkAtHM(tkAddDays(tkDayStart(Date.now()),1),tkHmOf(round15(cur))));depPick='tmr';updateRq();
+    const f=$('#depTimes .tb');if(f)setTimeout(()=>f.focus({preventScroll:true}),0);return;}
+  tkSetDT('departAt',Date.now()+Number(b.dataset.m)*60000);depPick=Number(b.dataset.m);updateRq();});
+$('#depTimes').addEventListener('click',e=>{const b=e.target.closest('.tb');if(!b)return;const dep=fromLocalInput(nf.elements.departAt.value)||tkAddDays(Date.now(),1);
+  const keep=depPick;tkSetDT('departAt',tkAtHM(tkDayStart(dep),b.dataset.t));depPick=keep;updateRq();});
+$('#dueQuick').addEventListener('click',e=>{const b=e.target.closest('.tb');if(!b)return;const dep=fromLocalInput(nf.elements.departAt.value)||Date.now();const due=fromLocalInput(nf.elements.dueAt.value);
+  if(b.dataset.h)tkSetDT('dueAt',round15(dep+Number(b.dataset.h)*3600000));
+  else if(b.dataset.d)tkSetDT('dueAt',tkAtHM(tkAddDays(tkDayStart(dep),Number(b.dataset.d)),due?tkHmOf(due):tkHmOf(round15(dep))));
+  else if(b.dataset.t)tkSetDT('dueAt',tkAtHM(due?tkDayStart(due):tkAddDays(tkDayStart(dep),1),b.dataset.t));
+  updateRq();});
+function tkSetHTML(el,h){if(el.innerHTML!==h)el.innerHTML=h;}
+function tkResHTML(t,which){if(!t)return '<span class="e">まだ選んでいません</span>';
+  const r=tkRelDay(t);let h=`<span class="d">${r?r+' ':''}${tkMdOf(t)}</span><span class="t">${tkHmOf(t)}</span>`;
+  if(which==='dep'){if(isPlanForm())h+='<span class="plan">予定として登録</span>';}
+  else{const dep=fromLocalInput(nf.elements.departAt.value);if(dep&&t>dep){const q=Math.round((t-dep)/900000)*900000;h+=`<span class="s">出発から ${q===t-dep?'':'約'}${tkDurText(q||t-dep)}</span>`;}else if(dep)h+='<span class="s warn">出発より前です</span>';}
+  return h;}
+function paintTime(){const f=nf.elements;const dep=fromLocalInput(f.departAt.value),due=fromLocalInput(f.dueAt.value),kind=f.kind.value,now=Date.now();
+  $$('#dueQuick [data-kind]').forEach(g=>{const h=g.dataset.kind!==kind;if(g.hidden!==h)g.hidden=h;});
+  const tmr=tkAddDays(tkDayStart(now),1);
+  $$('#depQuick .tb').forEach(b=>{const on=b.dataset.tmr?(!!dep&&tkDayStart(dep)===tmr):(depPick===Number(b.dataset.m)||(depPick===null&&b.dataset.m==='0'&&!!dep&&Math.abs(dep-now)<=120000));b.classList.toggle('on',on);});
+  const sh=!(dep&&tkDayStart(dep)>tkDayStart(now));if($('#depTimes').hidden!==sh)$('#depTimes').hidden=sh;
+  $$('#depTimes .tb').forEach(b=>b.classList.toggle('on',!!dep&&tkHmOf(dep)===b.dataset.t));
+  $$('#dueQuick [data-h]').forEach(b=>b.classList.toggle('on',!!(dep&&due)&&round15(dep+Number(b.dataset.h)*3600000)===due));
+  $$('#dueQuick [data-d]').forEach(b=>{const day=tkAddDays(tkDayStart(dep||now),Number(b.dataset.d));const r=tkRelDay(day);tkSetHTML(b,`${r||tkMdOf(day)}<small>${tkMdOf(day)}</small>`);b.classList.toggle('on',!!due&&tkDayStart(due)===day);});
+  $$('#dueQuick [data-t]').forEach(b=>b.classList.toggle('on',!!due&&tkHmOf(due)===b.dataset.t));
+  tkSetHTML($('#depRes'),tkResHTML(dep,'dep'));tkSetHTML($('#dueRes'),tkResHTML(due,'due'));
+  $('#depCol').classList.toggle('isplan',isPlanForm());
+}
 
 /* ---------- 見本：必須の見分け・下の登録バー・患者欄のたたみ ---------- */
 const RQ=[{k:'name',lab:'患者氏名'},{k:'pid',lab:'患者ID'},{k:'ward',lab:'病棟'},{k:'departAt',lab:'出発日時'},{k:'dueAt',lab:'帰院予定日時'},{k:'departNurse'},{k:'compName',lab:'同行者氏名',cond:()=>nf.elements.alone.value==='0'}];
-function rqBox(k){return k==='ward'?$('#wardBox'):nf.elements[k].closest('label');}
+function rqBox(k){return k==='ward'?$('#wardBox'):k==='departAt'?$('#depCol'):k==='dueAt'?$('#dueCol'):nf.elements[k].closest('label');}
 function rqFilled(k){return !!String((k==='ward'?nf.elements.ward.value:nf.elements[k].value)||'').trim();}
 function rqLabel(k){return k==='departNurse'?(isPlanForm()?'登録した看護師':'確認した看護師'):RQ.find(r=>r.k===k).lab;}
 RQ.forEach(r=>{const b=rqBox(r.k);b.classList.add('rq');const st=document.createElement('span');st.className='rqst';b.querySelector('.req').after(st);});
 nf.querySelectorAll('label').forEach(l=>{if(l.classList.contains('rq')||l.closest('.radios')||l.classList.contains('consent')||l.classList.contains('btn')||l.querySelector('#pSearch')||!l.querySelector('input,select,textarea'))return;
   const t=l.firstChild;if(t&&t.nodeType===3){const o=document.createElement('span');o.className='opt';o.textContent='任意';t.after(o);}});
 let rqSig='';
-function updateRq(){
+function updateRq(){paintTime();
   let n=0,tot=0;const miss=[];
   RQ.forEach(r=>{const b=rqBox(r.k);const on=!r.cond||r.cond();const f=on&&rqFilled(r.k);
     b.classList.toggle('done',f);b.classList.toggle('rqempty',on&&!f);b.querySelector('.rqst').textContent=f?'✓ 入力済み':'未入力';
@@ -1597,7 +1725,7 @@ setInterval(()=>{if(!$('#regBar').hidden)updateRq();},1000);   // 呼び出し�
 $('#rbBtn').addEventListener('click',()=>$('#submitBtn').click());
 $('#rbMiss').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)goField(b.dataset.go);});
 function goField(k){const box=rqBox(k);if($('#pFields').contains(box))pExpand();
-  let t;if(k==='ward')t=nf.querySelector('#wardRadios input');else{const i=nf.elements[k];t=i._tp&&i.hidden?(i._tp.querySelector('.tp-d').value?i._tp.querySelector('.tp-t'):i._tp.querySelector('.tp-d')):i;}
+  let t;if(k==='ward')t=nf.querySelector('#wardRadios input');else if(k==='departAt'||k==='dueAt')t=[...box.querySelectorAll('.tb')].find(x=>x.offsetParent);else{const i=nf.elements[k];t=i._tp&&i.hidden?(i._tp.querySelector('.tp-d').value?i._tp.querySelector('.tp-t'):i._tp.querySelector('.tp-d')):i;}
   box.scrollIntoView({behavior:'smooth',block:'center'});
   box.classList.remove('flash');void box.offsetWidth;box.classList.add('flash');
   setTimeout(()=>t&&t.focus({preventScroll:true}),350);}
