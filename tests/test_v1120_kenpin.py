@@ -142,16 +142,20 @@ def main():
 
         # 古いバックアップ（印なし）：3つを足す。すでにある「喫煙」は重ねない
         dp = restore({'destPresets': ['自宅', '喫煙'], 'nurses': []}, 'kenpin_old.json')
-        assert dp == ['自宅', '喫煙', '図書館', '加古川のイオン'], dp
+        # 2.4.1：印のない古いバックアップには「他院受診」も末尾に足す（addPresets241）
+        assert dp == ['自宅', '喫煙', '図書館', '加古川のイオン', '他院受診'], dp
         assert pg.evaluate('settings.destAdded1110') is True
-        assert pg.evaluate("dbGet('settings','main').then(s=>[s.destPresets.length,s.destAdded1110])") == [4, True]
+        assert pg.evaluate("dbGet('settings','main').then(s=>[s.destPresets.length,s.destAdded1110,s.destAdded241])") == [5, True, True]
         # そのあと利用者が消したものは、開き直しても足さない（一度だけ）
         pg.fill('#sDest', '自宅'); pg.click('#sPresetSave'); pg.wait_for_timeout(300)
         pg.reload(); pg.wait_for_timeout(700); pg.click('#startOv'); pg.wait_for_timeout(200)
         assert pg.evaluate('settings.destPresets') == ['自宅']
         # 新しいバックアップ（1.11.0 以降・印あり）：足さない
-        dp = restore({'destPresets': ['自宅', '見本の公園'], 'destAdded1110': True, 'nurses': []}, 'kenpin_new.json')
+        dp = restore({'destPresets': ['自宅', '見本の公園'], 'destAdded1110': True, 'destAdded241': True, 'nurses': []}, 'kenpin_new.json')
         assert dp == ['自宅', '見本の公園'], dp
+        # 2.4.1：1.11.0〜2.4.0 のバックアップ（destAdded241 の印なし）なら「他院受診」だけを末尾に足す
+        dp = restore({'destPresets': ['自宅', '見本の公園'], 'destAdded1110': True, 'nurses': []}, 'kenpin_240.json')
+        assert dp == ['自宅', '見本の公園', '他院受診'], dp
         ctx2.close(); b.close()
     print('errors', errs)
     assert not errs

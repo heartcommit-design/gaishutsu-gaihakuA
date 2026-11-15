@@ -1183,6 +1183,9 @@ const saveSettings=()=>dbPut('settings',settings,'main');
 const DEST_ADD_1110=['喫煙','図書館','加古川のイオン'];
 // 1.11.0：すでに使っている端末にも行き先の3つを一度だけ足す（後で消したものは再び足さない）
 async function addPresets1110(){if(settings.destAdded1110)return;const l=settings.destPresets||[];settings.destPresets=[...l,...DEST_ADD_1110.filter(x=>!l.includes(x))];settings.destAdded1110=true;await saveSettings();}
+// 2.4.1：2.4.0 で初期値の末尾に入った「他院受診」を、すでに使っている端末にも一度だけ末尾に足す（すでにあれば重ねない・後で消したら再び足さない）
+const DEST_ADD_241='他院受診';
+async function addPresets241(){if(settings.destAdded241)return;const l=settings.destPresets||[];settings.destPresets=l.includes(DEST_ADD_241)?[...l]:[...l,DEST_ADD_241];settings.destAdded241=true;await saveSettings();}
 const NURSE_MAX=60;
 const tagSort=(a,b)=>a.id.localeCompare(b.id,'ja',{numeric:true});
 const TAG_ST={available:'利用可',reserved:'予約中',inuse:'貸出中',missing:'未回収',maint:'点検・電池交換'};
@@ -1305,6 +1308,7 @@ $('#themeBtn').addEventListener('click',()=>{const order=['auto','light','dark']
 
 /* ---------- 目隠し表示 ---------- */
 const revealUntil={};const openUntil={};let printFull=false;
+const OPEN_MS=120000;   // 「詳細」を開いてから自動で閉じるまで（外出・外泊中と予定で共通。2.4.1）
 const OPEN_ALL=location.hash==='#detail';
 const isOpen=o=>OPEN_ALL||printFull||openUntil[o.id]>Date.now();
 function maskName(n){return String(n||'').trim().split(/[\s　]+/).map(x=>x?x[0]+'○'.repeat(Math.max(0,x.length-1)):'').join(' ');}
@@ -1408,7 +1412,7 @@ async function renderActive(){
 }
 $('#activeList').addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');if(!b)return;const id=b.closest('.card').dataset.id;const o=outings.find(x=>x.id===id);if(!o)return;
-  ({open:o=>{openUntil[o.id]=Date.now()+120000;lastSig='';tick();},close:o=>{delete openUntil[o.id];lastSig='';tick();},undo:dlgUndo,return:dlgReturn,ack:doAck,lost:dlgLost,found:o=>dlgExtend(o,true),log:dlgLog,extend:o=>dlgExtend(o,false),edit:dlgEdit,photo:dlgPhoto,reveal:o=>{revealUntil[o.id]=Date.now()+30000;lastSig='';tick();}})[b.dataset.act](o);
+  ({open:o=>{openUntil[o.id]=Date.now()+OPEN_MS;lastSig='';tick();},close:o=>{delete openUntil[o.id];lastSig='';tick();},undo:dlgUndo,return:dlgReturn,ack:doAck,lost:dlgLost,found:o=>dlgExtend(o,true),log:dlgLog,extend:o=>dlgExtend(o,false),edit:dlgEdit,photo:dlgPhoto,reveal:o=>{revealUntil[o.id]=Date.now()+30000;lastSig='';tick();}})[b.dataset.act](o);
 });
 // 2.2.2：日別一覧・集計の印刷の間だけ body に pm-history を付ける。iPad では印刷の画面（用紙の向きの切り替えなど）を
 // 開いている間に afterprint が先に来て、向きを変えた時に別の内容（外出・外泊中の一覧）に変わってしまうため、
@@ -1419,8 +1423,11 @@ $('#printBtn').addEventListener('click',async()=>{pmHistoryOff();showTab('active
 
 /* ---------- 予定 ---------- */
 // 2.4.0：ふだんは1行（タグ・氏名・病棟と区分・出発予定・帰院予定・出発まで・「出発（GO）」「詳細」）。「詳細」で写真・行き先などと残りのボタンが開く
-const planOpen=new Set();
-const isPlanOpen=o=>OPEN_ALL||planOpen.has(o.id);
+// 2.4.1：外出・外泊中の「詳細」と同じく、開いてから OPEN_MS（2分）で自動で閉じる。planOpen は 予定のid → 閉じる時刻。
+// ダイアログ（GO・写真・取り消しの確認など）が開いている間と、行の中の入力欄にフォーカスがある間は閉じずに待つ（閉じた後の次の1秒で閉じる）
+const planOpen=new Map();
+const planHold=id=>{if(document.querySelector('dialog[open]'))return true;const a=document.activeElement;return !!(a&&a.matches('input,textarea,select')&&a.closest(`#planList .card[data-id="${id}"]`));};
+const isPlanOpen=o=>OPEN_ALL||(planOpen.has(o.id)&&(planOpen.get(o.id)>Date.now()||planHold(o.id)));
 const planCountText=(o,now)=>o.departAt<now?dur(now-o.departAt)+' 経過':'出発まで '+dur(o.departAt-now);
 function planDayHTML(ds,n){const k=Math.round((ds-tkDayStart(Date.now()))/86400000);const r={'-1':'昨日','0':'今日','1':'明日'}[k];
   return `<h3 class="pday" data-day="${toDateInput(ds)}">${r?`<span>${r}</span><small>${tkMdOf(ds)}</small>`:`<span>${tkMdOf(ds)}</span>`}<small>${n}件</small></h3>`;}
@@ -1449,12 +1456,13 @@ async function renderPlans(){
   $('#planList').innerHTML=html.join('')||'<div class="empty">出発前の予定はありません。</div>';
 }
 // 毎秒：予定タブを開いている間、「出発まで」を進める。出発予定を過ぎた・日付が変わった等の時だけ作り直す
-function updatePlans(now){if(!$('#sec-plan').classList.contains('active'))return;const list=outings.filter(o=>o.status==='planned').sort((a,b)=>a.departAt-b.departAt);
+function updatePlans(now){for(const [id,t] of planOpen)if(t<=now&&!planHold(id))planOpen.delete(id);   // 期限の過ぎた「詳細」を片付ける（印は isPlanOpen で見る）
+  if(!$('#sec-plan').classList.contains('active'))return;const list=outings.filter(o=>o.status==='planned').sort((a,b)=>a.departAt-b.departAt);
   if(planSigOf(list,now)!==planSig){renderPlans();return;}
   $$('[data-pcount]').forEach(el=>{const o=outings.find(x=>x.id===el.dataset.pcount);if(o){const t=planCountText(o,now);if(el.textContent!==t)el.textContent=t;}});}
 $('#planHelpBtn').addEventListener('click',()=>{const h=$('#planHelp'),b=$('#planHelpBtn');h.hidden=!h.hidden;b.setAttribute('aria-expanded',h.hidden?'false':'true');b.textContent=h.hidden?'使い方':'使い方を閉じる';});
 $('#planList').addEventListener('click',async e=>{const b=e.target.closest('[data-pact]');if(!b)return;const o=outings.find(x=>x.id===b.closest('.card').dataset.id);if(!o)return;
-  if(b.dataset.pact==='toggle'){if(planOpen.has(o.id))planOpen.delete(o.id);else planOpen.add(o.id);await renderPlans();const c=$(`#planList .card[data-id="${o.id}"] [data-pact=toggle]`);if(c)c.focus({preventScroll:true});return;}
+  if(b.dataset.pact==='toggle'){if(isPlanOpen(o))planOpen.delete(o.id);else planOpen.set(o.id,Date.now()+OPEN_MS);await renderPlans();const c=$(`#planList .card[data-id="${o.id}"] [data-pact=toggle]`);if(c)c.focus({preventScroll:true});return;}
   if(b.dataset.pact==='reveal'){revealUntil[o.id]=Date.now()+30000;renderPlans();return;}
   if(b.dataset.pact==='go')dlgGo(o);
   if(b.dataset.pact==='edit')startDeparture(o);
@@ -2518,6 +2526,8 @@ $('#bkIn').addEventListener('change',async e=>{const f=e.target.files[0];e.targe
   Object.keys(photoURL).forEach(dropPhotoURL);await loadAll();
   // 1.10.0 以前のバックアップ（印なし）なら、行き先の3つを足す処理をもう一度だけ動かす（すでにあるものは重ねない）
   if(!(d.settings&&d.settings.destAdded1110)){settings.destAdded1110=false;await addPresets1110();}
+  // 2.4.1：2.4.0 以前のバックアップ（印なし）なら「他院受診」を足す処理をもう一度だけ動かす（すでにあれば重ねない）
+  if(!(d.settings&&d.settings.destAdded241)){settings.destAdded241=false;await addPresets241();}
   applyTheme();mirrorTheme();lastSig='';tick();renderSettings();renderPresetChips();toast('復元しました');}catch(err){toast('このファイルは読み込めません');}});
 $('#wipe').addEventListener('click',async()=>{if(!await askConfirm('すべての記録・患者台帳・タグ・写真を削除します。元に戻せません。'))return;if(!await askConfirm('本当に削除しますか？'))return;
   await dbClear('outings');await dbClear('tags');await dbClear('photos');await dbClear('patients');Object.keys(photoURL).forEach(dropPhotoURL);outings=[];tags=[];patients=[];lastSig='';tick();toast('削除しました');});
@@ -2745,7 +2755,7 @@ $('#soundBtn').addEventListener('click',()=>{const was=soundBtnSeen||$('#soundBt
 $('#muteOn').addEventListener('click',()=>{ensureAudio();soundOnAgain();});
 
 /* ---------- iPad単独動作（オフライン対応） ---------- */
-const APP_VERSION='2.4.0';
+const APP_VERSION='2.4.1';
 {const av=document.getElementById('aboutVer');if(av)av.textContent=APP_VERSION;}
 function updateSwInfo(){const el=$('#swInfo');if(!el)return;
   const standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -2771,7 +2781,7 @@ if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostnam
     if(o.tagId){const t=tags.find(x=>x.id===o.tagId);if(t&&t.outingId===o.id){t.status='available';t.outingId=null;await saveTag(t);}addLog(o,`出発前のため予定に変更（タグ ${o.tagId} の確保を解除）`);o.tagId='';o.consent=false;}
     else addLog(o,'出発前のため予定に変更');
     if(o.hasPhoto){await dbDel('photos',o.id);o.hasPhoto=false;}await saveOuting(o);}}
-  await addPresets1110();
+  await addPresets1110();await addPresets241();
   if(!tags.length&&!settings.tagsSeeded){for(let i=1;i<=5;i++)await addTag('T-'+pad(i));settings.tagsSeeded=true;await saveSettings();}
   renderNurseList();attachNurseChips(nf);updateSoundBtn();await tick();setInterval(tick,1000);
 })();

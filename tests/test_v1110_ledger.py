@@ -300,9 +300,10 @@ def main():
         # 既存の設定（1.10.0 まで）にも1回だけ足す。消したものは再び足さない
         ctx2 = b.new_context(viewport={'width': 1024, 'height': 1366})
         pg = open_app(ctx2)
-        pg.evaluate("""async()=>{const s=await dbGet('settings','main')||{};s.destPresets=['自宅','見本の公園'];delete s.destAdded1110;await dbPut('settings',s,'main');}""")
+        pg.evaluate("""async()=>{const s=await dbGet('settings','main')||{};s.destPresets=['自宅','見本の公園'];delete s.destAdded1110;delete s.destAdded241;await dbPut('settings',s,'main');}""")
         pg.reload(); pg.wait_for_timeout(700); pg.click('#startOv'); pg.wait_for_timeout(200)
-        assert pg.evaluate('settings.destPresets') == ['自宅', '見本の公園', '喫煙', '図書館', '加古川のイオン'], pg.evaluate('settings.destPresets')
+        # 2.4.1：古い端末には「他院受診」も一度だけ末尾に足す（addPresets241）
+        assert pg.evaluate('settings.destPresets') == ['自宅', '見本の公園', '喫煙', '図書館', '加古川のイオン', '他院受診'], pg.evaluate('settings.destPresets')
         pg.click('nav button[data-tab=settings]'); pg.fill('#sDest', '自宅\n見本の公園\n図書館\n加古川のイオン'); pg.click('#sPresetSave'); pg.wait_for_timeout(300)
         pg.reload(); pg.wait_for_timeout(700); pg.click('#startOv'); pg.wait_for_timeout(200)
         assert pg.evaluate('settings.destPresets') == ['自宅', '見本の公園', '図書館', '加古川のイオン'], '消した「喫煙」がまた入った'
