@@ -1080,7 +1080,7 @@ function needsSound(o,now){
   return now-ack>=settings.realertMin*60000;
 }
 const isActive=o=>o.status==='out'||o.status==='search';
-const PLAN_MIN=15;
+const PLAN_MIN=30;   // 見本：出発が今から30分を超えて先なら「予定」（30分ちょうどまでは出発の登録）
 function stLabel(o,s){if(s==='ok')return (o.kind||'外出')+'中';if(s==='planned')return o.departAt<Date.now()?'出発予定時刻を過ぎています':(o.kind||'外出')+'の予定';return LABEL[s];}
 const LABEL={cancelled:'取消（誤登録）',planned:'予定',ok:'外出中',soon:'まもなく帰院時刻',overdue:'帰院時刻超過',search:'捜索中',returned:'帰院済'};
 function countText(o,now){
