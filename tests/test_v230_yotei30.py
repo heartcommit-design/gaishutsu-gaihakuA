@@ -1,12 +1,13 @@
 """2.3.0：予定に切り替わる境目は「出発が今から30分を超える時」。30分後のボタンは出発の登録のまま（時間がたっても予定に倒れない）"""
-import os
+import os, datetime
 from playwright.sync_api import sync_playwright
 HERE=os.path.dirname(os.path.abspath(__file__)); APP=os.path.dirname(HERE)
 def main():
     errs=[]
     with sync_playwright() as p:
         b=p.chromium.launch(); pg=b.new_page(viewport={'width':1180,'height':820}); pg.on('pageerror',lambda e:errs.append(str(e)))
-        pg.clock.install(); pg.goto('file://'+APP+'/index.html'); pg.wait_for_timeout(500); pg.clock.run_for(1000); pg.click('#startOv')
+        pg.clock.install(time=datetime.datetime(2026,11,13,10,0))   # 時計を昼に固定（夜だと「外出で帰院が翌日」の確認が出て登録が止まる）
+        pg.goto('file://'+APP+'/index.html'); pg.wait_for_timeout(500); pg.clock.run_for(1000); pg.click('#startOv')
         pg.click('nav button[data-tab=new]'); pg.clock.run_for(500)
         plan=lambda: pg.evaluate('isPlanForm()')
         def wait_st(pid):   # 時計を止めているので、保存（IndexedDB）が終わるまで少しずつ進めて待つ
