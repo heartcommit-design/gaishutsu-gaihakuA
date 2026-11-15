@@ -11,6 +11,8 @@ async def main():
         await pg.click('nav button[data-tab=new]'); await pg.wait_for_timeout(300)
         dep=pg.locator('input[name=departAt]'); due=pg.locator('input[name=dueAt]')
         dw=pg.locator('.tp',has=dep); uw=pg.locator('.tp',has=due)
+        # 見本：日付・時刻の選択欄はふだんたたんであるので、「細かく選ぶ」で開いてから操作する
+        await pg.click('.tfine[data-man="depMan"]'); await pg.click('.tfine[data-man="dueMan"]')
         print('raw inputs hidden:', await dep.is_hidden(), await due.is_hidden())
         print('dep date/time:', await dw.locator('.tp-d').evaluate("s=>s.selectedOptions[0].text"), await dw.locator('.tp-t').input_value(), '| value', await dep.input_value())
         print('due empty:', await uw.locator('.tp-d').evaluate("s=>s.selectedOptions[0].text"), await uw.locator('.tp-t').evaluate("s=>s.selectedOptions[0].text"))

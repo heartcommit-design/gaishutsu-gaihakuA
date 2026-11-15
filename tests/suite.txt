@@ -32,3 +32,4 @@ test_v221_insatsu_yoko
 test_v222_insatsu_muki
 test_v223_insatsu_annai
 test_mihon_plan30
+test_mihon_kaizen

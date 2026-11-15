@@ -430,7 +430,7 @@ body.rbon #toast{bottom:calc(var(--rbh,90px) + 12px)}
 html[data-theme="dark"]{--nv:#e3eaf6;--nvtx:#0f1b30;--acc:#62cfd6;--surf:rgba(20,32,52,.78);--hair:rgba(255,255,255,.10);--hair2:rgba(255,255,255,.24);--segbg:rgba(255,255,255,.07);--segon:rgba(255,255,255,.17);--soft:0 1px 2px rgba(0,0,0,.20),0 12px 32px rgba(0,0,0,.28);--rqsoft:rgba(255,196,87,.10)}
 #sec-new>h2{font-size:22px;font-weight:700;letter-spacing:.06em;margin:10px 6px 16px}
 #sec-new #newForm.panel{background:var(--surf);border:1px solid var(--edge);border-radius:24px;padding:4px 32px 22px;box-shadow:var(--hl),var(--soft)}
-#newForm fieldset{border:0;border-top:1px solid var(--hair);border-radius:0;margin:0;padding:26px 2px 28px}
+#newForm fieldset{border:0;border-top:1px solid var(--hair);border-radius:0;margin:0;padding:22px 2px 24px}
 #newForm>fieldset:first-of-type{border-top:0}
 #newForm fieldset::after{content:"";display:table;clear:both}
 #newForm legend{float:left;width:100%;padding:0;margin:0 0 18px;display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;letter-spacing:.08em;color:var(--ink)}
@@ -503,6 +503,34 @@ html[data-theme="dark"]{--nv:#e3eaf6;--nvtx:#0f1b30;--acc:#62cfd6;--surf:rgba(20
 #regBar .rbcnt.all{background:var(--okbg);color:var(--oktx);border-color:var(--okline)}
 #regBar .rbmiss button{border-width:1px;background:transparent;font-weight:600}
 @media (max-width:760px){.tgrid{grid-template-columns:minmax(0,1fr)}#newForm .radios.wards{grid-template-columns:repeat(4,minmax(0,1fr))}#sec-new #newForm.panel{padding:4px 14px 18px}}
+
+/* ---------- 見本5 ---------- */
+.vh{position:absolute!important;width:1px!important;height:1px!important;min-height:0!important;padding:0!important;margin:0!important;opacity:0;overflow:hidden;clip-path:inset(50%);border:0!important}
+#fsTag label{position:relative}
+.tfrow{display:flex;justify-content:flex-end;margin-top:6px}
+.tfine{font:inherit;font-size:15px;font-weight:700;min-height:44px;padding:4px 6px 4px 12px;border:0;background:transparent;color:var(--pritx);cursor:pointer;letter-spacing:.04em;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.tfine::after{content:"";width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .15s}
+.tfine[aria-expanded="true"]::after{transform:rotate(-135deg) translate(-2px,0)}
+.tman{margin-top:4px}
+.lbl-pre{background:var(--planbg);color:var(--plantx);box-shadow:inset 0 0 0 1px var(--infoline);margin-left:6px}
+.tl .l2 .lbl-pre{font-size:13px;padding:2px 9px}
+#regBar{bottom:var(--vvb,0px)}
+body.kbd #regBar{display:none}
+.tagbtns{grid-template-columns:repeat(8,minmax(0,1fr));margin-top:6px}
+.tb.two{flex-direction:column;gap:0;line-height:1.15}
+.tb.two small{font-size:12px}
+/* 残りの部品も時刻ボタンと同じ粒にそろえる */
+#newForm .nchip{min-height:48px;font-size:16px;font-weight:600;padding:6px 16px;border-radius:12px;background:var(--field);box-shadow:var(--hl)}
+#newForm .nchips{gap:8px}
+#fsClothes .btn,#newForm #noteAdd{min-height:48px;font-size:16px;font-weight:600;border-radius:12px;padding:8px 18px;box-shadow:var(--hl)}
+#fsClothes .photoarea{gap:18px;margin-top:14px}
+#fsClothes .nophoto,#fsClothes .thumb{border-radius:12px}
+#fsClothes .nophoto{border:1px dashed var(--hair2);background:var(--segbg)}
+#fsClothes .quick{gap:8px}
+#newForm #compBox,#newForm div>.hint+.radios{margin-top:8px}
+#newForm .consent{padding:12px 14px;border-radius:12px;background:var(--segbg)}
+@media (max-width:900px){.tagbtns{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media (max-width:600px){.tagbtns{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
 /* ---------- スマホ（幅600px以下） ---------- */
 @media (max-width:600px){
@@ -668,7 +696,8 @@ html[data-theme="dark"]{--nv:#e3eaf6;--nvtx:#0f1b30;--acc:#62cfd6;--surf:rgba(20
           <div class="tres" id="depRes"></div>
           <div class="tbtns" id="depQuick"><button type="button" class="tb" data-m="0">今から</button><button type="button" class="tb" data-m="10">10分後</button><button type="button" class="tb" data-m="20">20分後</button><button type="button" class="tb" data-m="30">30分後</button><button type="button" class="tb" data-m="60">1時間後</button><button type="button" class="tb" data-m="120">2時間後</button><button type="button" class="tb" data-m="180">3時間後</button><button type="button" class="tb" data-tmr="1">明日</button></div>
           <div class="tbtns" id="depTimes" hidden><button type="button" class="tb" data-t="09:00">09:00</button><button type="button" class="tb" data-t="10:00">10:00</button><button type="button" class="tb" data-t="13:00">13:00</button><button type="button" class="tb" data-t="15:00">15:00</button></div>
-          <div class="tman" id="depMan"></div>
+          <div class="tfrow"><button type="button" class="tfine" data-man="depMan" aria-expanded="false">細かく選ぶ</button></div>
+          <div class="tman" id="depMan" hidden></div>
         </div>
         <div class="tcol" id="dueCol">
           <label class="thead">帰院予定日時<span class="req">必須</span><input type="datetime-local" name="dueAt" required></label>
@@ -678,7 +707,8 @@ html[data-theme="dark"]{--nv:#e3eaf6;--nvtx:#0f1b30;--acc:#62cfd6;--surf:rgba(20
             <div class="tbtns c3" data-kind="外泊" hidden><button type="button" class="tb" data-d="1">明日</button><button type="button" class="tb" data-d="2">明後日</button><button type="button" class="tb" data-d="3">3日後</button></div>
             <div class="tbtns" data-kind="外泊" hidden><button type="button" class="tb" data-t="10:00">10:00</button><button type="button" class="tb" data-t="13:00">13:00</button><button type="button" class="tb" data-t="15:00">15:00</button><button type="button" class="tb" data-t="17:00">17:00</button></div>
           </div>
-          <div class="tman" id="dueMan"></div>
+          <div class="tfrow"><button type="button" class="tfine" data-man="dueMan" aria-expanded="false">細かく選ぶ</button></div>
+          <div class="tman" id="dueMan" hidden></div>
         </div>
       </div>
       <div class="grid" style="margin-top:10px">
@@ -726,7 +756,8 @@ html[data-theme="dark"]{--nv:#e3eaf6;--nvtx:#0f1b30;--acc:#62cfd6;--surf:rgba(20
       </div>
     </fieldset>
     <fieldset id="fsTag"><legend>位置確認タグ</legend>
-      <label>タグ番号<select name="tagId" id="tagSelect"></select></label>
+      <label>タグ番号<select name="tagId" id="tagSelect" class="vh"></select></label>
+      <div class="tbtns tagbtns" id="tagBtns" role="group" aria-label="タグ番号"></div>
       <p class="hint" id="tagHint"></p>
       <div id="consentBox" hidden></div>
     </fieldset>
@@ -1167,7 +1198,7 @@ function tlHead(){return `<div class="tlhead" aria-hidden="true"><div class="cap
 function tlRowHTML(o,s,mk,now,alert){
   return `<article class="card crow tl st-${s}" data-id="${o.id}">
     <div class="tlleft">${o.tagId?`<div class="tagbadge sm">${esc(o.tagId)}</div>`:'<div class="tagbadge sm none">タグなし</div>'}
-      <div class="who"><div class="name">${esc(shownName(o))}</div><div class="l2"><span class="lbl lbl-${s}">${stLabel(o,s)}</span><span class="sub">${esc([o.ward,o.kind,(o.pid&&!mk)?'ID '+o.pid:''].filter(Boolean).join('・'))}</span></div><div class="tlmini"><i></i></div></div></div>
+      <div class="who"><div class="name">${esc(shownName(o))}</div><div class="l2"><span class="lbl lbl-${s}">${stLabel(o,s)}</span>${preBadge(o,Date.now())}<span class="sub">${esc([o.ward,o.kind,(o.pid&&!mk)?'ID '+o.pid:''].filter(Boolean).join('・'))}</span></div><div class="tlmini"><i></i></div></div></div>
     <div class="tlaxis" role="img" aria-label="出発 ${fmt(o.departAt)}、帰院予定 ${fmt(o.dueAt)}">${tlGrid()}<div class="tlbar"><span class="cl cl-l"></span><span class="cl cl-r"></span></div><div class="tlext"><span class="cl cl-l"></span></div><div class="tlnow"></div></div>
     <div class="tlright"><div class="statebox"><div class="count" data-count="${o.id}">${countText(o,now)}</div><div class="due">帰院予定 <b>${fmtShort(o.dueAt,now)}</b></div></div>
       <div class="acts"><button class="btn ok" data-act="return">帰院した</button>${alert?'<button class="btn bad" data-act="open">対応・詳細</button>':'<button class="btn" data-act="open">詳細</button>'}</div></div></article>`;}
@@ -1217,7 +1248,7 @@ async function renderActive(){
       ${o.tagId?`<div class="tagbadge sm">${esc(o.tagId)}</div>`:'<div class="tagbadge sm none">タグなし</div>'}
       <div class="who"><div class="name">${esc(shownName(o))}</div><div class="sub">${esc([(o.pid&&!mk)?'ID '+o.pid:'',o.ward,o.kind].filter(Boolean).join('・'))}</div></div>
       <div class="times"><span>出発 <b>${fmt(o.departAt)}</b></span><span>帰院予定 <b>${fmt(o.dueAt)}</b></span></div>
-      <div class="statebox"><span class="lbl lbl-${s}">${stLabel(o,s)}</span><div class="count" data-count="${o.id}">${countText(o,now)}</div></div>
+      <div class="statebox"><span class="lbl lbl-${s}">${stLabel(o,s)}</span>${preBadge(o,Date.now())}<div class="count" data-count="${o.id}">${countText(o,now)}</div></div>
       <div class="acts"><button class="btn ok" data-act="return">帰院した</button>${alert?'<button class="btn bad" data-act="open">対応・詳細</button>':'<button class="btn" data-act="open">詳細</button>'}</div></article>`;}
     const tg=o.tagId?`<div class="tagbadge">${esc(o.tagId)}</div>`:'<div class="tagbadge none">タグなし</div>';
     const tagName=o.tagId?(tags.find(t=>t.id===o.tagId)?.findName||o.tagId):'';
@@ -1241,7 +1272,7 @@ async function renderActive(){
     acts.push(`<button class="btn" data-act="log">対応記録</button>`,`<button class="btn" data-act="extend">帰院予定を変更</button>`,`<button class="btn" data-act="edit">内容を修正</button>`);
     return `<article class="card st-${s}" data-id="${o.id}">
       <div class="head">${tg}<div class="who"><div class="name">${esc(shownName(o))}</div><div class="sub">${esc([wardText(o),o.adm,o.kind,sexAge(o),(o.pid&&!mk)?'ID '+o.pid:''].filter(Boolean).join('・'))}</div></div>
-      <div class="statebox"><span class="lbl lbl-${s}">${stLabel(o,s)}</span><div class="count" data-count="${o.id}">${countText(o,now)}</div></div></div>
+      <div class="statebox"><span class="lbl lbl-${s}">${stLabel(o,s)}</span>${preBadge(o,Date.now())}<div class="count" data-count="${o.id}">${countText(o,now)}</div></div></div>
       <div class="body">${urls[o.id]?`<img class="thumb" src="${urls[o.id]}" alt="服装写真" data-act="photo">`:(mk&&o.hasPhoto?'<div class="nophoto">写真あり<br>（表示で確認）</div>':'<div class="nophoto">写真なし</div>')}
       <dl class="info"><dt>出発</dt><dd>${fmt(o.departAt)}（${esc(o.departNurse)}）</dd>
       <dt>帰院予定</dt><dd>${fmt(o.dueAt)}${o.dueAt!==o.dueAtOriginal?' <span class="sub">（当初 '+fmt(o.dueAtOriginal)+'）</span>':''}</dd>
@@ -1563,6 +1594,7 @@ function buildTagOptions(){
   const av=tags.filter(t=>t.status==='available'||(pid&&t.status==='reserved'&&t.outingId===pid));
   sel.innerHTML=`<option value="">${isPlanForm()?'タグなし（出発時に選ぶ）':'タグなし'}</option>`+av.map(t=>`<option value="${esc(t.id)}">${esc(t.id)}${t.findName&&t.findName!==t.id?'（'+esc(t.findName)+'）':''}${t.status==='reserved'?'（この予定で予約中）':''}</option>`).join('');
   if(av.some(t=>t.id===cur))sel.value=cur;
+  renderTagBtns();
   $('#tagHint').textContent=tags.length?`利用可能なタグ：${tags.filter(t=>t.status==='available').length}個（全${tags.length}個）`:'タグが未登録です。「タグ管理」で登録すると選べるようになります。';
 }
 function renderPresetChips(){$$('.pchips').forEach(c=>{const l=(c.dataset.preset==='dest'?settings.destPresets:settings.relPresets)||[];c.innerHTML=l.map(t=>`<button type="button" class="nchip" data-memo="${esc(t)}" data-field="${c.dataset.field}">${esc(t)}</button>`).join('');c.hidden=!l.length;});}
@@ -1650,6 +1682,30 @@ $('#tagSelect').addEventListener('change',updateConsent);
 $$('input[name="alone"]').forEach(r=>r.addEventListener('change',()=>{$('#compBox').hidden=nf.elements.alone.value==='1';}));
 
 
+
+/* ---------- 見本5：改善（細かく選ぶ・出発前の札・外出の翌日確認・キーボード・タグのボタン） ---------- */
+function openMan(id,on){const m=$('#'+id);const b=document.querySelector(`.tfine[data-man="${id}"]`);m.hidden=!on;if(b){b.setAttribute('aria-expanded',on?'true':'false');b.textContent=on?'細かい選択を閉じる':'細かく選ぶ';}}
+$$('.tfine').forEach(b=>b.addEventListener('click',()=>openMan(b.dataset.man,$('#'+b.dataset.man).hidden)));
+nf.addEventListener('reset',()=>{openMan('depMan',false);openMan('dueMan',false);});
+function preText(o,now){if(!o||o.status!=='out'||!(o.departAt>now))return '';return `出発前（あと${Math.max(1,Math.ceil((o.departAt-now)/60000))}分）`;}
+function preBadge(o,now){const t=preText(o,now);return t?` <span class="lbl lbl-pre" data-pre="${o.id}">${t}</span>`:'';}
+function updatePreBadges(now){$$('[data-pre]').forEach(el=>{const t=preText(outings.find(x=>x.id===el.dataset.pre),now);if(!t)el.remove();else if(el.textContent!==t)el.textContent=t;});}
+function askKindChange(){return new Promise(res=>{let done=false;const fin=v=>{if(!done){done=true;res(v);}};
+  openDlg('区分の確認','<p style="margin:0;font-size:17px;line-height:1.7">区分が「外出」ですが、帰院予定が翌日以降です。<br>「外泊」に変えますか？</p>',
+    [{label:'戻る',onClick:()=>{fin(null);}},{label:'外出のまま登録',onClick:()=>{fin('gaishutsu');}},{label:'外泊に変えて登録',cls:'pri',onClick:()=>{fin('gaihaku');}}]);
+  $('#dlg').addEventListener('close',()=>fin(null),{once:true});});}
+const isTextEl=el=>!!el&&!!el.closest&&!!el.closest('#newForm')&&(el.tagName==='TEXTAREA'||(el.tagName==='INPUT'&&/^(text|tel|search|email|number|url|password)$/.test(el.type)));
+document.addEventListener('focusin',e=>{if(isTextEl(e.target))document.body.classList.add('kbd');});   // 外す方は下の focusout で少し待ってから
+// 外れた時は少し待ってから戻す（キーボードを閉じる操作と同時に押したボタンの上へバーが出て、押せなくなるのを防ぐ）
+document.addEventListener('focusout',()=>setTimeout(()=>document.body.classList.toggle('kbd',isTextEl(document.activeElement)),350));
+if(window.visualViewport){const vv=window.visualViewport;const f=()=>{const b=Math.max(0,Math.round(window.innerHeight-(vv.offsetTop+vv.height)));document.body.style.setProperty('--vvb',b+'px');};vv.addEventListener('resize',f);vv.addEventListener('scroll',f);f();}
+function renderTagBtns(){const sel=$('#tagSelect');const plan=isPlanForm();
+  const h=[...sel.options].map(o=>{const v=o.value;let main,sub='';if(!v){main='タグなし';sub=plan?'出発時に選ぶ':'';}else{main=v;const m=o.textContent.slice(v.length).replace(/^（|）$/g,'').replace('この予定で予約中','予約中');sub=m;}
+    return `<button type="button" class="tb${sub?' two':''}" data-tag="${esc(v)}">${esc(main)}${sub?`<small>${esc(sub)}</small>`:''}</button>`;}).join('');
+  const box=$('#tagBtns');if(box.dataset.h!==h){box.dataset.h=h;box.innerHTML=h;}
+  $$('#tagBtns .tb').forEach(b=>b.classList.toggle('on',b.dataset.tag===sel.value));}
+$('#tagBtns').addEventListener('click',e=>{const b=e.target.closest('[data-tag]');if(!b)return;const sel=$('#tagSelect');if(sel.value!==b.dataset.tag){sel.value=b.dataset.tag;sel.dispatchEvent(new Event('change',{bubbles:true}));}renderTagBtns();});
+
 /* ---------- 見本A：出発・帰院の時刻ボタン ---------- */
 // 選択欄（日付・時刻・細かく入力）は各列の下へ移す。入力欄（name=departAt/dueAt）と値の読み取りは同じ
 $('#depMan').append(nf.elements.departAt._tp);$('#dueMan').append(nf.elements.dueAt._tp);
@@ -1703,7 +1759,7 @@ RQ.forEach(r=>{const b=rqBox(r.k);b.classList.add('rq');const st=document.create
 nf.querySelectorAll('label').forEach(l=>{if(l.classList.contains('rq')||l.closest('.radios')||l.classList.contains('consent')||l.classList.contains('btn')||l.querySelector('#pSearch')||!l.querySelector('input,select,textarea'))return;
   const t=l.firstChild;if(t&&t.nodeType===3){const o=document.createElement('span');o.className='opt';o.textContent='任意';t.after(o);}});
 let rqSig='';
-function updateRq(){paintTime();
+function updateRq(){paintTime();renderTagBtns();
   let n=0,tot=0;const miss=[];
   RQ.forEach(r=>{const b=rqBox(r.k);const on=!r.cond||r.cond();const f=on&&rqFilled(r.k);
     b.classList.toggle('done',f);b.classList.toggle('rqempty',on&&!f);b.querySelector('.rqst').textContent=f?'✓ 入力済み':'未入力';
@@ -1776,6 +1832,7 @@ function showFormErrors(errs){
   nf.querySelectorAll('.invalid').forEach(el=>el.classList.remove('invalid'));
   const box=$('#formErr');
   if(!errs.length){box.hidden=true;return;}
+  errs.forEach(e=>{if(e.el===nf.elements.departAt)openMan('depMan',true);if(e.el===nf.elements.dueAt)openMan('dueMan',true);});
   if(errs.some(e=>e.el&&$('#pFields').contains(e.el)))pExpand();if(errs.some(e=>e.el&&$('#cFields').contains(e.el)))cExpand();
   errs.forEach(e=>e.el&&(e.el._tp||e.el).classList.add('invalid'));
   box.innerHTML='<b>まだ登録できません。次の項目を確認してください。</b><ul>'+errs.map(e=>'<li>'+esc(e.msg)+'</li>').join('')+'</ul>';
@@ -1808,6 +1865,7 @@ async function registerOuting(){
   else if(tagId&&cs.st==='none'&&(!f.elements.consent?.checked||!val(f,'consentDate')))E.push({msg:`タグ ${tagId} を渡すには、同意書の取得日を入れて「同意書を確認した」にチェックしてください（渡さない場合はタグ番号を「タグなし」に）`,el:$('#consentBox')});
   if(!nurse)E.push({msg:plan?'登録した看護師名を入力してください':'出発を確認した看護師名を入力してください',el:el('departNurse')});
   showFormErrors(E);if(E.length)return;
+  if(f.elements.kind.value==='外出'&&tkDayStart(dueAt)>tkDayStart(departAt)){const a=await askKindChange();if(!a)return;if(a==='gaihaku'){setRadio('kind','外泊');updateRq();}}
   if(outings.some(o=>isActive(o)&&o.id!==nf.dataset.planId&&(o.pid===val(f,'pid')||(nf.dataset.patientId&&o.patientId===nf.dataset.patientId)))&&!await askConfirm(`${name} さんは既に外出・外泊中として登録されています。続けますか？`))return;
   const now=Date.now();
   const o={id:uid(),name,pid:val(f,'pid'),kana:hira(val(f,'kana')),sex:val(f,'sex'),age:half(val(f,'age')).replace(/[^0-9]/g,''),ward:f.elements.ward.value,adm:val(f,'adm'),kind:f.elements.kind.value,departAt,dueAt,dueAtOriginal:dueAt,
@@ -1996,7 +2054,7 @@ function dlgDetail(o){
   const now=Date.now(),s=stateOf(o,now),lm=lateMin(o);
   const comp=o.alone?'単独':`${esc(o.compName)}${o.compRel?'（'+esc(o.compRel)+'）':''}${o.compTel?' '+esc(o.compTel):''}`;
   const fam=[o.famName,o.famRel?'（'+o.famRel+'）':'',o.famTel].filter(Boolean).join(' ');
-  openDlg(`記録：${o.name}`,`<p style="margin:0 0 10px"><span class="lbl lbl-${s}">${stLabel(o,s)}</span>${hadSearch(o)?' <span class="f srch">捜索あり</span>':''}${lm>0?` <span class="f late">${lm}分遅れ</span>`:''}</p>
+  openDlg(`記録：${o.name}`,`<p style="margin:0 0 10px"><span class="lbl lbl-${s}">${stLabel(o,s)}</span>${preBadge(o,Date.now())}${hadSearch(o)?' <span class="f srch">捜索あり</span>':''}${lm>0?` <span class="f late">${lm}分遅れ</span>`:''}</p>
    <dl class="info"><dt>病棟</dt><dd>${esc(wardText(o))}${o.pid?'（ID '+esc(o.pid)+'）':''}</dd><dt>入院形態</dt><dd>${esc(o.adm)}</dd><dt>区分</dt><dd>${esc(o.kind)}</dd>
    <dt>出発</dt><dd>${fmt(o.departAt)}（${esc(o.departNurse)}）${o.departAtPlanned&&o.status!=='planned'?'<span class="sub">　予定 '+fmt(o.departAtPlanned)+'</span>':''}</dd><dt>帰院予定</dt><dd>${fmt(o.dueAt)}${o.dueAt!==o.dueAtOriginal?'（当初 '+fmt(o.dueAtOriginal)+'）':''}</dd>
    <dt>帰院</dt><dd>${o.returnedAt?fmt(o.returnedAt)+'（'+esc(o.returnNurse)+'）':(o.status==='planned'?'出発前（予定）':'まだ帰院していません')}</dd>
@@ -2370,7 +2428,7 @@ async function tick(){
   for(const o of act){if(stateOf(o,now)==='overdue'&&o.overdueLoggedFor!==o.dueAt){o.overdueLoggedFor=o.dueAt;addLog(o,'帰院予定時刻を超過（アラーム）');saveOuting(o);}}
   const sig=act.map(o=>o.id+':'+stateOf(o,now)+':'+(o.hasPhoto?1:0)+':'+(isMasked(o)?1:0)+':'+(isOpen(o)?1:0)).join('|')+'#'+settings.preMin+':'+settings.mask+':'+settings.activeView;
   if(sig!==lastSig){lastSig=sig;await renderActive();}
-  else{$$('[data-count]').forEach(el=>{const o=outings.find(x=>x.id===el.dataset.count);if(o)el.textContent=countText(o,now);});updateTimeline(now);}
+  else{$$('[data-count]').forEach(el=>{const o=outings.find(x=>x.id===el.dataset.count);if(o)el.textContent=countText(o,now);});updateTimeline(now);updatePreBadges(now);}
   const alerts=act.filter(o=>isAlert(o,now));
   const ban=$('#banner');
   const sounding=alerts.filter(o=>needsSound(o,now));let urgent=false;
