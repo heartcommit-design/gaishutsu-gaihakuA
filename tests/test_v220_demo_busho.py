@@ -35,9 +35,9 @@ def main():
         pg.evaluate("window.tone=function(){}")
         pg.click('nav button[data-tab=settings]')
         hint = pg.locator('#demoIn').locator('xpath=../..').inner_text()
-        assert '54人' in hint and '外出・外泊中7人' in hint and '予定1件' in hint, hint
+        assert '54人' in hint and '外出・外泊中7人' in hint and '予定19件' in hint, hint  # 2.4.0：予定を30日先まで19件に
         pg.click('#demoIn'); pg.wait_for_timeout(1500)
-        assert '54人・外出・外泊中7人・予定1件' in pg.inner_text('#toast'), pg.inner_text('#toast')
+        assert '54人・外出・外泊中7人・予定19件' in pg.inner_text('#toast'), pg.inner_text('#toast')
 
         # 台帳と外出・外泊中
         r = pg.evaluate("""(pids)=>pids.map(pid=>{const o=outings.find(x=>x.pid===pid);const pt=patients.find(x=>x.pid===pid);
@@ -51,7 +51,7 @@ def main():
             assert x['pt'], (pid, '台帳')
             assert (x['name'], x['kind'], x['status'], x['demo'], x['dest'], x['comp'], x['rel'], x['alone'], x['clothes']) == \
                 (name, kind, 'out', True, dest, comp, rel, False, clothes), x
-            assert x['tagOk'] and x['hasPhoto'] and x['nurse'] == '(デモ) 看護師A', x
+            assert x['tagOk'] and x['hasPhoto'] and x['nurse'].startswith(('(デモ) 看護師 ', '(デモ) PSW ')), x  # 2.4.0：出発確認は架空の職員30人の中から
             assert x['st'] not in ('overdue', 'search'), (pid, '予定超過になっている', x)
             assert '出発（デモ）' in x['log'] and '服装写真を登録' in x['log'], x
         mins = [x['mins'] for x in r]
@@ -59,10 +59,10 @@ def main():
         assert sorted(x['tag'] for x in r) == ['T-06', 'T-07', 'T-08', 'T-09']
         # 練習用に T-04・T-05 は空いている
         assert pg.evaluate("['T-04','T-05'].map(i=>tags.find(t=>t.id===i).status)") == ['available', 'available']
-        # 既存のデモ3人・予定1件はそのまま。超過は既存の1人だけ
+        # 既存のデモ3人はそのまま。超過は既存の1人だけ（2.4.0：予定は19件、写真は4人＋予定13件の見本）
         assert pg.evaluate("outings.filter(o=>o.status==='out').length") == 7
-        assert pg.evaluate("outings.filter(o=>o.status==='planned').length") == 1
-        assert pg.evaluate("dbKeys('photos').then(k=>k.length)") == 4
+        assert pg.evaluate("outings.filter(o=>o.status==='planned').length") == 19
+        assert pg.evaluate("dbKeys('photos').then(k=>k.length)") == 17
 
         # 時間軸（既定）に4人が出る・超過でない
         pg.click('nav button[data-tab=active]'); pg.wait_for_timeout(500)
@@ -127,7 +127,7 @@ def main():
 
         # 入れ直しても重複しない（入っている間は増えない）
         pg.click('nav button[data-tab=settings]'); pg.click('#demoIn'); pg.wait_for_timeout(800)
-        assert pg.evaluate("[patients.length,outings.length,tags.length]") == [54, 8, 9]
+        assert pg.evaluate("[patients.length,outings.length,tags.length]") == [54, 36, 12]  # 2.4.0：7＋予定19＋帰院済み10、タグは予約用の T-10〜T-12 を足す
 
         # 「帰院した」で写真が消える（光秀）
         pg.click('nav button[data-tab=active]'); pg.wait_for_timeout(300)
@@ -137,7 +137,7 @@ def main():
         o = pg.evaluate("(()=>{const o=outings.find(x=>x.pid==='D1051');return {st:o.status,hp:o.hasPhoto,del:!!o.photoDeletedAt,tag:tags.find(t=>t.id==='T-06').status}})()")
         assert o == {'st': 'returned', 'hp': False, 'del': True, 'tag': 'available'}, o
         assert not pg.evaluate("dbKeys('photos').then(k=>k.includes(outings.find(x=>x.pid==='D1051').id))")
-        assert pg.evaluate("dbKeys('photos').then(k=>k.length)") == 3
+        assert pg.evaluate("dbKeys('photos').then(k=>k.length)") == 16
 
         # 「デモデータを消す」で4人と写真が消える。デモで足したタグ（T-06〜T-09）も消える
         pg.click('nav button[data-tab=settings]'); pg.click('#demoOut'); pg.wait_for_timeout(1000)
@@ -149,15 +149,15 @@ def main():
         assert pg.locator('#activeList .card').count() == 0
 
         # 消したあと入れ直すと、もとどおり（重複なし）
-        pg.click('nav button[data-tab=settings]'); pg.click('#demoIn'); pg.wait_for_timeout(1500)
+        pg.click('nav button[data-tab=settings]'); pg.click('#demoIn'); pg.wait_for_function("document.getElementById('toast').textContent.includes('デモデータを入れました')", timeout=30000)   # 2.4.0：予定の見本写真を作るので、入れ終わりを待つ
         r = pg.evaluate("""({pts:patients.length,pids:new Set(patients.map(p=>p.pid)).size,out:outings.filter(o=>o.status==='out').length,
             busho:outings.filter(o=>/^D105/.test(o.pid)).length,tags:tags.length})""")
-        assert r == {'pts': 54, 'pids': 54, 'out': 7, 'busho': 4, 'tags': 9}, r
-        assert pg.evaluate("dbKeys('photos').then(k=>k.length)") == 4
+        assert r == {'pts': 54, 'pids': 54, 'out': 7, 'busho': 4, 'tags': 12}, r
+        assert pg.evaluate("dbKeys('photos').then(k=>k.length)") == 17
 
         # 再読み込みしても写真が残る（端末の中）
         pg.reload(); pg.wait_for_timeout(800); pg.click('#startOv'); pg.wait_for_timeout(800)
-        assert pg.evaluate("dbKeys('photos').then(k=>k.length)") == 4
+        assert pg.evaluate("dbKeys('photos').then(k=>k.length)") == 17
         b.close()
     print('errors', errs)
     assert not errs

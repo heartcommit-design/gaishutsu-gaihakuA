@@ -2,10 +2,13 @@ import os as _os
 HERE=_os.path.dirname(_os.path.abspath(__file__));APP=_os.path.dirname(HERE);OUT=_os.path.join(HERE,'out');_os.makedirs(OUT,exist_ok=True)
 import asyncio
 from playwright.async_api import async_playwright
+from v200_util import jst
 SP=OUT
 async def main():
     async with async_playwright() as p:
         b=await p.chromium.launch(); pg=await b.new_page(viewport={'width':1024,'height':1366},has_touch=True)
+        # 2.4.0：夕方以降に流すと「外出で帰院が翌日」の確認が出て登録されない（時刻しだいで落ちる）ため、時計を平日の10:00から始める（時刻は普通に進む）
+        await pg.clock.install(time=jst(2026,11,13,10,0))
         errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)))
         await pg.goto('file://'+APP+'/index.html#detail'); await pg.wait_for_timeout(600); await pg.click('#startOv')
         async def plan(name,pid,tag,photo=True,hours=3):

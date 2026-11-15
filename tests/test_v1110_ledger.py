@@ -5,6 +5,7 @@ H6 変更せずに戻る／H7 GO で写真・服装を任意で／H8 行き先�
 """
 import os, struct, zlib
 from playwright.sync_api import sync_playwright
+from v200_util import jst
 
 HERE = os.path.dirname(os.path.abspath(__file__)); APP = os.path.dirname(HERE)
 OUT = os.path.join(HERE, 'out'); os.makedirs(OUT, exist_ok=True)
@@ -26,6 +27,8 @@ errs = []
 def open_app(ctx):
     pg = ctx.new_page()
     pg.on('pageerror', lambda e: errs.append(str(e)))
+    # 2.4.0：夕方以降に流すと「外出で帰院が翌日」の確認が出て登録されない（時刻しだいで落ちる）ため、時計を平日の10:00から始める（時刻は普通に進む）
+    pg.clock.install(time=jst(2026, 11, 13, 10, 0))
     pg.goto(URL); pg.wait_for_timeout(700); pg.click('#startOv'); pg.wait_for_timeout(300)
     return pg
 
@@ -149,7 +152,8 @@ def main():
         pg.fill('#dlgBody input[name=pid]', 'P0003'); pg.fill('#dlgBody input[name=name]', 'テスト 太郎X')
         staff_ok()
         assert pg.evaluate("document.getElementById('dlg').open"), '重複IDなのにダイアログが閉じた'
-        assert 'P0003' in pg.inner_text('#toast') and P('P0001')['name'] == 'テスト 太郎'
+        # 2.4.0：知らせはトーストではなく、ダイアログの中の患者IDの欄のすぐそばに出る
+        assert 'P0003' in pg.inner_text('#dlg .ferr') and pg.locator('#dlg .ferr').is_visible() and P('P0001')['name'] == 'テスト 太郎'
         pg.click('#dlgActions button:has-text("やめる")'); pg.wait_for_timeout(150)
         # 外出中の記録の病棟は書き換えない
         row('テスト 次郎').locator('[data-ptedit]').click(); pg.wait_for_timeout(200)

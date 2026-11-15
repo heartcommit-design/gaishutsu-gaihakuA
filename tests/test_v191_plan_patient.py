@@ -3,6 +3,7 @@
 """
 import os
 from playwright.sync_api import sync_playwright
+from v200_util import jst
 
 HERE = os.path.dirname(os.path.abspath(__file__)); APP = os.path.dirname(HERE)
 OUT = os.path.join(HERE, 'out'); os.makedirs(OUT, exist_ok=True)
@@ -16,6 +17,8 @@ def main():
     with sync_playwright() as p:
         b = p.chromium.launch()
         pg = b.new_page(viewport={'width': 1024, 'height': 1366}, has_touch=True)
+        # 2.4.0：夕方以降に流すと「外出で帰院が翌日」の確認が出て登録されない（時刻しだいで落ちる）ため、時計を平日の10:00から始める（時刻は普通に進む）
+        pg.clock.install(time=jst(2026, 11, 13, 10, 0))
         pg.on('pageerror', lambda e: errs.append(str(e)))
         pg.goto(URL); pg.wait_for_timeout(800); pg.click('#startOv'); pg.wait_for_timeout(300)
         pt = lambda pid: pg.evaluate(PT, pid)

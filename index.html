@@ -534,6 +534,82 @@ body.kbd #regBar{display:none}
 @media (max-width:900px){.tagbtns{grid-template-columns:repeat(6,minmax(0,1fr))}}
 @media (max-width:600px){.tagbtns{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
+/* ---------- 2.4.0 入れ忘れ・入力の誤りを、その欄のすぐそばに（ダイアログの中でも） ---------- */
+.ferr{display:block;margin:6px 0 4px;padding:6px 10px 6px 12px;border-left:4px solid var(--bad);border-radius:8px;background:var(--cstng);color:var(--cstngtx);font-size:16px;font-weight:800;line-height:1.5;letter-spacing:.02em}
+.ferr::before{content:"⚠ "}
+.ferr.fgen{margin:12px 0 0}
+input.invalid,select.invalid,textarea.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 2px var(--bad)}
+/* トーストは最前面（ダイアログより手前）に出す：popover の最上位の層で表示する */
+#toast[popover]{inset:auto;left:50%;bottom:24px;margin:0;border:0;overflow:visible;width:max-content}
+html:has(dialog[open]) #toast[popover]{bottom:auto;top:calc(env(safe-area-inset-top,0px) + 14px)}   /* ダイアログの間は上に出して、ダイアログのボタンに重ねない */
+/* 出発（GO）の画面：必須の見た目を新規登録と同じ形に */
+#dlg .rq{border-left:3px solid var(--rqline);padding:2px 0 6px 14px;font-size:16px;font-weight:700;color:var(--ink)}
+#dlg .rq.rqempty{background:linear-gradient(90deg,var(--rqsoft),transparent 70%)}
+#dlg .rq.done{border-left-color:var(--hair2)}
+#dlg .rq .req{display:inline-block;background:transparent;color:var(--rqtx);border:1px solid var(--rqline);font-size:12.5px;font-weight:700;line-height:1.5;padding:0 7px;border-radius:999px;letter-spacing:.06em;margin-left:8px;vertical-align:1px;white-space:nowrap}
+#dlg .rq .rqst{margin-left:8px;font-size:13px;font-weight:800;white-space:nowrap;color:var(--rqtx);letter-spacing:.04em}
+#dlg .rq.rqempty .rqst::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--rqline);margin-right:5px;vertical-align:1px}
+#dlg .rq.done .rqst{color:var(--oktx)}
+#dlg .rq input,#dlg .rq select{font-weight:400}
+#dlg .goTagBtns{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));margin:6px 0 2px}
+
+/* ---------- 2.4.0 予定：ふだんは1行（「詳細」で開く）・日付ごとの見出し・使い方のたたみ ---------- */
+#planList{display:flex;flex-direction:column;gap:10px}
+.card.prow{padding:0}
+.card.prow.late{border-color:var(--warn);border-width:2px 2px 2px 8px;background:var(--warnbg)}
+.prow>.crow{grid-template-columns:84px minmax(140px,1fr) 214px 196px auto}
+.prow .statebox{min-width:0}
+.prow .statebox .lbl{white-space:normal;line-height:1.35}
+.prow .count{font-size:19px;line-height:1.35;margin-top:2px}
+.prow.late .count{color:var(--warntx)}
+.prow .acts .btn{padding:10px 14px}
+.prow .acts [data-pact=go]{font-size:18px;font-weight:800;padding:10px 18px;min-width:132px}
+.prow .acts [data-pact=toggle]{min-width:86px}
+.prow .acts [data-pact=toggle][aria-expanded=true]{background:var(--selbg);border-color:var(--pritx);font-weight:700}
+.prow .prbody{padding:2px 14px 14px;border-top:1px solid var(--line2);margin:0 0 0 0}
+.prow .prbody .body{margin-top:12px}
+.pday{display:flex;align-items:baseline;gap:10px;margin:12px 4px 0;font-size:18px;font-weight:800;color:var(--ink);letter-spacing:.04em}
+.pday:first-child{margin-top:2px}
+.pday small{font-size:15px;font-weight:600;color:var(--sub);letter-spacing:.02em}
+#sec-plan .toolbar h2{margin:0}
+#sec-plan .tfine{padding-left:6px}
+#planHelp{margin:0 0 12px;padding:10px 14px;border-radius:12px;background:var(--glass2);border:1px solid var(--edge)}
+
+/* ---------- 2.4.0 新規登録：選んだ患者を目立たせる ---------- */
+:root,html[data-theme="light"]{--psel:#1b2b4b;--pseltx:#fff;--pselsub:#d5def0;--pselline:#1b2b4b;--pselok:#b9f0cf}
+html[data-theme="dark"]{--psel:#2d5596;--pseltx:#fff;--pselsub:#e3ecfb;--pselline:#9cc3ff;--pselok:#c9f7dc}
+#newForm #pSum{background:var(--psel);color:var(--pseltx);border:2px solid var(--pselline);border-left:8px solid var(--pselline);border-radius:16px;padding:12px 14px 12px 18px;gap:8px 16px;box-shadow:0 6px 18px rgba(16,24,40,.18)}
+#pSum .pst{flex-direction:column;align-items:flex-start;gap:2px}
+#pSum .pcap{font-size:14px;font-weight:700;letter-spacing:.1em;color:var(--pselsub)}
+#pSum .pst .pnm{font-size:28px;font-weight:800;line-height:1.3;letter-spacing:.04em;white-space:normal;color:var(--pseltx)}
+#pSum .pst .pnm small{font-size:18px;font-weight:700;margin-left:4px}
+#pSum .pmeta{display:flex;flex-wrap:wrap;gap:2px 18px;font-size:17px;font-weight:600;color:var(--pseltx)}
+#pSum .pmeta>span{white-space:nowrap}
+#newForm #pSum .pok{color:var(--pselok);font-size:15px}
+#newForm #pSum .btn{background:#fff;color:#1b2b4b;border-color:#fff;font-weight:800}
+.chip.sel{background:var(--psel);color:var(--pseltx);border:2px solid var(--pselline);box-shadow:0 3px 10px rgba(16,24,40,.2)}
+.chip.sel .sub,.chip.sel small{color:var(--pselsub)}
+.chip.sel b::before{content:"✓ "}
+#regBar .rbwho{flex:none;max-width:260px;min-width:0;display:flex;flex-direction:column;line-height:1.25;padding:2px 14px 2px 4px;border-right:1px solid var(--hair2)}
+#regBar .rbwho .rbwl{font-size:12.5px;font-weight:700;color:var(--sub);letter-spacing:.08em}
+#regBar .rbwho .rbwn{font-size:18px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+#regBar .rbwho .rbwn small{font-size:14px;font-weight:700;margin-left:2px}
+#regBar .rbwho.none .rbwn{color:var(--muted);font-weight:700}
+@media (max-width:1100px){#regBar .rbwho{max-width:210px}}
+@media (max-width:600px){#regBar .rbwho{max-width:none;flex-direction:row;align-items:baseline;gap:8px;border-right:0;padding:0 2px}}
+
+/* ---------- 2.4.0 タブの帯を、スクロールしても上に残す ---------- */
+#navWrap{position:sticky;top:var(--toph,0px);z-index:19}
+#navWrap.stuck{background:var(--bar);-webkit-backdrop-filter:var(--blurbar);backdrop-filter:var(--blurbar);border-bottom:1px solid var(--edge);box-shadow:var(--shadow);padding-bottom:5px}
+#navWrap.stuck nav{margin-top:5px}
+html[data-glass="off"] #navWrap.stuck{-webkit-backdrop-filter:none;backdrop-filter:none}
+html{scroll-padding-top:var(--stickt,0px);scroll-padding-bottom:var(--stickb,0px)}
+@media print{#navWrap{position:static;display:none!important}html{scroll-padding:0}}
+/* 看護師名の「ほか」：30人でも探しやすいよう、名前の順に広い枠で並べる */
+.nall{max-height:300px;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px}
+.nall .nchip{text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#newForm .rq:has(input[name=departNurse]){grid-column:1/-1}   /* 新規登録：看護師名のボタンと「ほか」の一覧を横いっぱいに */
+
 /* ---------- スマホ（幅600px以下） ---------- */
 @media (max-width:600px){
  .crow{display:flex;flex-wrap:wrap}
@@ -636,7 +712,7 @@ body.kbd #regBar{display:none}
 <div class="notice" id="prBar" hidden><span class="msg" id="prMsg"></span><button type="button" class="btn sm pri" id="prNow">一覧を印刷</button><button type="button" class="btn sm" id="prLater">閉じる</button></div>
 <div class="notice" id="bkBar" hidden><span class="msg">本日のバックアップ（データの保存）がまだです。</span><button type="button" class="btn sm pri" id="bkNow">バックアップを保存</button><button type="button" class="btn sm" id="bkLater">今日は閉じる</button></div>
 </div>
-<nav>
+<div id="navWrap"><nav>
   <button data-tab="active" class="active">外出・外泊中<span class="cnt" id="cntActive">0</span><span class="cnt bad" id="cntAlert" hidden>0</span></button>
   <button data-tab="plan">予定<span class="cnt" id="cntPlan">0</span></button>
   <button data-tab="new">＋ 新規登録</button>
@@ -646,7 +722,7 @@ body.kbd #regBar{display:none}
   <button data-tab="patients">患者台帳</button>
   <button data-tab="tags">タグ管理</button>
   <button data-tab="settings">設定</button>
-</nav>
+</nav></div>
 <main>
 <!-- 外出中 -->
 <section id="sec-active" class="active">
@@ -660,8 +736,8 @@ body.kbd #regBar{display:none}
 
 <!-- 予定 -->
 <section id="sec-plan">
-  <h2>出発前の予定</h2>
-  <p class="hint" style="margin-top:0">出発日時が先の登録はここに入ります。予定の段階で服装写真を撮っておけば、出発の時は<b>「出発（GO）」を押し、渡すタグと看護師名を選ぶだけ</b>です。タグは予定で予約しておくこともできます（予約すると出発日まで他の患者には使えません）。<b>帰院予定は、出発が早まっても遅れても変わりません。</b>写真を直したい時は「内容を確認・変更して出発」を使います。</p>
+  <div class="toolbar"><h2>出発前の予定</h2><button type="button" class="tfine" id="planHelpBtn" aria-expanded="false" aria-controls="planHelp">使い方</button></div>
+  <p class="hint" id="planHelp" hidden>出発日時が先の登録はここに入ります。予定の段階で服装写真を撮っておけば、出発の時は<b>「出発（GO）」を押し、渡すタグと看護師名を選ぶだけ</b>です。タグは予定で予約しておくこともできます（予約すると出発日まで他の患者には使えません）。<b>帰院予定は、出発が早まっても遅れても変わりません。</b>写真を直したい時は「内容を確認・変更して出発」を使います。</p>
   <div class="cards" id="planList"></div>
 </section>
 
@@ -925,7 +1001,7 @@ body.kbd #regBar{display:none}
   <div class="panel" style="margin-top:14px">
     <h2>デモ</h2>
     <div class="quick" style="margin-top:0"><button class="btn" type="button" id="demoIn">デモデータを入れる</button><button class="btn" type="button" id="demoOut">デモデータを消す</button></div>
-    <p class="hint">説明・練習用。押すと<b>東1病棟の入院患者54人（架空）</b>が患者台帳に入り、外出・外泊中7人（うち4人は歴史上の人物の名前を借りた架空の患者で、服装写真つき）と予定1件がある状態から始まります（本番でCSVから病棟の患者を取り込んだ状態を想定）。デモの患者は「(デモ)」付きで、「デモデータを消す」でまとめて削除できます。</p>
+    <p class="hint">説明・練習用。押すと<b>東1病棟の入院患者54人（架空）</b>が患者台帳に入り、外出・外泊中7人（うち4人は歴史上の人物の名前を借りた架空の患者で、服装写真つき）、今日から30日先までの予定19件、過去10日の帰院済みの記録10件がある状態から始まります（本番でCSVから病棟の患者を取り込んだ状態を想定）。看護師名の一覧には<b>架空の職員30人</b>（看護師24人・PSW 6人）が足されます。デモの患者・職員は「(デモ)」付きで、「デモデータを消す」でまとめて削除できます（自分で登録した看護師名は消えません）。</p>
   </div>
   <div class="panel" style="margin-top:14px">
     <h2>データ</h2>
@@ -968,10 +1044,11 @@ body.kbd #regBar{display:none}
 <div id="printArea"></div>
 <!-- 新規登録の下に固定する登録バー（新規登録タブの間だけ出る） -->
 <div id="regBar" hidden><div class="rbin">
+  <div class="rbwho none" id="rbWho"><span class="rbwl">登録する患者</span><span class="rbwn">患者未選択</span></div>
   <div class="rbst"><b class="rbcnt" id="rbCnt"></b><span class="rbmiss" id="rbMiss"></span></div>
   <button type="button" class="btn pri big" id="rbBtn">この内容で出発を登録</button>
 </div></div>
-<div id="toast"></div>
+<div id="toast" popover="manual" role="status"></div>
 
 <script>
 'use strict';
@@ -1030,11 +1107,48 @@ function enhanceTime(inp){
 function enhanceTimes(root){root.querySelectorAll('input[type="datetime-local"]').forEach(enhanceTime);}
 function fromLocalInput(v){if(!v)return null;const t=new Date(v).getTime();return isNaN(t)?null:t;}
 function dur(ms){const m=Math.floor(Math.abs(ms)/60000);const h=Math.floor(m/60),mm=m%60;if(h>=24)return `${Math.floor(h/24)}日${h%24}時間`;return h?`${h}時間${mm}分`:`${mm}分`;}
-function toast(msg,ms=3200){const t=$('#toast');t.textContent=msg;t.style.display='block';clearTimeout(toast._t);toast._t=setTimeout(()=>t.style.display='none',ms);}
+// 2.4.0：トーストは popover（最上位の層）で出し、開いているダイアログより必ず手前に見せる
+function toastOnTop(){const t=$('#toast');if(!t||!t.showPopover||t.style.display==='none'||!t.textContent)return;try{if(t.matches(':popover-open'))t.hidePopover();t.showPopover();}catch(e){}}
+function toastHide(){const t=$('#toast');if(!t)return;clearTimeout(toast._t);t.style.display='none';try{if(t.hidePopover&&t.matches(':popover-open'))t.hidePopover();}catch(e){}}   // ダイアログを開く前の古い知らせは消す（ダイアログのボタンに重ねない）
+function toast(msg,ms=3200){const t=$('#toast');t.textContent=msg;t.style.display='block';toastOnTop();clearTimeout(toast._t);
+  toast._t=setTimeout(()=>{t.style.display='none';try{if(t.hidePopover&&t.matches(':popover-open'))t.hidePopover();}catch(e){}},ms);}
+/* 2.4.0：入れ忘れ・入力の誤りは、トーストではなく、その欄のすぐそば（開いているダイアログの中）に赤い文字と欄の縁で知らせる。
+   list：[[欄, 文言], …]。欄は name（文字）か要素。null なら下のボタンのすぐ上に出す。最初の欄が見える位置に動かし、フォーカスを移す。 */
+function stickTop(){const tb=document.querySelector('.topbar'),nw=$('#navWrap');return (tb?tb.offsetHeight:0)+(nw?nw.offsetHeight:0);}
+function stickBottom(){const rb=$('#regBar');return rb&&!rb.hidden&&!document.body.classList.contains('kbd')?rb.offsetHeight:0;}
+// 上に固定した帯（ヘッダー・アラーム帯・タブ）と下の登録バーに隠れない位置へ動かす（入りきる時は見える範囲の真ん中に）
+function scrollIntoArea(el,smooth){if(!el)return;const r=el.getBoundingClientRect();const top=stickTop()+12,bot=window.innerHeight-stickBottom()-12;const avail=bot-top;
+  let y=window.scrollY+r.top-top;if(r.height<avail)y-=(avail-r.height)/2;window.scrollTo({top:Math.max(0,Math.round(y)),behavior:smooth?'smooth':'auto'});}
+function clearFieldErr(root){root.querySelectorAll('.ferr').forEach(e=>e.remove());root.querySelectorAll('[data-ferr]').forEach(e=>{e.classList.remove('invalid');e.removeAttribute('data-ferr');});}
+function fieldErrs(root,list){
+  const dlg=root.closest('dialog');const box=dlg||root;clearFieldErr(box);let first=null;
+  for(const [key,msg] of list){
+    let el=key==null?null:(typeof key==='string'?(root.elements?root.elements[key]:root.querySelector(`[name="${key}"]`)):key);
+    if(el&&!(el instanceof Element)&&el.length)el=(el[0]&&el[0].closest('.radios'))||el[0];   // ラジオの組
+    const orig=el;
+    if(el&&el.classList.contains('vh')&&el._btns)el=el._btns;          // 隠した選択欄 → 見えているボタンの組
+    if(el&&el._tp&&el.hidden)el=el._tp;                               // 日時の欄 → 日付・時刻の選択欄
+    const err=document.createElement('div');err.className='ferr';err.setAttribute('role','alert');err.textContent=msg;
+    let mark=el,foc=null;
+    if(!el){err.classList.add('fgen');const a=box.querySelector('.dlgActions');if(a)a.before(err);else root.appendChild(err);}
+    else{if(el.type==='checkbox'||el.type==='radio'){mark=el.closest('label')||el;foc=el;}
+      else if(el.matches('input,select,textarea')){foc=el;}
+      else foc=el.querySelector('button:not([disabled]),input:not([type=hidden]),select');
+      mark.before(err);   // 欄のすぐ上（見出しと欄の間）。看護師名のボタンは欄のすぐ後ろにある決まりなので、後ろには入れない
+      mark.classList.add('invalid');mark.setAttribute('data-ferr','1');
+      const off=e=>{if(e.target===orig||mark.contains(e.target)||(orig&&orig.contains&&orig.contains(e.target))){err.remove();mark.classList.remove('invalid');mark.removeAttribute('data-ferr');box.removeEventListener('input',off,true);box.removeEventListener('change',off,true);}};
+      box.addEventListener('input',off,true);box.addEventListener('change',off,true);}
+    if(!first)first={err,mark:mark||err,foc};
+  }
+  if(first){if(dlg){first.mark.scrollIntoView({block:'center'});first.err.scrollIntoView({block:'nearest'});}else scrollIntoArea(first.err);
+    if(first.foc)try{first.foc.focus({preventScroll:true});}catch(e){}}
+  return false;
+}
+const fieldErr=(root,key,msg)=>fieldErrs(root,[[key,msg]]);
 function download(name,blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}
 
 function askConfirm(msg,yes){return new Promise(res=>{const d=$('#cdlg');$('#cdlgMsg').textContent=msg;$('#cdlgYes').textContent=yes||'はい';
-  const done=v=>{d.close();$('#cdlgYes').onclick=$('#cdlgNo').onclick=null;res(v);};$('#cdlgYes').onclick=()=>done(true);$('#cdlgNo').onclick=()=>done(false);d.showModal();});}
+  const done=v=>{d.close();$('#cdlgYes').onclick=$('#cdlgNo').onclick=null;res(v);};$('#cdlgYes').onclick=()=>done(true);$('#cdlgNo').onclick=()=>done(false);toastHide();d.showModal();});}
 /* ---------- 保存（IndexedDB：この端末内のみ） ---------- */
 let db;
 // 新版（ガラス調・時間軸）：現行（gaishutsu_kanri）と同じドメインに置かれても混ざらないよう、別の名前のDBを使う
@@ -1060,7 +1174,7 @@ function ageOf(x){if(!x)return '';if(x.birth){const b=new Date(x.birth+'T00:00:0
 const isDis=p=>!!p&&p.status==='discharged';   // 患者台帳：status が無い・'in' は入院中
 const sexAge=x=>[x.sex||'',ageOf(x)?ageOf(x)+'歳':''].filter(Boolean).join(' ');
 const matchQ=(p,q)=>{q=hira(q).replace(/\s/g,'');if(!q)return true;return hira((p.name||'')+(p.kana||'')+(p.pid||'')).replace(/\s/g,'').includes(q);};
-let settings={themeMode:'auto',darkFrom:'18:00',darkTo:'07:00',glassOff:false,activeView:'timeline',preMin:15,realertMin:10,volume:0.7,nurses:[],escalateMin:10,idleMin:30,backupHour:17,mask:false,gaps:[],quietFrom:17,quietTo:8,printHours:[8,17],memos:{},destPresets:['自宅','実家','病院周辺の散歩','近くのコンビニ','喫煙','図書館','加古川のイオン'],relPresets:['母','父','妻','夫','姉','兄','妹','弟','娘','息子','その他の親族','施設職員']};
+let settings={themeMode:'auto',darkFrom:'18:00',darkTo:'07:00',glassOff:false,activeView:'timeline',preMin:15,realertMin:10,volume:0.7,nurses:[],escalateMin:10,idleMin:30,backupHour:17,mask:false,gaps:[],quietFrom:17,quietTo:8,printHours:[8,17],memos:{},destPresets:['自宅','実家','病院周辺の散歩','近くのコンビニ','喫煙','図書館','加古川のイオン','他院受診'],relPresets:['母','父','妻','夫','姉','兄','妹','弟','娘','息子','その他の親族','施設職員']};
 const photoURL={};
 let pendingPhoto=null;
 const saveOuting=o=>dbPut('outings',o);
@@ -1156,6 +1270,14 @@ document.addEventListener('pointerdown',ensureAudio);document.addEventListener('
 function showTab(name){$$('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));{const ab=document.querySelector(`nav button[data-tab="${name}"]`);if(ab&&IS_PHONE)ab.scrollIntoView({block:'nearest',inline:'center'});}$$('main section').forEach(s=>s.classList.toggle('active',s.id==='sec-'+name));
   if(name==='new')prepareNewForm();if(name==='history')renderHistory();if(name==='tags')renderTags();if(name==='patients'){ptView='in';renderPatients();}if(name==='plan')renderPlans();if(name==='calendar')renderCalendar();if(name==='stats')renderStats();if(name==='settings')renderSettings();window.scrollTo(0,0);}
 $$('nav button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+/* ---------- 2.4.0 タブの帯を、スクロールしても上（ヘッダー・アラーム帯の下）に残す ---------- */
+// 上に固定する部分（.topbar）の高さを測って、タブの帯をその下に止める。スクロールで動かす時の余白（scroll-padding）にも使う
+function updateStick(){const de=document.documentElement,tb=document.querySelector('.topbar'),nw=$('#navWrap');if(!tb||!nw)return;
+  const th=tb.offsetHeight;if(de._th!==th){de._th=th;de.style.setProperty('--toph',th+'px');}
+  de.style.setProperty('--stickt',(th+nw.offsetHeight+8)+'px');de.style.setProperty('--stickb',(stickBottom()+8)+'px');
+  const st=window.scrollY>2;if(nw.classList.contains('stuck')!==st)nw.classList.toggle('stuck',st);}
+if(window.ResizeObserver){const ro=new ResizeObserver(()=>updateStick());ro.observe(document.querySelector('.topbar'));ro.observe($('#navWrap'));}
+window.addEventListener('scroll',updateStick,{passive:true});window.addEventListener('resize',updateStick);updateStick();
 
 /* ---------- 画面の明るさ（新版） ---------- */
 const THEME_NAME={auto:'自動',light:'明るい',dark:'暗い'};
@@ -1296,29 +1418,50 @@ function pmHistoryOn(){pmHistoryOff();document.body.classList.add('pm-history');
 $('#printBtn').addEventListener('click',async()=>{pmHistoryOff();showTab('active');$('#printHead').textContent='外出・外泊中一覧　印刷：'+fmtFull(Date.now());const now=Date.now();const h=(settings.printHours||[]).filter(x=>new Date(now).getHours()>=x).slice(-1)[0];if(h!==undefined){settings.prDoneKey=toDateInput(now)+':'+h;await saveSettings();$('#prBar').hidden=true;}printFull=true;await renderActive();try{window.print();}catch(e){toast('この画面からは印刷できません。SafariやChromeで直接開いてください。',6000);}printFull=false;lastSig='';tick();});
 
 /* ---------- 予定 ---------- */
+// 2.4.0：ふだんは1行（タグ・氏名・病棟と区分・出発予定・帰院予定・出発まで・「出発（GO）」「詳細」）。「詳細」で写真・行き先などと残りのボタンが開く
+const planOpen=new Set();
+const isPlanOpen=o=>OPEN_ALL||planOpen.has(o.id);
+const planCountText=(o,now)=>o.departAt<now?dur(now-o.departAt)+' 経過':'出発まで '+dur(o.departAt-now);
+function planDayHTML(ds,n){const k=Math.round((ds-tkDayStart(Date.now()))/86400000);const r={'-1':'昨日','0':'今日','1':'明日'}[k];
+  return `<h3 class="pday" data-day="${toDateInput(ds)}">${r?`<span>${r}</span><small>${tkMdOf(ds)}</small>`:`<span>${tkMdOf(ds)}</span>`}<small>${n}件</small></h3>`;}
+let planSig='';
+const planSigOf=(list,now)=>list.map(o=>o.id+':'+(o.departAt<now?1:0)+':'+(isPlanOpen(o)?1:0)+':'+(isMasked(o)?1:0)+':'+(o.hasPhoto?1:0)+':'+tkDayStart(o.departAt)).join('|')+'#'+tkDayStart(now)+':'+settings.mask;
 async function renderPlans(){
   const now=Date.now();const list=outings.filter(o=>o.status==='planned').sort((a,b)=>a.departAt-b.departAt);
-  $('#cntPlan').textContent=list.length;
-  const urls={};for(const o of list){if(o.hasPhoto&&!isMasked(o))urls[o.id]=await getPhotoURL(o.id);}
-  $('#planList').innerHTML=list.map(o=>{const late=o.departAt<now;const mk=isMasked(o);
+  $('#cntPlan').textContent=list.length;planSig=planSigOf(list,now);
+  const urls={};for(const o of list){if(isPlanOpen(o)&&o.hasPhoto&&!isMasked(o))urls[o.id]=await getPhotoURL(o.id);}
+  const html=[];let day=null;
+  for(const o of list){const ds=tkDayStart(o.departAt);
+    if(ds!==day){day=ds;html.push(planDayHTML(ds,list.filter(x=>tkDayStart(x.departAt)===ds).length));}
+    const late=o.departAt<now;const mk=isMasked(o);const open=isPlanOpen(o);
     const ready=[o.tagId?'タグ '+esc(o.tagId)+' 予約済み':'タグは出発時に選ぶ',o.hasPhoto?'服装写真あり':'服装写真なし'];
-    return `<article class="card" data-id="${o.id}" style="${late?'border-color:var(--warn);background:var(--warnbg)':''}">
-     <div class="head">${o.tagId?`<div class="tagbadge">${esc(o.tagId)}</div>`:'<div class="tagbadge none">タグ<br>出発時</div>'}<div class="who"><div class="name">${esc(shownName(o))}</div><div class="sub">${esc([wardText(o),o.adm,(o.pid&&!mk)?'ID '+o.pid:''].filter(Boolean).join('・'))}</div></div>
-     <div class="statebox"><span class="lbl lbl-planned">${esc(stLabel(o,'planned'))}</span><div class="count" style="font-size:20px">${late?dur(now-o.departAt)+' 経過':'出発まで '+dur(o.departAt-now)}</div></div></div>
-     <div class="body">${urls[o.id]?`<img class="thumb" src="${urls[o.id]}" alt="服装写真" data-pact="photo">`:(mk&&o.hasPhoto?'<div class="nophoto">写真あり<br>（表示で確認）</div>':'<div class="nophoto">写真なし<br>（出発時でも可）</div>')}
+    html.push(`<article class="card prow${late?' late':''}${open?' open':''}" data-id="${o.id}">
+     <div class="crow">${o.tagId?`<div class="tagbadge sm">${esc(o.tagId)}</div>`:'<div class="tagbadge sm none">タグ<br>出発時</div>'}
+      <div class="who"><div class="name">${esc(shownName(o))}</div><div class="sub">${esc([wardText(o),o.kind].filter(Boolean).join('・'))}</div></div>
+      <div class="times"><span>出発予定 <b>${fmt(o.departAt)}</b></span><span>帰院予定 <b>${fmt(o.dueAt)}</b></span></div>
+      <div class="statebox"><span class="lbl lbl-planned">${esc(stLabel(o,'planned'))}</span><div class="count" data-pcount="${o.id}">${planCountText(o,now)}</div></div>
+      <div class="acts"><button class="btn ok" data-pact="go">出発（GO）</button><button class="btn" data-pact="toggle" aria-expanded="${open}">${open?'閉じる':'詳細'}</button></div></div>
+     ${open?`<div class="prbody"><div class="body">${urls[o.id]?`<img class="thumb" src="${urls[o.id]}" alt="服装写真" data-pact="photo">`:(mk&&o.hasPhoto?'<div class="nophoto">写真あり<br>（表示で確認）</div>':'<div class="nophoto">写真なし<br>（出発時でも可）</div>')}
      <dl class="info"><dt>出発予定</dt><dd>${fmt(o.departAt)}</dd><dt>帰院予定</dt><dd><b>${fmt(o.dueAt)}</b>（出発が前後しても変わりません）</dd><dt>区分</dt><dd>${esc(o.kind)}</dd>
      <dt>行き先</dt><dd>${esc(o.dest)||'—'}</dd><dt>同行</dt><dd>${o.alone?'単独':(mk?'同行あり':esc(o.compName)+(o.compRel?'（'+esc(o.compRel)+'）':''))}</dd>
      <dt>準備</dt><dd>${ready.join('・')}</dd><dt>登録</dt><dd>${esc(o.departNurse)}</dd></dl></div>
-     <div class="actions"><button class="btn ok big" data-pact="go" style="font-size:20px;padding:12px 30px">出発（GO）</button><button class="btn" data-pact="edit">内容を確認・変更して出発</button><button class="btn" data-pact="planedit">予定を修正（出発しない）</button><button class="btn" data-pact="cancel">予定を取り消す</button></div></article>`;}).join('')
-   ||'<div class="empty">出発前の予定はありません。</div>';
+     <div class="actions"><button class="btn" data-pact="edit">内容を確認・変更して出発</button><button class="btn" data-pact="planedit">予定を修正（出発しない）</button><button class="btn" data-pact="cancel">予定を取り消す</button>${mk?'<button class="btn" data-pact="reveal">表示（30秒）</button>':''}</div></div>`:''}</article>`);}
+  $('#planList').innerHTML=html.join('')||'<div class="empty">出発前の予定はありません。</div>';
 }
+// 毎秒：予定タブを開いている間、「出発まで」を進める。出発予定を過ぎた・日付が変わった等の時だけ作り直す
+function updatePlans(now){if(!$('#sec-plan').classList.contains('active'))return;const list=outings.filter(o=>o.status==='planned').sort((a,b)=>a.departAt-b.departAt);
+  if(planSigOf(list,now)!==planSig){renderPlans();return;}
+  $$('[data-pcount]').forEach(el=>{const o=outings.find(x=>x.id===el.dataset.pcount);if(o){const t=planCountText(o,now);if(el.textContent!==t)el.textContent=t;}});}
+$('#planHelpBtn').addEventListener('click',()=>{const h=$('#planHelp'),b=$('#planHelpBtn');h.hidden=!h.hidden;b.setAttribute('aria-expanded',h.hidden?'false':'true');b.textContent=h.hidden?'使い方':'使い方を閉じる';});
 $('#planList').addEventListener('click',async e=>{const b=e.target.closest('[data-pact]');if(!b)return;const o=outings.find(x=>x.id===b.closest('.card').dataset.id);if(!o)return;
+  if(b.dataset.pact==='toggle'){if(planOpen.has(o.id))planOpen.delete(o.id);else planOpen.add(o.id);await renderPlans();const c=$(`#planList .card[data-id="${o.id}"] [data-pact=toggle]`);if(c)c.focus({preventScroll:true});return;}
+  if(b.dataset.pact==='reveal'){revealUntil[o.id]=Date.now()+30000;renderPlans();return;}
   if(b.dataset.pact==='go')dlgGo(o);
   if(b.dataset.pact==='edit')startDeparture(o);
   if(b.dataset.pact==='planedit')startDeparture(o,'edit');
   if(b.dataset.pact==='photo')dlgPhoto(o);
   if(b.dataset.pact==='cancel'){if(!await askConfirm(`${o.name} さんの${o.kind}予定（${fmt(o.departAt)}）を取り消しますか？`+(o.tagId?`予約していたタグ ${o.tagId} は空きに戻ります。`:''),'取り消す'))return;
-    await releasePlan(o);await dbDel('outings',o.id);outings=outings.filter(x=>x!==o);renderPlans();lastSig='';tick();toast('予定を取り消しました');}
+    await releasePlan(o);await dbDel('outings',o.id);outings=outings.filter(x=>x!==o);planOpen.delete(o.id);renderPlans();lastSig='';tick();toast('予定を取り消しました');}
 });
 async function releasePlan(o){
   if(o.tagId){const t=tags.find(x=>x.id===o.tagId);if(t&&t.outingId===o.id&&t.status==='reserved'){t.status='available';t.outingId=null;await saveTag(t);}}
@@ -1351,23 +1494,36 @@ function dlgGo(o){
         <p class="hint">顔は写さないでください。写真は帰院の登録で自動的に削除されます。${o.hasPhoto?'撮り直した時だけ、予定で撮った写真と置き換えます。':''}</p></div></div>
     <label style="margin-top:10px">服装<span class="hint">（任意）</span><textarea name="goClothes" placeholder="例：紺のダウン、灰色のズボン、白いスニーカー">${esc(o.clothes)}</textarea></label>
     ${clothesChips(planPatient(o),'goClothes')}
-    <label style="margin-top:10px">渡すタグ<span class="req">必須</span><select name="goTag" id="goTag">${goTagOptions(o)}</select></label>
+    <div class="rq" id="goTagRq" style="margin-top:12px"><label style="margin-bottom:0">渡すタグ<span class="req">必須</span><span class="rqst"></span><select name="goTag" id="goTag" class="vh">${goTagOptions(o)}</select></label>
+      <div class="tbtns tagbtns goTagBtns" id="goTagBtns" role="group" aria-label="渡すタグ"></div></div>
     <p class="hint" style="margin:4px 0 0">${o.tagId?`予定のときに ${esc(o.tagId)} を予約しています。別のタグに替えると、予約していたタグは空きに戻ります。`:`空いているタグ：${nAv}個。実際に渡すタグの番号を選んでください。`}</p>
     <div id="goConsent" style="margin-top:6px">${goConsentHtml(o,o.tagId)}</div>
-    <label style="margin-top:10px">出発を確認した看護師<span class="req">必須</span><input name="nurse" list="nurseList"></label>`,
+    <label class="rq" id="goNurseRq" style="margin-top:12px">出発を確認した看護師<span class="req">必須</span><span class="rqst"></span><input name="nurse" list="nurseList"></label>`,
   [{label:'やめる'},{label:'出発（GO）',cls:'ok',onClick:async f=>{
-    const tag=val(f,'goTag');const nurse=val(f,'nurse');
-    if(tag==='__'){toast('渡すタグを選んでください（渡さない時は「タグなし」）');return false;}
+    const tag=val(f,'goTag');const nurse=val(f,'nurse');const E=[];
     let cdate='';
-    if(tag){const c=consentState(planPatient(o));
-      if(c.st==='withdrawn'){toast('同意を撤回している患者にはタグを渡せません。「タグなし」を選んでください。',5000);return false;}
-      if(c.st==='none'){cdate=val(f,'gcDate');if(!cdate||!f.elements.gcOk?.checked){toast('タグを渡すには、同意書の取得日を入れて「同意書を確認した」にチェックしてください',5000);return false;}}
-      else cdate=c.date;
-      const t=tags.find(x=>x.id===tag);if(!t||!(t.status==='available'||(t.status==='reserved'&&t.outingId===o.id))){toast(`タグ ${tag} は使えなくなっています。別のタグを選んでください。`,5000);return false;}}
-    if(!nurse){toast('出発を確認した看護師を選んでください');return false;}
+    if(tag==='__')E.push(['goTag','渡すタグを選んでください（渡さない時は「タグなし」）']);
+    else if(tag){const c=consentState(planPatient(o));
+      const t=tags.find(x=>x.id===tag);
+      if(!t||!(t.status==='available'||(t.status==='reserved'&&t.outingId===o.id)))E.push(['goTag',`タグ ${tag} は使えなくなっています。別のタグを選んでください。`]);
+      else if(c.st==='withdrawn')E.push(['goTag','同意を撤回している患者にはタグを渡せません。「タグなし」を選んでください。']);
+      else if(c.st==='none'){cdate=val(f,'gcDate');
+        if(!cdate)E.push(['gcDate','タグを渡すには、同意書の取得日を入れてください']);
+        if(!f.elements.gcOk?.checked)E.push(['gcOk','タグを渡すには、同意書を確かめて「同意書を確認した」にチェックしてください']);}
+      else cdate=c.date;}
+    if(!nurse)E.push(['nurse','出発を確認した看護師を選んでください']);
+    if(E.length)return fieldErrs(f,E);
     await goPlan(o,nurse,tag,cdate,{photo:goPhoto,clothes:val(f,'goClothes')});}}]);
   let goPhoto=null,goURL=null;
-  $('#goTag').addEventListener('change',e=>{$('#goConsent').innerHTML=goConsentHtml(o,e.target.value);});
+  // 必須の見分け（新規登録と同じ「未入力／✓ 入力済み」）と、タグのボタン（選択欄は隠して残す）
+  const gsel=$('#goTag'),gbox=$('#goTagBtns'),gnurse=$('#dlgBody input[name=nurse]');gsel._btns=gbox;
+  const goRq=()=>{[[$('#goTagRq'),gsel.value!=='__'],[$('#goNurseRq'),!!gnurse.value.trim()]].forEach(([b,f])=>{b.classList.toggle('done',f);b.classList.toggle('rqempty',!f);b.querySelector('.rqst').textContent=f?'✓ 入力済み':'未入力';});
+    gbox.querySelectorAll('[data-gotag]').forEach(b=>{const on=b.dataset.gotag===gsel.value;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false');});};
+  gbox.innerHTML=[...gsel.options].filter(x=>x.value!=='__').map(x=>{const v=x.value;const sub=v?x.textContent.slice(v.length).replace(/^（|）$/g,'').replace('この予定で予約中','予約中'):'持たせない';
+    return `<button type="button" class="tb${sub?' two':''}" data-gotag="${esc(v)}">${esc(v||'タグなし')}${sub?`<small>${esc(sub)}</small>`:''}</button>`;}).join('');
+  gbox.addEventListener('click',e=>{const b=e.target.closest('[data-gotag]');if(!b)return;if(gsel.value!==b.dataset.gotag){gsel.value=b.dataset.gotag;gsel.dispatchEvent(new Event('change',{bubbles:true}));}goRq();});
+  gsel.addEventListener('change',e=>{$('#goConsent').innerHTML=goConsentHtml(o,e.target.value);goRq();});
+  gnurse.addEventListener('input',goRq);gnurse.addEventListener('change',goRq);goRq();
   $('#goPhotoInput').addEventListener('change',async e=>{const fl=e.target.files[0];e.target.value='';if(!fl)return;
     try{goPhoto=await compress(fl);if(goURL)URL.revokeObjectURL(goURL);goURL=URL.createObjectURL(goPhoto);$('#goPhotoPrev').innerHTML=`<img class="thumb" src="${goURL}" alt="服装写真">`;}catch(err){toast('写真を読み込めませんでした');}});
   $('#dlg').addEventListener('close',()=>{if(goURL)URL.revokeObjectURL(goURL);},{once:true});
@@ -1422,13 +1578,14 @@ function openDlg(title,body,buttons){
   $('#dlgTitle').textContent=title;$('#dlgBody').innerHTML=body;const a=$('#dlgActions');a.innerHTML='';
   buttons.forEach(bt=>{const el=document.createElement('button');el.type='button';el.className='btn '+(bt.cls||'');el.textContent=bt.label;
     el.addEventListener('click',async()=>{const r=bt.onClick?await bt.onClick($('#dlgForm')):true;if(r!==false)$('#dlg').close();});a.appendChild(el);});
-  attachNurseChips($('#dlgBody'));enhanceTimes($('#dlgBody'));
-  if(!$('#dlg').open)$('#dlg').showModal();
+  attachNurseChips($('#dlgBody'));enhanceTimes($('#dlgBody'));clearFieldErr($('#dlg'));
+  if(!$('#dlg').open){toastHide();$('#dlg').showModal();}else toastOnTop();
   try{$('#dlgTitle').focus({preventScroll:true});}catch(e){}
 }
 const val=(f,n)=>(f.elements[n]?.value||'').trim();
 /* 看護師名：覚えた名前をボタンで出す */
 const nurseChip=n=>`<button type="button" class="nchip" data-nurse="${esc(n)}">${esc(n)}</button>`;
+const NURSE_COLL=new Intl.Collator('ja',{numeric:true});
 const nurseMoreText=()=>`ほかの看護師（全${settings.nurses.length}人）`;
 function attachNurseChips(root){root.querySelectorAll('input[list="nurseList"]').forEach(inp=>{const nx=inp.nextElementSibling;if(nx&&nx.classList.contains('nchips'))nx.remove();
   if(!settings.nurses.length)return;const d=document.createElement('div');d.className='nchips';
@@ -1436,7 +1593,8 @@ function attachNurseChips(root){root.querySelectorAll('input[list="nurseList"]')
 function closeNurseAll(box){const a=box&&box.querySelector('.nall');if(a)a.remove();const m=box&&box.querySelector('[data-nmore]');if(m)m.textContent=nurseMoreText();}
 document.addEventListener('click',e=>{const mb=e.target.closest('[data-nmore]');if(mb){e.preventDefault();const box=mb.closest('.nchips');
     if(box.querySelector('.nall')){closeNurseAll(box);return;}
-    const a=document.createElement('div');a.className='nall';a.innerHTML=settings.nurses.map(nurseChip).join('');box.appendChild(a);mb.textContent='一覧を閉じる';return;}
+    // 2.4.0：「ほか」は全員を名前の順（職種ごとにまとまる）に、広い枠で並べる（上の8人は最近使った順のまま）
+    const a=document.createElement('div');a.className='nall';a.innerHTML=[...settings.nurses].sort(NURSE_COLL.compare).map(nurseChip).join('');box.appendChild(a);mb.textContent='一覧を閉じる';return;}
   const b=e.target.closest('[data-nurse]');if(!b)return;e.preventDefault();const box=b.closest('.nchips');const inp=box&&box.previousElementSibling;
   if(inp&&inp.tagName==='INPUT'){inp.value=b.dataset.nurse;inp.dispatchEvent(new Event('input',{bubbles:true}));inp.classList.remove('invalid');}closeNurseAll(box);});
 
@@ -1455,10 +1613,12 @@ function dlgReturn(o){
     <label>メモ（遅れた理由など）<input name="memo"></label>
     ${o.hasPhoto?'<p class="warnbox">帰院登録をすると服装写真は削除されます（元に戻せません）。</p>':''}`,
   [{label:'やめる'},{label:'帰院を登録',cls:'ok',onClick:async f=>{
-    const nurse=val(f,'nurse');if(!nurse){toast('確認した看護師を入力してください');return false;}
-    const at=fromLocalInput(val(f,'at'))||Date.now();
-    if(at<Math.floor(o.departAt/60000)*60000){toast('帰院時刻は出発時刻（'+fmt(o.departAt)+'）より後にしてください');return false;}
-    if(at>Date.now()+5*60000){toast('帰院時刻が現在より先になっています。確認してください');return false;}
+    const nurse=val(f,'nurse');
+    const at=fromLocalInput(val(f,'at'))||Date.now();const E=[];
+    if(at<Math.floor(o.departAt/60000)*60000)E.push(['at','帰院時刻は出発時刻（'+fmt(o.departAt)+'）より後にしてください']);
+    else if(at>Date.now()+5*60000)E.push(['at','帰院時刻が現在より先になっています。確認してください']);
+    if(!nurse)E.push(['nurse','確認した看護師を入力してください']);
+    if(E.length)return fieldErrs(f,E);
     o.status='returned';o.returnedAt=at;o.returnNurse=nurse;
     o.rc={other:val(f,'rc_other')};RC_ITEMS.forEach(([k])=>{o.rc[k]={ok:!!f.elements['rc_'+k].checked,memo:val(f,'rcm_'+k)};});
     addLog(o,'帰院'+(val(f,'memo')?'：'+val(f,'memo'):''),nurse);if(rcText(o))addLog(o,'帰院時確認：'+rcText(o),nurse);rememberNurse(nurse);
@@ -1478,7 +1638,7 @@ function dlgLost(o){
     <label>内容<textarea name="memo"></textarea></label>
     ${o.tagId?`<p class="warnbox">位置の確認：病院のiPhone／iPadの「探す」→「持ち物」→ <b>${esc(tags.find(t=>t.id===o.tagId)?.findName||o.tagId)}</b></p>`:'<p class="warnbox">この患者はタグを持っていません。</p>'}`,
   [{label:'やめる'},{label:'捜索を開始',cls:'srch',onClick:async f=>{
-    const staff=val(f,'staff');if(!staff){toast('連絡を受けた職員を入力してください');return false;}
+    const staff=val(f,'staff');if(!staff)return fieldErr(f,'staff','連絡を受けた職員を入力してください');
     const now=Date.now();o.status='search';o.searchAt=now;o.ackAt=now;rememberNurse(staff);
     addLog(o,`捜索開始（連絡：${val(f,'who')}）`+(val(f,'last')?`／最終確認：${val(f,'last')}`:'')+(val(f,'memo')?`／${val(f,'memo')}`:''),staff);
     await saveOuting(o);lastSig='';tick();
@@ -1493,8 +1653,10 @@ function dlgExtend(o,resolveSearch){
     <label>職員<span class="req">必須</span><input name="staff" list="nurseList"></label>`,
   [{label:'やめる'},{label:'変更を保存',cls:'pri',onClick:async f=>{
     const due=fromLocalInput(val(f,'due')),reason=val(f,'reason'),staff=val(f,'staff');
-    if(!due||!reason||!staff){toast('新しい帰院予定・理由・職員を入力してください');return false;}
-    if(due<=Date.now()){toast('新しい帰院予定は現在より後にしてください');return false;}
+    const E=[];if(!due)E.push(['due','新しい帰院予定を入れてください']);else if(due<=Date.now())E.push(['due','新しい帰院予定は現在より後にしてください']);
+    if(!reason)E.push(['reason',resolveSearch?'理由・状況（どこで確認できたか等）を入力してください':'変更の理由・状況を入力してください']);
+    if(!staff)E.push(['staff','職員を入力してください']);
+    if(E.length)return fieldErrs(f,E);
     if(resolveSearch){o.status='out';addLog(o,'所在確認・捜索終了：'+reason,staff);}
     addLog(o,`帰院予定を変更 ${fmt(o.dueAt)} → ${fmt(due)}（${reason}）`,staff);
     o.dueAt=due;rememberNurse(staff);rememberMemo(resolveSearch?'found':'extend',reason);await saveOuting(o);lastSig='';tick();
@@ -1509,7 +1671,7 @@ function dlgLog(o,readOnly){
     <div class="quick" id="logQuick">${quick.map(q=>`<button type="button" class="btn sm" data-q="${esc(q)}">${esc(q)}</button>`).join('')}</div>
     <label style="margin-top:10px">内容（確認した位置、電話の結果など）<textarea name="memo"></textarea></label>
     <p class="hint">ボタンを押すと、下の内容欄と合わせて記録されます。間違えた記録は、上の一覧の「取消」で取り消せます（取り消し線で残ります）。</p>`),
-  readOnly?[{label:'閉じる'}]:[{label:'閉じる'},{label:'内容を記録',cls:'pri',onClick:async f=>{const m=val(f,'memo');if(!m){toast('内容を入力してください');return false;}addLog(o,m,val(f,'staff'),{m:1});rememberNurse(val(f,'staff'));await saveOuting(o);dlgLog(o);return false;}}]);
+  readOnly?[{label:'閉じる'}]:[{label:'閉じる'},{label:'内容を記録',cls:'pri',onClick:async f=>{const m=val(f,'memo');if(!m)return fieldErr(f,'memo','記録する内容を入力してください');addLog(o,m,val(f,'staff'),{m:1});rememberNurse(val(f,'staff'));await saveOuting(o);dlgLog(o);return false;}}]);
   if(!readOnly)$$('#dlgBody [data-logx]').forEach(b=>b.addEventListener('click',async()=>{const l=o.log[+b.dataset.logx];if(!l)return;const st=val($('#dlgForm'),'staff');
     if(!await askConfirm(`この記録を取り消しますか？\n「${l.text}」（${fmt(l.at)}）\n記録は消えずに、取り消し線を付けて残ります。`,'取り消す'))return;
     l.x=Date.now();l.xby=st||'';await saveOuting(o);dlgLog(o);$('#dlgForm').elements.staff.value=st;toast('記録を取り消しました');}));
@@ -1539,26 +1701,26 @@ function dlgEdit(o){
     <label>職員<span class="req">必須</span><input name="staff" list="nurseList"></label>`,
   [{label:'やめる'},
    ...(o.status==='out'&&o.departAtPlanned?[{label:'出発を取り消して予定に戻す',cls:'',onClick:async f=>{const staff=val(f,'staff'),reason=val(f,'reason');
-     if(!reason||!staff){toast('理由（例：GOを押し間違えた）と職員を入力してください');return false;}
+     if(!reason||!staff)return fieldErrs(f,[...(reason?[]:[['reason','理由（例：GOを押し間違えた）を入力してください']]),...(staff?[]:[['staff','職員を入力してください']])]);
      if(!await askConfirm(`${o.name} さんの出発を取り消し、出発前の予定（出発予定 ${fmt(o.departAtPlanned)}）に戻します。よろしいですか？`,'予定に戻す'))return false;
      await undoDeparture(o,reason,staff);}}]:[]),
    {label:'誤登録として取り消す',cls:'bad',onClick:async f=>{const staff=val(f,'staff'),reason=val(f,'reason');
-     if(!reason||!staff){toast('取消の理由と職員を入力してください');return false;}
+     if(!reason||!staff)return fieldErrs(f,[...(reason?[]:[['reason','取消の理由を入力してください']]),...(staff?[]:[['staff','職員を入力してください']])]);
      if(!await askConfirm(`${o.name} さんのこの登録を誤登録として取り消します。一覧やアラームの対象から外れ、記録には「取消」と残ります。よろしいですか？`,'取り消す'))return false;
      await cancelOuting(o,reason,staff);}},
    {label:'修正を保存',cls:'pri',onClick:async f=>{const staff=val(f,'staff'),reason=val(f,'reason');
-     if(!reason||!staff){toast('修正の理由と職員を入力してください');return false;}
+     if(!reason||!staff)return fieldErrs(f,[...(reason?[]:[['reason','修正の理由を入力してください']]),...(staff?[]:[['staff','職員を入力してください']])]);
      const NAMES={name:'氏名',ward:'病棟',adm:'入院形態',kind:'区分',dest:'行き先',clothes:'服装',selfTel:'本人連絡先',compTel:'同行者連絡先',famTel:'家族連絡先',note:'備考',departAt:'出発時刻',returnedAt:'帰院時刻'};
      const ch=[];
      for(const k of ['name','ward','adm','kind','dest','clothes','selfTel','compTel','famTel','note']){if(!f.elements[k])continue;const v=val(f,k);if(v!==(o[k]||'')){ch.push(k==='name'||k==='ward'||k==='kind'||k==='adm'?`${NAMES[k]} ${o[k]||'—'}→${v}`:NAMES[k]);o[k]=v;}}
-     const dp=fromLocalInput(val(f,'departAt'));if(!dp){toast('出発時刻を入れてください');return false;}
-     const rt=ret?fromLocalInput(val(f,'returnedAt')):null;if(ret&&!rt){toast('帰院時刻を入れてください');return false;}
-     if(ret&&rt<dp){toast('帰院時刻は出発時刻より後にしてください');return false;}
-     if(ret&&rt>Date.now()+5*60000){toast('帰院時刻が現在より先になっています');return false;}
-     if(dp>Date.now()+5*60000){toast('出発時刻が現在より先になっています');return false;}
+     const dp=fromLocalInput(val(f,'departAt'));if(!dp)return fieldErr(f,'departAt','出発時刻を入れてください');
+     const rt=ret?fromLocalInput(val(f,'returnedAt')):null;if(ret&&!rt)return fieldErr(f,'returnedAt','帰院時刻を入れてください');
+     if(ret&&rt<dp)return fieldErr(f,'returnedAt','帰院時刻は出発時刻より後にしてください');
+     if(ret&&rt>Date.now()+5*60000)return fieldErr(f,'returnedAt','帰院時刻が現在より先になっています');
+     if(dp>Date.now()+5*60000)return fieldErr(f,'departAt','出発時刻が現在より先になっています');
      if(dp!==o.departAt){ch.push(`出発時刻 ${fmt(o.departAt)}→${fmt(dp)}`);o.departAt=dp;}
      if(ret&&rt!==o.returnedAt){ch.push(`帰院時刻 ${fmt(o.returnedAt)}→${fmt(rt)}`);o.returnedAt=rt;}
-     if(!ch.length){toast('変更はありません');return false;}
+     if(!ch.length)return fieldErr(f,null,'変更はありません（直したい所を変えてから「修正を保存」を押してください）');
      if(isActive(o)){const pp=patients.find(x=>x.id===o.patientId);if(pp){['selfTel','famTel'].forEach(k=>{if(f.elements[k])pp[k]=o[k];});dbPut('patients',pp);}}
      addLog(o,`登録内容を修正（${ch.join('、')}）理由：${reason}`,staff);rememberNurse(staff);await saveOuting(o);lastSig='';tick();
      if($('#sec-history').classList.contains('active'))renderHistory();toast('修正を保存しました');}}]);
@@ -1568,7 +1730,7 @@ function dlgUndo(o){
     <label>理由<span class="req">必須</span><input name="reason" placeholder="例：GOを押し間違えた、出発が延期になった"></label>${memoChips('undo','reason')}
     <label>職員<span class="req">必須</span><input name="staff" list="nurseList"></label>`,
   [{label:'やめる'},{label:'予定に戻す',cls:'pri',onClick:async f=>{const reason=val(f,'reason'),staff=val(f,'staff');
-    if(!reason||!staff){toast('理由と職員を入力してください');return false;}
+    if(!reason||!staff)return fieldErrs(f,[...(reason?[]:[['reason','理由を入力してください']]),...(staff?[]:[['staff','職員を入力してください']])]);
     rememberMemo('undo',reason);await undoDeparture(o,reason,staff);}}]);
 }
 async function undoDeparture(o,reason,staff){
@@ -1614,9 +1776,12 @@ function renderPatientChips(){
   const all=patients.filter(p=>!isDis(p)&&matchQ(p,q)).sort((a,b)=>(b.lastOutAt||0)-(a.lastOutAt||0));const lim=q?30:10;let list=all.slice(0,lim);
   $('#pChipsMore').textContent=all.length>lim?`ほか ${all.length-lim}人は、氏名・ふりがな・IDで探してください`:(list.length>3?'← 横にずらすと続きが見られます':'');
   $('#pChips').innerHTML=list.map(p=>{const out=outings.some(o=>isActive(o)&&o.patientId===p.id);
-    return `<button type="button" class="chip${out?' out':''}" data-pt="${p.id}"><b>${esc(p.name)}</b>${p.pid?' <span class="sub">ID '+esc(p.pid)+'</span>':''}${sexAge(p)?' <span class="sub">'+esc(sexAge(p))+'</span>':''}<small>${esc(wardText(p)||'病棟未設定')}・前回 ${p.lastOutAt?fmt(p.lastOutAt):'—'}${out?'・<b>外出中</b>':''}</small></button>`;}).join('')
+    const sel=nf.dataset.patientId===p.id&&nf.elements.name.value.trim()===p.name;
+    return `<button type="button" class="chip${out?' out':''}${sel?' sel':''}" data-pt="${p.id}" aria-pressed="${sel}"><b>${esc(p.name)}</b>${p.pid?' <span class="sub">ID '+esc(p.pid)+'</span>':''}${sexAge(p)?' <span class="sub">'+esc(sexAge(p))+'</span>':''}<small>${esc(wardText(p)||'病棟未設定')}・前回 ${p.lastOutAt?fmt(p.lastOutAt):'—'}${out?'・<b>外出中</b>':''}</small></button>`;}).join('')
     ||(q?'<span class="hint">該当する患者がいません。下の欄に入力すると、登録時に台帳へ追加されます。</span>':(patients.some(p=>!isDis(p))?'':'<span class="hint">まだ台帳に入院中の患者がいません。初回は下の欄に入力してください。</span>'));
 }
+// 2.4.0：候補のボタンのうち、いま登録している患者を「選択中」に（作り直さずに印だけ付け替える）
+function markSelChip(){const nm=nf.elements.name.value.trim();$$('#pChips [data-pt]').forEach(b=>{const p=patients.find(x=>x.id===b.dataset.pt);const on=!!p&&nf.dataset.patientId===p.id&&nm===p.name;b.classList.toggle('sel',on);b.setAttribute('aria-pressed',on?'true':'false');});}
 function setRadio(name,v){const r=[...nf.querySelectorAll(`input[name="${name}"]`)].find(x=>x.value===v);if(r)r.checked=true;}
 function fillPatient(p){
   const f=nf.elements;
@@ -1625,13 +1790,13 @@ function fillPatient(p){
   f.dest.value=p.lastDest||'';
   const c=p.lastComp||{alone:true};setRadio('alone',c.alone?'1':'0');$('#compBox').hidden=!!c.alone;
   f.compName.value=c.alone?'':(c.compName||'');f.compRel.value=c.alone?'':(c.compRel||'');f.compTel.value=c.alone?'':(c.compTel||'');
-  nf.dataset.patientId=p.id;renderDestList(p);
+  nf.dataset.patientId=p.id;renderDestList(p);markSelChip();
   const L=$('#pLoaded');L.hidden=false;L.innerHTML=`<b>${esc(p.name)}</b> さんの前回の情報（病棟・連絡先・行き先・同行者）を入れました。変わっている所だけ直してください。服装は毎回撮影・入力してください。 <button type="button" class="btn sm" id="pUnload">取り消す</button>`;
   $('#pUnload').addEventListener('click',clearPatientForm);
   if(!f.departAt.value)f.departAt.value=toLocalInput(Date.now());
   updateConsent();
 }
-function clearPatientForm(){const keep=nf.elements.departAt.value;const hadPlan=!!nf.dataset.planId;nf.reset();nf.elements.departAt.value=keep;delete nf.dataset.patientId;delete nf.dataset.planId;delete nf.dataset.planMode;$('#formBack').hidden=true;if(hadPlan){pendingPhoto=null;renderPhotoPrev();buildTagOptions();}$('#pLoaded').hidden=true;$('#compBox').hidden=true;renderDestList(null);updateConsent();}
+function clearPatientForm(){const keep=nf.elements.departAt.value;const hadPlan=!!nf.dataset.planId;nf.reset();nf.elements.departAt.value=keep;delete nf.dataset.patientId;delete nf.dataset.planId;delete nf.dataset.planMode;$('#formBack').hidden=true;if(hadPlan){pendingPhoto=null;renderPhotoPrev();buildTagOptions();}$('#pLoaded').hidden=true;$('#compBox').hidden=true;renderDestList(null);updateConsent();markSelChip();}
 $('#pSearch').addEventListener('input',renderPatientChips);
 $('#pChips').addEventListener('click',e=>{const b=e.target.closest('[data-pt]');if(!b)return;const p=patients.find(x=>x.id===b.dataset.pt);if(!p)return;
   if(outings.some(o=>isActive(o)&&o.patientId===p.id)){toast(`${p.name} さんは現在外出中です。帰院登録を確認してください。`,4500);}
@@ -1679,7 +1844,7 @@ function updateConsent(){renderClothesHist();const box=$('#consentBox');const ta
     <div class="grid" style="margin-top:8px"><label>同意書の取得日<input type="date" name="consentDate" value="${keep||toDateInput(Date.now())}"></label></div>
     <label class="consent"><input type="checkbox" name="consent"${kc?' checked':''}>同意書を確認した（医療保護入院の場合は家族等の同意も含む）</label>`;}
 }
-nf.elements.name.addEventListener('input',updateConsent);nf.elements.pid.addEventListener('input',updateConsent);
+nf.elements.name.addEventListener('input',updateConsent);nf.elements.name.addEventListener('input',markSelChip);nf.elements.pid.addEventListener('input',updateConsent);
 $('#tagSelect').addEventListener('change',updateConsent);
 $$('input[name="alone"]').forEach(r=>r.addEventListener('change',()=>{$('#compBox').hidden=nf.elements.alone.value==='1';}));
 
@@ -1687,7 +1852,7 @@ $$('input[name="alone"]').forEach(r=>r.addEventListener('change',()=>{$('#compBo
 
 /* ---------- 新規登録：細かく選ぶ・出発前の札・外出の翌日確認・キーボード・タグのボタン ---------- */
 function openMan(id,on){const m=$('#'+id);const b=document.querySelector(`.tfine[data-man="${id}"]`);m.hidden=!on;if(b){b.setAttribute('aria-expanded',on?'true':'false');b.textContent=on?'細かい選択を閉じる':'細かく選ぶ';}}
-$$('.tfine').forEach(b=>b.addEventListener('click',()=>openMan(b.dataset.man,$('#'+b.dataset.man).hidden)));
+$$('.tfine[data-man]').forEach(b=>b.addEventListener('click',()=>openMan(b.dataset.man,$('#'+b.dataset.man).hidden)));
 nf.addEventListener('reset',()=>{openMan('depMan',false);openMan('dueMan',false);});
 function preText(o,now){if(!o||o.status!=='out'||!(o.departAt>now))return '';return `出発前（あと${Math.max(1,Math.ceil((o.departAt-now)/60000))}分）`;}
 function preBadge(o,now){const t=preText(o,now);return t?` <span class="lbl lbl-pre" data-pre="${o.id}">${t}</span>`:'';}
@@ -1776,26 +1941,28 @@ function updateRq(){paintTime();renderTagBtns();
     if(!miss.length){c.textContent='✓ 必須はすべて入力済み';c.classList.add('all');}else{c.textContent=`必須 ${n}／${tot}`;c.classList.remove('all');}
     $('#rbMiss').innerHTML=miss.length?'<span class="rblab">未入力：</span>'+miss.map(k=>`<button type="button" data-go="${k}">${esc(rqLabel(k))}</button>`).join(''):'';}
   const bt=$('#submitBtn').textContent;if($('#rbBtn').textContent!==bt)$('#rbBtn').textContent=bt;
-  const bar=$('#regBar');if(!bar.hidden)document.body.style.setProperty('--rbh',bar.offsetHeight+'px');
+  {const nm=nf.elements.name.value.trim();const w=$('#rbWho');const h=nm?`<span class="rbwl">登録する患者</span><span class="rbwn">${esc(nm)}<small>さん</small></span>`:'<span class="rbwl">登録する患者</span><span class="rbwn">患者未選択</span>';
+    if(w._h!==h){w._h=h;w.innerHTML=h;w.classList.toggle('none',!nm);w.title=nm?nm+' さん':'';}}
+  const bar=$('#regBar');if(!bar.hidden){document.body.style.setProperty('--rbh',bar.offsetHeight+'px');}updateStick();
 }
 function updateRegBar(){const on=$('#sec-new').classList.contains('active');$('#regBar').hidden=!on;document.body.classList.toggle('rbon',on);if(on)updateRq();}
 new MutationObserver(updateRegBar).observe($('#sec-new'),{attributes:true,attributeFilter:['class']});
 new MutationObserver(()=>updateRq()).observe($('#submitBtn'),{childList:true,characterData:true,subtree:true});
 nf.addEventListener('input',()=>setTimeout(updateRq,0));nf.addEventListener('change',()=>setTimeout(updateRq,0));
-nf.addEventListener('reset',()=>{pExpand();setTimeout(()=>{noteAuto();updateRq();},0);});
+nf.addEventListener('reset',()=>{pExpand();nf.querySelectorAll('.ferr').forEach(x=>x.remove());setTimeout(()=>{noteAuto();updateRq();markSelChip();},0);});
 window.addEventListener('resize',updateRq);
 setInterval(()=>{if(!$('#regBar').hidden)updateRq();},1000);   // 呼び出し・ボタンで値が入った時（input が起きない時）も追う
 $('#rbBtn').addEventListener('click',()=>$('#submitBtn').click());
 $('#rbMiss').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)goField(b.dataset.go);});
 function goField(k){const box=rqBox(k);if($('#pFields').contains(box))pExpand();
   let t;if(k==='ward')t=nf.querySelector('#wardRadios input');else if(k==='departAt'||k==='dueAt')t=[...box.querySelectorAll('.tb')].find(x=>x.offsetParent);else{const i=nf.elements[k];t=i._tp&&i.hidden?(i._tp.querySelector('.tp-d').value?i._tp.querySelector('.tp-t'):i._tp.querySelector('.tp-d')):i;}
-  box.scrollIntoView({behavior:'smooth',block:'center'});
+  scrollIntoArea(box,true);   // 2.4.0：上に固定した帯・タブと下の登録バーに隠れない位置へ
   box.classList.remove('flash');void box.offsetWidth;box.classList.add('flash');
   setTimeout(()=>t&&t.focus({preventScroll:true}),350);}
 // 患者を呼び出したら、患者欄を1行にたたむ（必須の氏名・ID・病棟がそろっている時だけ）。入力欄は消さずに隠すだけ
 function pFold(){const f=nf.elements;if(!(f.name.value.trim()&&f.pid.value.trim()&&f.ward.value)){pExpand();return;}
   const sa=[f.sex.value,f.age.value?f.age.value+'歳':''].filter(Boolean).join(' ');
-  $('#pSum').innerHTML=`<div class="pst"><b>${esc(f.name.value)}</b><span>ID ${esc(f.pid.value)}</span>${sa?`<span>${esc(sa)}</span>`:''}<span>${esc(f.ward.value)}・${esc(f.adm.value)}</span></div><span class="pok">✓ 入力済み</span><button type="button" class="btn" id="pOpen">変更</button>`;
+  $('#pSum').innerHTML=`<div class="pst"><span class="pcap">登録する患者</span><b class="pnm">${esc(f.name.value)}</b><span class="pmeta"><span>ID ${esc(f.pid.value)}</span>${sa?`<span>${esc(sa)}</span>`:''}<span>${esc(f.ward.value)}・${esc(f.adm.value)}</span></span></div><span class="pok">✓ 入力済み</span><button type="button" class="btn" id="pOpen">変更</button>`;
   $('#pSum').hidden=false;$('#pFields').hidden=true;
   $('#pOpen').addEventListener('click',()=>{pExpand();nf.elements.name.focus({preventScroll:true});});
   updateRq();}
@@ -1836,20 +2003,26 @@ $('#webcamBtn').addEventListener('click',async()=>{
 });
 
 function showFormErrors(errs){
-  nf.querySelectorAll('.invalid').forEach(el=>el.classList.remove('invalid'));
+  nf.querySelectorAll('.invalid').forEach(el=>el.classList.remove('invalid'));nf.querySelectorAll('.ferr').forEach(x=>x.remove());
   const box=$('#formErr');
   if(!errs.length){box.hidden=true;return;}
   errs.forEach(e=>{if(e.el===nf.elements.departAt)openMan('depMan',true);if(e.el===nf.elements.dueAt)openMan('dueMan',true);});
   if(errs.some(e=>e.el&&$('#pFields').contains(e.el)))pExpand();if(errs.some(e=>e.el&&$('#cFields').contains(e.el)))cExpand();
   errs.forEach(e=>e.el&&(e.el._tp||e.el).classList.add('invalid'));
+  // 2.4.0：その欄のすぐそば（見出しと欄の間）にも赤い文字で出す
+  errs.forEach(e=>{if(!e.el)return;const x=document.createElement('div');x.className='ferr';x.textContent=e.msg;x._for=e.el;
+    const col=e.el===nf.elements.departAt?$('#depCol'):e.el===nf.elements.dueAt?$('#dueCol'):null;
+    if(col)col.querySelector('.tres').before(x);else e.el.before(x);});
   box.innerHTML='<b>まだ登録できません。次の項目を確認してください。</b><ul>'+errs.map(e=>'<li>'+esc(e.msg)+'</li>').join('')+'</ul>';
   box.hidden=false;
   toast(`まだ登録できません：赤枠の${errs.length}項目を確認してください（一覧は登録ボタンの上）`,6000);
-  const first=errs[0].el||box;first.scrollIntoView({behavior:'smooth',block:'center'});
-  const inp=first.matches('input,select,textarea')?first:null;if(inp)setTimeout(()=>inp.focus({preventScroll:true}),400);
+  const first=errs[0].el||box;const fx=nf.querySelector('.ferr');scrollIntoArea(fx||first,true);   // 上の帯・タブと下のバーに隠れない位置へ
+  const inp=first.matches('input,select,textarea')&&!first.hidden?first:(first._tp?first._tp.querySelector('select'):null);if(inp)setTimeout(()=>inp.focus({preventScroll:true}),400);
 }
-nf.addEventListener('input',e=>{const t=e.target.closest('.invalid')||(e.target.name==='ward'&&$('#wardRadios'));if(t)t.classList.remove('invalid');});
-nf.addEventListener('change',e=>{if(e.target.name==='ward')$('#wardRadios').classList.remove('invalid');if(e.target.name==='consent'||e.target.name==='tagId')$('#consentBox').classList.remove('invalid');});
+nf.addEventListener('input',e=>{const t=e.target.closest('.invalid')||(e.target.name==='ward'&&$('#wardRadios'));if(t)t.classList.remove('invalid');ferrOff(e.target);});
+// 直した欄の知らせを消す
+function ferrOff(t){nf.querySelectorAll('.ferr').forEach(x=>{const f=x._for;if(!f)return;if(f===t||(f.contains&&f.contains(t))||(f._tp&&f._tp.contains(t))||(f.id==='wardRadios'&&t.name==='ward')||(f.id==='consentBox'&&(t.name==='consent'||t.name==='tagId'||t.name==='consentDate')))x.remove();});}
+nf.addEventListener('change',e=>{ferrOff(e.target);if(e.target.name==='ward')$('#wardRadios').classList.remove('invalid');if(e.target.name==='consent'||e.target.name==='tagId')$('#consentBox').classList.remove('invalid');});
 nf.addEventListener('submit',e=>e.preventDefault());
 let submitting=false;
 $('#submitBtn').addEventListener('click',async()=>{if(submitting)return;submitting=true;try{await registerOuting();}catch(err){toast('登録中にエラーが起きました：'+(err&&err.message||err),8000);}finally{submitting=false;}});
@@ -2233,14 +2406,16 @@ function dlgPtEdit(p){
   [{label:'やめる'},{label:'修正を保存',cls:'pri',onClick:async f=>{
     const nv={};PT_FIELDS.forEach(([k])=>{nv[k]=val(f,k);});
     nv.name=nv.name.replace(/　/g,' ').replace(/\s+/g,' ');nv.kana=hira(nv.kana);nv.pid=half(nv.pid);nv.age=half(nv.age).replace(/[^0-9]/g,'');
-    if(!nv.name||!nv.pid){toast('患者氏名と患者IDを入れてください');return false;}
-    if(!nv.ward){toast('病棟を選んでください');return false;}
-    const other=patients.find(x=>x!==p&&x.pid===nv.pid);
-    if(other){toast(`患者ID ${nv.pid} は、ほかの患者（${other.name}${isDis(other)?'・退院の一覧':''}）で使われています。保存していません。IDを確かめてください。`,7000);return false;}
-    const staff=val(f,'staff');if(!staff){toast('職員を入力してください');return false;}
+    const other=nv.pid&&patients.find(x=>x!==p&&x.pid===nv.pid);const staff=val(f,'staff');const E=[];
+    if(!nv.name)E.push(['name','患者氏名を入れてください']);
+    if(!nv.pid)E.push(['pid','患者IDを入れてください']);
+    else if(other)E.push(['pid',`患者ID ${nv.pid} は、ほかの患者（${other.name}${isDis(other)?'・退院の一覧':''}）で使われています。保存していません。IDを確かめてください。`]);
+    if(!nv.ward)E.push(['ward','病棟を選んでください']);
+    if(!staff)E.push(['staff','職員を入力してください']);
+    if(E.length)return fieldErrs(f,E);
     const cur=k=>k==='age'?ageOf(p):String(p[k]||'');
     const ch=PT_FIELDS.filter(([k])=>nv[k]!==cur(k));
-    if(!ch.length){toast('変更はありません');return false;}
+    if(!ch.length)return fieldErr(f,null,'変更はありません（直したい所を変えてから「修正を保存」を押してください）');
     ptLog(p,'修正：'+ch.map(([k,l])=>`${l} ${cur(k)||'—'} → ${nv[k]||'—'}`).join('、'),staff);
     ch.forEach(([k])=>{if(k==='age'){p.age=nv.age;delete p.birth;}else p[k]=nv[k];});
     rememberNurse(staff);await dbPut('patients',p);renderPatients();toast(`${p.name} さんの情報を修正しました`);}}]);
@@ -2253,8 +2428,8 @@ function dlgDischarge(p){
   openDlg(`退院：${p.name}`,`<p class="hint" style="margin-top:0">「退院」の一覧に移します。「＋ 新規登録」の呼び出しには出なくなります。過去の外出の記録は消えません。また入院したときは「退院」の一覧の「再入院」で戻せます。</p>
     <label>退院日<span class="req">必須</span><input type="date" name="ddate" value="${toDateInput(Date.now())}"></label>${STAFF_IN}`,
   [{label:'やめる'},{label:'退院にする',cls:'pri',onClick:async f=>{const d=val(f,'ddate'),staff=val(f,'staff');
-    if(!d){toast('退院日を入れてください');return false;}if(!staff){toast('職員を入力してください');return false;}
-    if(ptBusy(p)){toast('外出・外泊中または予定があるため退院にできません。先に帰院・予定の取消をしてください',6000);return false;}
+    if(!d||!staff)return fieldErrs(f,[...(d?[]:[['ddate','退院日を入れてください']]),...(staff?[]:[['staff','職員を入力してください']])]);
+    if(ptBusy(p))return fieldErr(f,null,'外出・外泊中または予定があるため退院にできません。先に帰院・予定の取消をしてください');
     p.status='discharged';p.dischargedAt=d;ptLog(p,`退院（退院日 ${ymd(d)}・${p.ward||'病棟なし'}）`,staff);rememberNurse(staff);await dbPut('patients',p);renderPatients();toast(`${p.name} さんを「退院」の一覧に移しました`);}}]);
 }
 function dlgReadmit(p){
@@ -2262,7 +2437,7 @@ function dlgReadmit(p){
     <div style="margin-bottom:10px"><span class="hint">病棟<span class="req">必須</span></span>${wardRadiosHTML(p.ward)}</div>
     <label>入院形態<select name="adm">${optHTML(ADMS,p.adm||'任意入院')}</select></label>${STAFF_IN}`,
   [{label:'やめる'},{label:'再入院にする',cls:'pri',onClick:async f=>{const ward=val(f,'ward'),adm=val(f,'adm'),staff=val(f,'staff');
-    if(!ward){toast('病棟を選んでください');return false;}if(!staff){toast('職員を入力してください');return false;}
+    if(!ward||!staff)return fieldErrs(f,[...(ward?[]:[['ward','病棟を選んでください']]),...(staff?[]:[['staff','職員を入力してください']])]);
     ptLog(p,`再入院（${ward}・${adm}）`+(p.ward&&p.ward!==ward?`　病棟 ${p.ward} → ${ward}`:'')+(p.adm&&p.adm!==adm?`　入院形態 ${p.adm} → ${adm}`:''),staff);
     p.status='in';p.ward=ward;p.adm=adm;delete p.dischargedAt;rememberNurse(staff);await dbPut('patients',p);renderPatients();toast(`${p.name} さんを「入院中」に戻しました（${ward}）`);}}]);
 }
@@ -2270,7 +2445,7 @@ function dlgWithdraw(p){
   openDlg(`同意の撤回：${p.name}`,`<p class="warnbox" style="margin-top:0">同意の撤回を記録します。この患者にはタグを渡せなくなります。</p>
     <label>撤回日<span class="req">必須</span><input type="date" name="wdate" value="${toDateInput(Date.now())}"></label>${STAFF_IN}`,
   [{label:'やめる'},{label:'撤回を記録',cls:'bad',onClick:async f=>{const wd=val(f,'wdate'),staff=val(f,'staff');
-    if(!wd){toast('撤回日を入れてください');return false;}if(!staff){toast('職員を入力してください');return false;}
+    if(!wd||!staff)return fieldErrs(f,[...(wd?[]:[['wdate','撤回日を入れてください']]),...(staff?[]:[['staff','職員を入力してください']])]);
     p.consentWithdrawn=wd;p.consentLog=[...(p.consentLog||[]),{at:Date.now(),text:`同意の撤回（${ymd(wd)}）を記録`,by:staff}];
     rememberNurse(staff);await dbPut('patients',p);renderPatients();toast('同意の撤回を記録しました');
     if(outings.some(o=>isActive(o)&&o.patientId===p.id&&o.tagId))toast('この患者は現在タグを持って外出中です。帰院時にタグを回収してください。',6000);}}]);
@@ -2280,7 +2455,7 @@ function dlgConsentDate(p){
     ${p.consentWithdrawn?`<p class="warnbox">${ymd(p.consentWithdrawn)} に同意の撤回が記録されています。新しく同意書をもらったときだけ入れてください。</p>`:''}
     <label>同意書の取得日<span class="req">必須</span><input type="date" name="cdate" value="${toDateInput(Date.now())}"></label>${STAFF_IN}`,
   [{label:'やめる'},{label:'取得日を保存',cls:'pri',onClick:async f=>{const cd=val(f,'cdate'),staff=val(f,'staff');
-    if(!cd){toast('取得日を入れてください');return false;}if(!staff){toast('職員を入力してください');return false;}
+    if(!cd||!staff)return fieldErrs(f,[...(cd?[]:[['cdate','同意書の取得日を入れてください']]),...(staff?[]:[['staff','職員を入力してください']])]);
     const was=p.consentWithdrawn;p.consentDate=cd;p.consentWithdrawn='';
     p.consentLog=[...(p.consentLog||[]),{at:Date.now(),text:`同意書取得日を ${ymd(cd)} に登録`+(was?'（撤回の記録を解除）':''),by:staff}];
     rememberNurse(staff);await dbPut('patients',p);renderPatients();toast('同意書の取得日を記録しました');}}]);
@@ -2300,8 +2475,11 @@ function renderTags(){
     return `<tr><td><b>${esc(t.id)}</b></td><td><input data-tname="${esc(t.id)}" value="${esc(t.findName)}" style="width:150px"></td><td>${st}</td><td>${o?esc(o.name)+(t.status==='reserved'?'（'+fmt(o.departAt)+' 出発予定）':'（'+fmt(o.dueAt)+'まで）'):''}</td><td><input data-tser="${esc(t.id)}" value="${esc(t.serial)}" style="width:150px"></td><td><input type="date" data-tbat="${esc(t.id)}" value="${esc(t.battery)}"></td><td>${(t.status==='inuse'||t.status==='reserved')?'':`<button class="btn sm" data-tdel="${esc(t.id)}">削除</button>`}</td></tr>`;}).join('')||'<tr><td colspan="7">タグが登録されていません</td></tr>');
 }
 async function addTag(id,findName,serial,battery){id=id.trim();if(!id)return false;if(tags.some(t=>t.id===id))return false;const t={id,findName:(findName||id).trim(),serial:serial||'',battery:battery||'',status:'available',outingId:null};tags.push(t);tags.sort(tagSort);await saveTag(t);return true;}
-$('#tAdd').addEventListener('click',async()=>{const ok=await addTag($('#tNewId').value,$('#tNewName').value,$('#tNewSerial').value,$('#tNewBat').value);if(!ok){toast('タグ番号が空か、既に登録されています');return;}['#tNewId','#tNewName','#tNewSerial','#tNewBat'].forEach(s=>$(s).value='');renderTags();toast('タグを追加しました');});
-$('#tBulk').addEventListener('click',async()=>{const a=+$('#tBulkFrom').value,b=+$('#tBulkTo').value;if(!(a>=1&&b>=a&&b-a<100)){toast('番号の範囲を確認してください');return;}let n=0;for(let i=a;i<=b;i++){if(await addTag('T-'+pad(i)))n++;}renderTags();toast(`${n}個追加しました`);});
+$('#tAdd').addEventListener('click',async()=>{const pn=$('#tNewId').closest('.panel'),id=$('#tNewId').value.trim();
+  if(!id)return fieldErr(pn,$('#tNewId'),'タグ番号を入れてください（例：T-01）');
+  if(tags.some(t=>t.id===id))return fieldErr(pn,$('#tNewId'),`タグ ${id} はすでに登録されています`);
+  const ok=await addTag($('#tNewId').value,$('#tNewName').value,$('#tNewSerial').value,$('#tNewBat').value);if(!ok)return;clearFieldErr(pn);['#tNewId','#tNewName','#tNewSerial','#tNewBat'].forEach(s=>$(s).value='');renderTags();toast('タグを追加しました');});
+$('#tBulk').addEventListener('click',async()=>{const a=+$('#tBulkFrom').value,b=+$('#tBulkTo').value;if(!(a>=1&&b>=a&&b-a<100))return fieldErr($('#tBulkFrom').closest('.panel'),$('#tBulkFrom'),'番号の範囲を確認してください（1以上・始め≦終わり・100個まで）');clearFieldErr($('#tBulkFrom').closest('.panel'));let n=0;for(let i=a;i<=b;i++){if(await addTag('T-'+pad(i)))n++;}renderTags();toast(`${n}個追加しました`);});
 $('#tTable').addEventListener('change',async e=>{const el=e.target;let t;
   if(el.dataset.tst){t=tags.find(x=>x.id===el.dataset.tst);t.status=el.value;}
   else if(el.dataset.tname){t=tags.find(x=>x.id===el.dataset.tname);t.findName=el.value.trim()||t.id;}
@@ -2350,12 +2528,88 @@ nobunaga:'/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHR
 ieyasu:'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',
 mitsunari:'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'};
 const demoPhotoBlob=k=>{const a=atob(DEMO_PHOTOS[k]),u=new Uint8Array(a.length);for(let i=0;i<a.length;i++)u[i]=a.charCodeAt(i);return new Blob([u],{type:'image/jpeg'});};
+// 2.4.0：デモの職員（架空。名字は患者のデモの名字と重ならない）。看護師24人・PSW 6人
+const DEMO_NURSE_SUR=['青木','浅野','新井','有村','飯田','石原','今村','上田','内田','大野','小川','片山','川口','北村','久保','熊谷','小島','坂口','柴田','杉山','関口','高木','竹内','千葉'];
+const DEMO_PSW_SUR=['土屋','永井','西川','野口','原田','平野'];
+// 予定の服装（文字）と、見本の服装写真の色（上・下）。写真は外部から取らず、その場で絵を描いて作る（顔は描かない）
+const DEMO_CLOTHES=[['紺のジャケット、ベージュのズボン','#24345e','#cbb48c'],['赤いセーター、黒いズボン','#b8322f','#2b2b2b'],['緑のパーカー、ジーンズ','#3d7a4a','#3b5a8a'],['灰色のコート、紺のズボン','#8a8f96','#25304d'],
+  ['白いシャツ、茶色のズボン','#f1f1ec','#7a5532'],['黄色のカーディガン、灰色のスカート','#e2b73c','#8d8f94'],['水色のダウン、黒いズボン','#8cc3e6','#262626'],['えんじ色のトレーナー、灰色のズボン','#7d2735','#7f8288']];
+function demoClothesBlob(top,bot){return new Promise(res=>{const c=document.createElement('canvas');c.width=240;c.height=320;const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,0,320);g.addColorStop(0,'#eef1f5');g.addColorStop(1,'#cdd5df');x.fillStyle=g;x.fillRect(0,0,240,320);
+  const rr=(X,Y,W,H,R,col)=>{x.fillStyle=col;x.beginPath();if(x.roundRect)x.roundRect(X,Y,W,H,R);else x.rect(X,Y,W,H);x.fill();x.strokeStyle='rgba(0,0,0,.18)';x.lineWidth=1.5;x.stroke();};
+  rr(106,0,28,22,6,'#e4c4a2');                                   // 首（顔は描かない）
+  rr(70,154,48,140,10,bot);rr(122,154,48,140,10,bot);             // ズボン
+  x.fillStyle='#2a2a2a';x.beginPath();x.ellipse(92,300,30,11,0,0,Math.PI*2);x.ellipse(148,300,30,11,0,0,Math.PI*2);x.fill();   // 靴
+  rr(36,26,30,138,15,top);rr(174,26,30,138,15,top);               // 腕
+  x.fillStyle='#e4c4a2';x.beginPath();x.arc(51,170,11,0,Math.PI*2);x.arc(189,170,11,0,Math.PI*2);x.fill();
+  rr(62,14,116,152,24,top);                                       // 胴
+  x.fillStyle='rgba(255,255,255,.85)';x.fillRect(178,6,54,24);x.fillStyle='#14233a';x.font='bold 15px sans-serif';x.fillText('見本',189,24);
+  c.toBlob(b=>res(b),'image/jpeg',0.8);});}
+// 予定：今日〜30日後に18件（＋もとからの1件）。平日は外出、週末（金・土・日）は外泊を多めに。出発予定を過ぎた予定は作らない
+async function demoPlans(list,{now,stf,famOf}){const M=60000,H=3600000,D=86400000;
+  const day0=tkDayStart(now);const at=(d,hm)=>tkAtHM(tkAddDays(day0,d),hm);
+  const OFF=[0,1,2,3,4,6,7,8,10,12,13,15,17,19,21,24,27,30];
+  const RELS=['母','','妻','施設職員','父','','娘','兄','','夫','姉','息子','','弟','妹','その他の親族','','母'];
+  const NOPH=[1,5,8,12,16];          // 服装写真なし（出発の時に撮る）
+  const RSV=[0,2,4];                 // タグを予約済み（近いうちの予定）
+  const OUT_DEST=['自宅','他院受診（内科）','実家','近くのコンビニ','他院受診（歯科）','〇〇駅周辺で買い物','病院周辺の散歩','他院受診（整形外科）','図書館','自宅','他院受診（眼科）'];
+  const STAY_DEST=['自宅','実家','自宅','姉の家','実家'];
+  const OTHER_SUR=['三宅','宮本','村上','中川','横山','大塚'],GF=['春香','美和','典子','千秋','礼子','静香'],GM=['孝','昭','進','武','実','豊'];
+  const fits=(rel,p)=>{const a=+p.age||0,m=p.sex==='男';return rel==='妻'?m&&a>=30:rel==='夫'?!m&&a>=30:(rel==='息子'||rel==='娘')?a>=55:(rel==='母'||rel==='父')?a<60:true;};
+  const used=new Set(),pool=list.slice(14,50);let io=0,is=0,n=0;
+  for(let i=0;i<OFF.length;i++){
+    const rel=RELS[i];const p=pool.find(x=>!used.has(x)&&(!rel||fits(rel,x)))||pool.find(x=>!used.has(x));used.add(p);
+    let d=OFF[i];if(d===0&&now+120*M>at(0,'15:00'))d=29;     // 今日はもう遅い時は、29日後に回す
+    const wd=new Date(tkAddDays(day0,d)).getDay();
+    const kind=(wd===5||wd===6||wd===0)&&i%4!==3?'外泊':'外出';
+    let dep,due,dest;
+    if(kind==='外出'){dest=OUT_DEST[io++%OUT_DEST.length];const hosp=dest.startsWith('他院受診');dep=at(d,hosp?(i%2?'13:30':'09:00'):['09:30','10:00','13:00','13:30','14:00'][i%5]);due=dep+(hosp?3:[2,3,4,5][i%4])*H;}
+    else{dest=STAY_DEST[is++%STAY_DEST.length];dep=at(d,['10:00','13:00','14:00'][i%3]);due=at(d+(wd===5?2:1),['15:00','16:00','17:00'][i%3]);}
+    if(d===0&&dep<now+120*M){const t=Math.ceil((now+120*M)/(30*M))*30*M;due=t+(due-dep);dep=t;}
+    let comp=null;
+    if(rel){const sur=p.name.replace('(デモ) ','').split(' ')[0];const fem=['母','妻','姉','妹','娘','その他の親族'].includes(rel)||(rel==='施設職員'&&i%2);
+      const own=['母','父','妻','夫','兄','弟','息子'].includes(rel)||(['姉','妹','娘'].includes(rel)&&i%2===0);
+      comp={name:`${own?sur:OTHER_SUR[Math.floor(i/3)%OTHER_SUR.length]} ${(fem?GF:GM)[i%6]}`,tel:'090-0000-'+(3001+i)};}
+    const ph=!NOPH.includes(i);const cl=DEMO_CLOTHES[i%DEMO_CLOTHES.length];
+    const o={id:uid(),name:p.name,pid:p.pid,kana:p.kana,sex:p.sex,age:p.age,ward:p.ward,adm:p.adm,kind,departAt:dep,dueAt:due,dueAtOriginal:due,dest,alone:!comp,
+      compName:comp?comp.name:'',compRel:comp?rel:'',compTel:comp?comp.tel:'',...famOf(p),clothes:ph||i%2?cl[0]:'',note:'',tagId:'',consent:false,departNurse:stf(),status:'planned',createdAt:now,hasPhoto:ph,demo:true,log:[]};
+    if(RSV.includes(i)){const tid='T-'+pad(10+RSV.indexOf(i));if(await addTag(tid)){const nt=tags.find(x=>x.id===tid);nt.demo=true;await saveTag(nt);}
+      const t=tags.find(x=>x.id===tid&&x.status==='available');
+      if(t){if(!p.consentDate){p.consentDate=toDateInput(now-30*D);p.consentLog=[...(p.consentLog||[]),{at:now-30*D,text:'同意書取得日を '+ymd(p.consentDate)+' に登録',by:stf()}];}
+        o.tagId=t.id;o.consent=true;o.consentDate=p.consentDate;t.status='reserved';t.outingId=o.id;await saveTag(t);}}
+    addLog(o,`${kind}の予定を登録（出発予定 ${fmt(dep)}）`+(o.tagId?`（タグ ${o.tagId} を予約）`:''),o.departNurse);if(ph)addLog(o,'服装写真を登録',o.departNurse);
+    o.patientId=(await upsertPatient(o,null)).id;await saveOuting(o);if(ph)await dbPut('photos',await demoClothesBlob(cl[1],cl[2]),o.id);outings.push(o);n++;}
+  return n;}
+// 帰院済みの記録：過去10日に10件（遅れ2件・外泊1件・タグあり5件）。出発確認・帰院確認の職員も架空の30人から
+async function demoHistory(list,{now,stf}){const M=60000,H=3600000,D=86400000;const day0=tkDayStart(now);const at=(d,hm)=>tkAtHM(tkAddDays(day0,d),hm);
+  const DEST=['自宅','病院周辺の散歩','近くのコンビニ','〇〇駅周辺で買い物','実家','図書館','他院受診（内科）','自宅','喫煙','病院周辺の散歩'];let n=0;
+  for(let k=4;k<=13;k++){const p=list[k];const dd=k-3;const kind=k===9?'外泊':'外出';
+    const dep=at(-dd,['10:00','13:00','13:30','09:30'][k%4]);const due=kind==='外泊'?at(-dd+1,'16:00'):dep+[2,3,4][k%3]*H;
+    const late=k===6?25*M:k===11?50*M:-[10,20,5][k%3]*M;const ret=Math.min(due+late,now-H);
+    const tag=k%2===0?(k%4===0?'T-04':'T-05'):'';const comp=k%3!==0;const dn=stf(),rn=stf();
+    if(tag&&!p.consentDate){p.consentDate=toDateInput(dep-20*D);p.consentLog=[...(p.consentLog||[]),{at:dep-20*D,text:'同意書取得日を '+ymd(p.consentDate)+' に登録',by:stf()}];}
+    const o={id:uid(),name:p.name,pid:p.pid,kana:p.kana,sex:p.sex,age:p.age,ward:p.ward,adm:p.adm,kind,departAt:dep,dueAt:due,dueAtOriginal:due,dest:DEST[k-4],alone:!comp,
+      compName:comp?p.famName:'',compRel:comp?p.famRel:'',compTel:comp?p.famTel:'',famName:p.famName,famRel:p.famRel,famTel:p.famTel,selfTel:p.selfTel,clothes:DEMO_CLOTHES[k%DEMO_CLOTHES.length][0],note:'',
+      tagId:tag,consent:!!tag,consentDate:tag?p.consentDate:'',departNurse:dn,status:'returned',returnedAt:ret,returnNurse:rn,tagReturned:!!tag,rc:{other:''},createdAt:dep,hasPhoto:false,demo:true,patientId:p.id,
+      log:[{at:dep,text:`${kind}に出発`+(tag?`（タグ ${tag} 貸出）`:'（タグなし）'),by:dn}]};
+    if(k%3===0)o.log.push({at:dep,text:'服装写真を登録',by:dn});
+    if(ret>due)o.log.push({at:due,text:'帰院予定時刻を超過（アラーム）',by:''});
+    o.log.push({at:ret,text:'帰院',by:rn});if(tag)o.log.push({at:ret,text:`タグ ${tag} 回収`,by:rn});
+    if(k%3===0){o.photoDeletedAt=ret;o.log.push({at:ret,text:'服装写真を削除（自動）',by:''});}
+    Object.assign(p,{lastOutAt:dep,lastDest:o.dest,dests:[o.dest],count:Math.max(1,p.count||0),lastComp:{alone:o.alone,compName:o.compName,compRel:o.compRel,compTel:o.compTel}});
+    await saveOuting(o);outings.push(o);n++;}
+  return n;}
 $('#demoIn').addEventListener('click',async()=>{
   if(patients.some(x=>x.demo)||outings.some(x=>x.demo)){toast('デモデータはすでに入っています。入れ直す時は先に「デモデータを消す」を押してください。',5000);return;}
   for(let i=1;i<=5;i++)await addTag('T-'+pad(i));
   const now=Date.now(),M=60000,H=3600000,D=86400000;
   // 東1病棟の入院患者50人（すべて架空）
   let seed=20261109;const rnd=()=>{seed=(seed*1103515245+12345)%2147483648;return seed/2147483648;};const pick=a=>a[Math.floor(rnd()*a.length)];
+  // 2.4.0：架空の職員30人（看護師24人・PSW 6人）を看護師名の一覧の後ろに足す。足した名前だけを覚えておき、「デモデータを消す」でそれだけを消す
+  const staff=[...DEMO_NURSE_SUR.map(x=>'(デモ) 看護師 '+x),...DEMO_PSW_SUR.map(x=>'(デモ) PSW '+x)];
+  const addN=staff.filter(n=>!settings.nurses.includes(n)).slice(0,Math.max(0,NURSE_MAX-settings.nurses.length));
+  settings.nurses=[...settings.nurses,...addN];settings.demoNurses=[...new Set([...(settings.demoNurses||[]),...addN])];await saveSettings();renderNurseList();attachNurseChips(nf);
+  let sseed=7;const stf=()=>{sseed=(sseed*48271)%2147483647;return staff[sseed%staff.length];};
   const SN=[['山田','やまだ'],['佐藤','さとう'],['鈴木','すずき'],['田中','たなか'],['高橋','たかはし'],['伊藤','いとう'],['渡辺','わたなべ'],['中村','なかむら'],['小林','こばやし'],['加藤','かとう'],['吉田','よしだ'],['山本','やまもと'],['松本','まつもと'],['井上','いのうえ'],['木村','きむら'],['林','はやし'],['清水','しみず'],['森','もり'],['池田','いけだ'],['橋本','はしもと'],['石川','いしかわ'],['前田','まえだ'],['藤田','ふじた'],['岡田','おかだ'],['後藤','ごとう']];
   const GM=[['一郎','いちろう'],['健太','けんた'],['大輔','だいすけ'],['誠','まこと'],['浩二','こうじ'],['隆','たかし'],['修','おさむ'],['和也','かずや'],['直樹','なおき'],['正人','まさと'],['勇','いさむ'],['亮','りょう'],['翔太','しょうた']];
   const GF=[['花子','はなこ'],['恵子','けいこ'],['由美','ゆみ'],['真理子','まりこ'],['幸子','さちこ'],['陽子','ようこ'],['美咲','みさき'],['裕子','ゆうこ'],['智子','ともこ'],['京子','きょうこ'],['直美','なおみ'],['彩','あや']];
@@ -2373,7 +2627,7 @@ $('#demoIn').addEventListener('click',async()=>{
       adm:rnd()<0.7?'任意入院':'医療保護入院',selfTel:rnd()<0.4?`090-0000-${2000+k}`:'',famName:`${famSur} ${fam[0]}`,famRel:rel,famTel:`090-0000-${1000+k}`,
       consentDate:rnd()<0.75?toDateInput(now-(10+Math.floor(rnd()*120))*D):'',consentWithdrawn:'',consentLog:[],dests:[],count:0,lastOutAt:0,lastDest:'',lastComp:{alone:true},createdAt:now,demo:true};
     if(k<14){p.count=1+Math.floor(rnd()*4);p.lastOutAt=now-(1+k)*D/2;p.lastDest=pick(DEST);p.dests=[p.lastDest];}
-    if(p.consentDate)p.consentLog=[{at:now-30*D,text:'同意書取得日を '+ymd(p.consentDate)+' に登録',by:'(デモ) 看護師A'}];
+    if(p.consentDate)p.consentLog=[{at:now-30*D,text:'同意書取得日を '+ymd(p.consentDate)+' に登録',by:stf()}];
     list.push(p);await dbPut('patients',p);patients.push(p);}
   // 外出・外泊中3人と予定1人（台帳の患者から）
   const P=n=>list[n];const famOf=p=>({famName:p.famName,famRel:p.famRel,famTel:p.famTel,selfTel:p.selfTel});
@@ -2382,8 +2636,8 @@ $('#demoIn').addEventListener('click',async()=>{
     {pt:P(2),kind:'外泊',departAt:now-20*H,dueAt:now+26*H,dest:'実家（明石市）',alone:false,comp:true,clothes:'緑のパーカー、ジーンズ'}];
   for(const d of demo){const p=d.pt;p.consentDate=p.consentDate||toDateInput(now-40*D);const t=tags.find(x=>x.status==='available');
     const o={id:uid(),name:p.name,pid:p.pid,kana:p.kana,sex:p.sex,age:p.age,ward:p.ward,adm:p.adm,kind:d.kind,departAt:d.departAt,dueAt:d.dueAt,dueAtOriginal:d.dueAt,dest:d.dest,alone:!d.comp,
-      compName:d.comp?p.famName:'',compRel:d.comp?p.famRel:'',compTel:d.comp?p.famTel:'',...famOf(p),clothes:d.clothes,note:'',tagId:t?t.id:'',consent:!!t,consentDate:t?p.consentDate:'',departNurse:'(デモ) 看護師A',status:'out',createdAt:now,hasPhoto:false,demo:true,log:[]};
-    addLog(o,`${o.kind}に出発（デモ）`+(t?`（タグ ${t.id} 貸出）`:''),'(デモ) 看護師A');o.patientId=(await upsertPatient(o,null)).id;if(t){t.status='inuse';t.outingId=o.id;await saveTag(t);}await saveOuting(o);outings.push(o);}
+      compName:d.comp?p.famName:'',compRel:d.comp?p.famRel:'',compTel:d.comp?p.famTel:'',...famOf(p),clothes:d.clothes,note:'',tagId:t?t.id:'',consent:!!t,consentDate:t?p.consentDate:'',departNurse:stf(),status:'out',createdAt:now,hasPhoto:false,demo:true,log:[]};
+    addLog(o,`${o.kind}に出発（デモ）`+(t?`（タグ ${t.id} 貸出）`:''),stf());o.patientId=(await upsertPatient(o,null)).id;if(t){t.status='inuse';t.outingId=o.id;await saveTag(t);}await saveOuting(o);outings.push(o);}
   // 2.2.0：歴史上の人物の名前を使った架空のデモ4人（外出・外泊中、服装写真つき）。デモを入れた直後は4人とも予定超過にしない
   const BUSHO=[{pid:'D1051',name:'明智 光秀',kana:'あけち みつひで',age:'55',kind:'外出',departAt:now-50*M,dueAt:now+40*M,dest:'本能寺',comp:'安田 国継',rel:'家臣',clothes:'薄桃色の着物、赤い柄の襟',img:'mitsuhide'},
     {pid:'D1052',name:'織田 信長',kana:'おだ のぶなが',age:'48',kind:'外出',departAt:now-70*M,dueAt:now+120*M,dest:'比叡山延暦寺',comp:'藤吉郎',rel:'家臣',clothes:'緑の肩衣、白い着物',img:'nobunaga'},
@@ -2392,25 +2646,30 @@ $('#demoIn').addEventListener('click',async()=>{
   for(const [i,b] of BUSHO.entries()){const tel='090-0000-'+(1051+i);
     const p={id:uid(),pid:b.pid,name:'(デモ) '+b.name,kana:b.kana,sex:'男',age:b.age,ward:'東1',adm:'任意入院',selfTel:'',famName:b.comp,famRel:b.rel,famTel:tel,
       consentDate:toDateInput(now-40*D),consentWithdrawn:'',consentLog:[],dests:[],count:0,lastOutAt:0,lastDest:'',lastComp:{alone:true},createdAt:now,demo:true};
-    p.consentLog=[{at:now-30*D,text:'同意書取得日を '+ymd(p.consentDate)+' に登録',by:'(デモ) 看護師A'}];
+    p.consentLog=[{at:now-30*D,text:'同意書取得日を '+ymd(p.consentDate)+' に登録',by:stf()}];
     list.push(p);await dbPut('patients',p);patients.push(p);
     // タグは T-06〜T-09 を足して貸し出す（T-04・T-05 は練習の新規登録・予定の出発用に空けておく）。もとから無かったタグだけ「デモ」の印をつけ、デモを消す時に消す
     const tid='T-'+pad(6+i);if(await addTag(tid)){const nt=tags.find(x=>x.id===tid);nt.demo=true;await saveTag(nt);}
     const t=tags.find(x=>x.id===tid&&x.status==='available')||tags.find(x=>x.status==='available');
     const o={id:uid(),name:p.name,pid:p.pid,kana:p.kana,sex:p.sex,age:p.age,ward:p.ward,adm:p.adm,kind:b.kind,departAt:b.departAt,dueAt:b.dueAt,dueAtOriginal:b.dueAt,dest:b.dest,alone:false,
-      compName:b.comp,compRel:b.rel,compTel:tel,...famOf(p),clothes:b.clothes,note:'',tagId:t?t.id:'',consent:!!t,consentDate:t?p.consentDate:'',departNurse:'(デモ) 看護師A',status:'out',createdAt:now,hasPhoto:true,demo:true,log:[]};
-    addLog(o,`${o.kind}に出発（デモ）`+(t?`（タグ ${t.id} 貸出）`:''),'(デモ) 看護師A');addLog(o,'服装写真を登録','(デモ) 看護師A');
+      compName:b.comp,compRel:b.rel,compTel:tel,...famOf(p),clothes:b.clothes,note:'',tagId:t?t.id:'',consent:!!t,consentDate:t?p.consentDate:'',departNurse:stf(),status:'out',createdAt:now,hasPhoto:true,demo:true,log:[]};
+    addLog(o,`${o.kind}に出発（デモ）`+(t?`（タグ ${t.id} 貸出）`:''),stf());addLog(o,'服装写真を登録',stf());
     o.patientId=(await upsertPatient(o,null)).id;if(t){t.status='inuse';t.outingId=o.id;await saveTag(t);}await saveOuting(o);await dbPut('photos',demoPhotoBlob(b.img),o.id);outings.push(o);}
   {const p=P(3);p.consentDate=p.consentDate||toDateInput(now-30*D);const dep=now+90*M;
-   const o={id:uid(),name:p.name,pid:p.pid,kana:p.kana,sex:p.sex,age:p.age,ward:p.ward,adm:p.adm,kind:'外泊',departAt:dep,dueAt:dep+26*H,dueAtOriginal:dep+26*H,dest:'自宅（明石市）',alone:false,compName:p.famName,compRel:p.famRel,compTel:p.famTel,...famOf(p),clothes:'',note:'',tagId:'',consent:false,departNurse:'(デモ) 看護師A',status:'planned',createdAt:now,hasPhoto:false,demo:true,log:[]};
-   addLog(o,`外泊の予定を登録（出発予定 ${fmt(dep)}）`,'(デモ) 看護師A');o.patientId=(await upsertPatient(o,null)).id;await saveOuting(o);outings.push(o);}
+   const o={id:uid(),name:p.name,pid:p.pid,kana:p.kana,sex:p.sex,age:p.age,ward:p.ward,adm:p.adm,kind:'外泊',departAt:dep,dueAt:dep+26*H,dueAtOriginal:dep+26*H,dest:'自宅（明石市）',alone:false,compName:p.famName,compRel:p.famRel,compTel:p.famTel,...famOf(p),clothes:'',note:'',tagId:'',consent:false,departNurse:stf(),status:'planned',createdAt:now,hasPhoto:false,demo:true,log:[]};
+   addLog(o,`外泊の予定を登録（出発予定 ${fmt(dep)}）`,stf());o.patientId=(await upsertPatient(o,null)).id;await saveOuting(o);outings.push(o);}
+  const nPlan=await demoPlans(list,{now,stf,pick,rnd,famOf});const nHist=await demoHistory(list,{now,stf});
   for(const p of list)await dbPut('patients',p);
-  lastSig='';showTab('active');tick();toast('デモデータを入れました（東1病棟の入院患者54人・外出・外泊中7人・予定1件）',5000);});
+  const nOut=outings.filter(o=>o.demo&&isActive(o)).length;
+  lastSig='';showTab('active');tick();toast(`デモデータを入れました（東1病棟の入院患者${list.length}人・外出・外泊中${nOut}人・予定${nPlan+1}件・帰院済みの記録${nHist}件・架空の職員${addN.length}人）`,6000);});
 $('#demoOut').addEventListener('click',async()=>{for(const o of outings.filter(x=>x.demo)){await dbDel('outings',o.id);await dbDel('photos',o.id);dropPhotoURL(o.id);const t=tags.find(x=>x.outingId===o.id);if(t){t.status='available';t.outingId=null;await saveTag(t);}}
   for(const p of patients.filter(x=>x.demo))await dbDel('patients',p.id);patients=patients.filter(x=>!x.demo);
   // デモで足したタグ（T-06〜T-09。もとから無かった時だけ足している）も消す
   for(const t of tags.filter(x=>x.demo&&x.status==='available'))await dbDel('tags',t.id);tags=tags.filter(x=>!(x.demo&&x.status==='available'));
-  outings=outings.filter(x=>!x.demo);lastSig='';tick();toast('デモデータを消しました');});
+  outings=outings.filter(x=>!x.demo);planOpen.clear();
+  // 2.4.0：デモで足した職員名だけを消す（利用者が登録した看護師名と、その順番はそのまま）
+  {const dn=settings.demoNurses||[];if(dn.length){settings.nurses=settings.nurses.filter(n=>!dn.includes(n));}delete settings.demoNurses;await saveSettings();renderNurseList();renderNurseMgr();attachNurseChips(nf);}
+  lastSig='';tick();if($('#sec-plan').classList.contains('active'))renderPlans();toast('デモデータを消しました');});
 
 /* ---------- 毎秒の見回り ---------- */
 let lastSig='';let titleFlip=false;
@@ -2436,6 +2695,7 @@ async function tick(){
   const sig=act.map(o=>o.id+':'+stateOf(o,now)+':'+(o.hasPhoto?1:0)+':'+(isMasked(o)?1:0)+':'+(isOpen(o)?1:0)).join('|')+'#'+settings.preMin+':'+settings.mask+':'+settings.activeView;
   if(sig!==lastSig){lastSig=sig;await renderActive();}
   else{$$('[data-count]').forEach(el=>{const o=outings.find(x=>x.id===el.dataset.count);if(o)el.textContent=countText(o,now);});updateTimeline(now);updatePreBadges(now);}
+  updatePlans(now);
   const alerts=act.filter(o=>isAlert(o,now));
   const ban=$('#banner');
   const sounding=alerts.filter(o=>needsSound(o,now));let urgent=false;
@@ -2485,7 +2745,7 @@ $('#soundBtn').addEventListener('click',()=>{const was=soundBtnSeen||$('#soundBt
 $('#muteOn').addEventListener('click',()=>{ensureAudio();soundOnAgain();});
 
 /* ---------- iPad単独動作（オフライン対応） ---------- */
-const APP_VERSION='2.3.0';
+const APP_VERSION='2.4.0';
 {const av=document.getElementById('aboutVer');if(av)av.textContent=APP_VERSION;}
 function updateSwInfo(){const el=$('#swInfo');if(!el)return;
   const standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

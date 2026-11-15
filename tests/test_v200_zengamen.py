@@ -92,6 +92,7 @@ def main():
 
                 def confirm():
                     pg.click('nav button[data-tab=plan]'); pg.wait_for_timeout(200)
+                    pg.locator('#planList [data-pact=toggle]').first.click(); pg.wait_for_timeout(200)   # 2.4.0：予定の行はふだんたたんであり、「詳細」で開く
                     pg.locator('#planList [data-pact=cancel]').first.click()
                 dlg('確認', confirm, close='#cdlgNo', sel='#cdlg')
 

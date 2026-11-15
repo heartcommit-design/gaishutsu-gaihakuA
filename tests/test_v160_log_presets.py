@@ -26,7 +26,7 @@ async def main():
         o=await pg.evaluate("outings.find(o=>o.log.some(l=>l.x))"); print('lastLog skips cancelled:', await pg.evaluate("(o=>lastLog(o))(outings.find(o=>o.log.some(l=>l.x)))"))
         await pg.click('#dlgActions button >> nth=0')
         # GO dialog focus
-        await pg.click('nav button[data-tab=plan]'); await pg.wait_for_timeout(200); await pg.locator('#planList [data-pact=go]').click(); await pg.wait_for_timeout(250)
+        await pg.click('nav button[data-tab=plan]'); await pg.wait_for_timeout(200); await pg.locator('#planList [data-pact=go]').first.click(); await pg.wait_for_timeout(250)
         print('go focus ->', await pg.evaluate(ae)); await pg.click('#dlgActions button >> nth=0')
         # presets
         await pg.click('nav button[data-tab=new]'); await pg.wait_for_timeout(200)

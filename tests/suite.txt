@@ -34,3 +34,4 @@ test_v223_insatsu_annai
 test_v230_yotei30
 test_v230_shinki_kaizen
 test_v230_shinki_ui
+test_v240_jikki_shiteki
