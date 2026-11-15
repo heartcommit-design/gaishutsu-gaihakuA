@@ -11,7 +11,7 @@ async def main():
             await pg.click('nav button[data-tab=new]'); await pg.wait_for_timeout(200)
             await pg.fill('input[name=name]','予定 太郎'); await pg.fill('input[name=pid]','Y1'); await pg.click('#wardRadios label:has-text("東1")')
             await pg.evaluate("(()=>{const i=nf.elements.departAt;i.value=toLocalInput(Date.now()+86400000);i.dispatchEvent(new Event('input',{bubbles:true}));})()")
-            await pg.click('#kindRadios label:has-text("外泊")'); await pg.click('#dueQuick button[data-d="1"]'); await pg.fill('input[name=departNurse]','看護 A'); await pg.click('#submitBtn'); await pg.wait_for_timeout(600)  # 見本A：日付のボタン（明日など）は外泊の時だけ出る
+            await pg.click('#kindRadios label:has-text("外泊")'); await pg.click('#dueQuick button[data-d="1"]'); await pg.fill('input[name=departNurse]','看護 A'); await pg.click('#submitBtn'); await pg.wait_for_timeout(600)  # 2.3.0：日付のボタン（明日など）は外泊の時だけ出る
             await pg.click('nav button[data-tab=plan]'); await pg.wait_for_timeout(300)
             await pg.locator('#planList [data-pact=go]').first.tap(); await pg.wait_for_timeout(300)
             dl=await pg.evaluate("(()=>{const d=document.getElementById('dlg');const r=d.getBoundingClientRect();const b=[...document.querySelectorAll('#dlgActions button')].map(x=>{const q=x.getBoundingClientRect();return x.textContent+':'+Math.round(q.top)+'-'+Math.round(q.bottom)});return {open:d.open,top:Math.round(r.top),bottom:Math.round(r.bottom),vh:innerHeight,btns:b}})()")

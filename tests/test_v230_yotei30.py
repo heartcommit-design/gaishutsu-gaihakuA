@@ -1,4 +1,4 @@
-"""見本：予定に切り替わる境目は「出発が今から30分を超える時」。30分後のボタンは出発の登録のまま（時間がたっても予定に倒れない）"""
+"""2.3.0：予定に切り替わる境目は「出発が今から30分を超える時」。30分後のボタンは出発の登録のまま（時間がたっても予定に倒れない）"""
 import os
 from playwright.sync_api import sync_playwright
 HERE=os.path.dirname(os.path.abspath(__file__)); APP=os.path.dirname(HERE)

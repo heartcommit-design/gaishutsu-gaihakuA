@@ -372,7 +372,7 @@ fieldset{min-width:0}
 #printArea{display:none}
 @page{size:297mm 210mm;margin:8mm}
 
-/* ---------- 見本：新規登録を分かりやすく（必須の見分け・下の登録バー・患者欄のたたみ） ---------- */
+/* ---------- 2.3.0 新規登録：必須の見分け・下の登録バー・患者欄のたたみ ---------- */
 :root,html[data-theme="light"]{--rq:#8f5600;--rqon:#fff;--rqbg:rgba(255,222,150,.34);--rqline:#d8901a;--rqtx:#6b4100}
 html[data-theme="dark"]{--rq:#ffc457;--rqon:#3d2600;--rqbg:rgba(255,196,87,.10);--rqline:#ffc457;--rqtx:#ffd27a}
 #newForm .req{display:inline-block;font-size:13px;font-weight:800;line-height:1.5;padding:0 7px;border-radius:6px;background:var(--rq);color:var(--rqon);margin-left:8px;vertical-align:1px;white-space:nowrap}
@@ -425,7 +425,7 @@ body.rbon #toast{bottom:calc(var(--rbh,90px) + 12px)}
 }
 @media print{#regBar{display:none!important}body.rbon{padding-bottom:0}}
 
-/* ---------- 見本B：新規登録の見た目（落ち着いた濃紺・余白と細い罫線・高さと角丸の統一） ---------- */
+/* ---------- 2.3.0 新規登録の見た目（落ち着いた濃紺・余白と細い罫線・高さと角丸の統一） ---------- */
 :root,html[data-theme="light"]{--nv:#1b2b4b;--nvtx:#fff;--acc:#0f7882;--surf:rgba(255,255,255,.80);--hair:rgba(20,35,58,.10);--hair2:rgba(20,35,58,.22);--segbg:rgba(20,35,58,.06);--segon:#fff;--soft:0 1px 2px rgba(16,24,40,.05),0 10px 30px rgba(16,24,40,.07);--rqsoft:rgba(216,144,26,.10)}
 html[data-theme="dark"]{--nv:#e3eaf6;--nvtx:#0f1b30;--acc:#62cfd6;--surf:rgba(20,32,52,.78);--hair:rgba(255,255,255,.10);--hair2:rgba(255,255,255,.24);--segbg:rgba(255,255,255,.07);--segon:rgba(255,255,255,.17);--soft:0 1px 2px rgba(0,0,0,.20),0 12px 32px rgba(0,0,0,.28);--rqsoft:rgba(255,196,87,.10)}
 #sec-new>h2{font-size:22px;font-weight:700;letter-spacing:.06em;margin:10px 6px 16px}
@@ -504,7 +504,7 @@ html[data-theme="dark"]{--nv:#e3eaf6;--nvtx:#0f1b30;--acc:#62cfd6;--surf:rgba(20
 #regBar .rbmiss button{border-width:1px;background:transparent;font-weight:600}
 @media (max-width:760px){.tgrid{grid-template-columns:minmax(0,1fr)}#newForm .radios.wards{grid-template-columns:repeat(4,minmax(0,1fr))}#sec-new #newForm.panel{padding:4px 14px 18px}}
 
-/* ---------- 見本5 ---------- */
+/* ---------- 2.3.0 新規登録：細かく選ぶ・出発前の札・キーボード中の登録バー・タグのボタン ---------- */
 .vh{position:absolute!important;width:1px!important;height:1px!important;min-height:0!important;padding:0!important;margin:0!important;opacity:0;overflow:hidden;clip-path:inset(50%);border:0!important}
 #fsTag label{position:relative}
 .tfrow{display:flex;justify-content:flex-end;margin-top:6px}
@@ -514,6 +514,8 @@ html[data-theme="dark"]{--nv:#e3eaf6;--nvtx:#0f1b30;--acc:#62cfd6;--surf:rgba(20
 .tman{margin-top:4px}
 .lbl-pre{background:var(--planbg);color:var(--plantx);box-shadow:inset 0 0 0 1px var(--infoline);margin-left:6px}
 .tl .l2 .lbl-pre{font-size:13px;padding:2px 9px}
+.tl .l2:has(.lbl-pre){flex-wrap:wrap;row-gap:3px}   /* 札が付く時は、病棟などを次の行に（…で切れないように） */
+.tl .l2:has(.lbl-pre) .sub{flex-basis:100%}
 #regBar{bottom:var(--vvb,0px)}
 body.kbd #regBar{display:none}
 .tagbtns{grid-template-columns:repeat(8,minmax(0,1fr));margin-top:6px}
@@ -695,7 +697,7 @@ body.kbd #regBar{display:none}
           <label class="thead">出発日時<span class="req">必須</span><input type="datetime-local" name="departAt" required></label>
           <div class="tres" id="depRes"></div>
           <div class="tbtns" id="depQuick"><button type="button" class="tb" data-m="0">今から</button><button type="button" class="tb" data-m="10">10分後</button><button type="button" class="tb" data-m="20">20分後</button><button type="button" class="tb" data-m="30">30分後</button><button type="button" class="tb" data-m="60">1時間後</button><button type="button" class="tb" data-m="120">2時間後</button><button type="button" class="tb" data-m="180">3時間後</button><button type="button" class="tb" data-tmr="1">明日</button></div>
-          <div class="tbtns" id="depTimes" hidden><button type="button" class="tb" data-t="09:00">09:00</button><button type="button" class="tb" data-t="10:00">10:00</button><button type="button" class="tb" data-t="13:00">13:00</button><button type="button" class="tb" data-t="15:00">15:00</button></div>
+          <div class="tbtns" id="depTimes" hidden></div>
           <div class="tfrow"><button type="button" class="tfine" data-man="depMan" aria-expanded="false">細かく選ぶ</button></div>
           <div class="tman" id="depMan" hidden></div>
         </div>
@@ -705,7 +707,7 @@ body.kbd #regBar{display:none}
           <div id="dueQuick">
             <div class="tbtns" data-kind="外出"><button type="button" class="tb" data-h="1">+1時間</button><button type="button" class="tb" data-h="2">+2時間</button><button type="button" class="tb" data-h="3">+3時間</button><button type="button" class="tb" data-h="4">+4時間</button><button type="button" class="tb" data-h="6">+6時間</button><button type="button" class="tb" data-h="8">+8時間</button><button type="button" class="tb" data-h="10">+10時間</button></div>
             <div class="tbtns c3" data-kind="外泊" hidden><button type="button" class="tb" data-d="1">明日</button><button type="button" class="tb" data-d="2">明後日</button><button type="button" class="tb" data-d="3">3日後</button></div>
-            <div class="tbtns" data-kind="外泊" hidden><button type="button" class="tb" data-t="10:00">10:00</button><button type="button" class="tb" data-t="13:00">13:00</button><button type="button" class="tb" data-t="15:00">15:00</button><button type="button" class="tb" data-t="17:00">17:00</button></div>
+            <div class="tbtns" data-kind="外泊" id="dueTimes" hidden></div>
           </div>
           <div class="tfrow"><button type="button" class="tfine" data-man="dueMan" aria-expanded="false">細かく選ぶ</button></div>
           <div class="tman" id="dueMan" hidden></div>
@@ -714,7 +716,7 @@ body.kbd #regBar{display:none}
       <div class="grid" style="margin-top:10px">
         <label>行き先<input name="dest" list="destList" placeholder="例：自宅、〇〇駅周辺の買い物"><span class="nchips mchips pchips" data-preset="dest" data-field="dest"></span></label>
       </div>
-      <p class="hint">よく使う行き先はボタンで入ります（「設定」で登録）。前回の情報を呼び出すと前回の行き先が入り、入力欄を押すと過去の行き先からも選べます。</p>
+      <p class="hint"><span class="nw">よく使う行き先はボタンで入ります</span><span class="nw">（「設定」で登録）。</span><span class="nw">前回の情報を呼び出すと</span><span class="nw">前回の行き先が入り、</span><span class="nw">入力欄を押すと</span><span class="nw">過去の行き先からも選べます。</span></p>
       <div class="psum csum" id="cSum" hidden></div>
       <div id="cFields">
       <div class="grid" style="margin-top:10px">
@@ -964,7 +966,7 @@ body.kbd #regBar{display:none}
 <dialog id="dlg"><div class="dlgin"><h3 id="dlgTitle" tabindex="-1" autofocus style="outline:none"></h3><form id="dlgForm" onsubmit="return false"><div id="dlgBody"></div><div class="dlgActions" id="dlgActions"></div></form></div></dialog>
 <dialog id="cdlg"><div class="dlgin"><h3 id="cdlgMsg" style="font-size:18px;line-height:1.6;white-space:pre-line"></h3><div class="dlgActions"><button type="button" class="btn" id="cdlgNo">やめる</button><button type="button" class="btn bad" id="cdlgYes">はい</button></div></div></dialog>
 <div id="printArea"></div>
-<!-- 見本：新規登録の下に固定する登録バー（新規登録タブの間だけ出る） -->
+<!-- 新規登録の下に固定する登録バー（新規登録タブの間だけ出る） -->
 <div id="regBar" hidden><div class="rbin">
   <div class="rbst"><b class="rbcnt" id="rbCnt"></b><span class="rbmiss" id="rbMiss"></span></div>
   <button type="button" class="btn pri big" id="rbBtn">この内容で出発を登録</button>
@@ -1111,7 +1113,7 @@ function needsSound(o,now){
   return now-ack>=settings.realertMin*60000;
 }
 const isActive=o=>o.status==='out'||o.status==='search';
-const PLAN_MIN=30;   // 見本：出発が今から30分を超えて先なら「予定」（30分ちょうどまでは出発の登録）
+const PLAN_MIN=30;   // 出発が今から30分を超えて先なら「予定」（30分ちょうどまでは出発の登録）
 function stLabel(o,s){if(s==='ok')return (o.kind||'外出')+'中';if(s==='planned')return o.departAt<Date.now()?'出発予定時刻を過ぎています':(o.kind||'外出')+'の予定';return LABEL[s];}
 const LABEL={cancelled:'取消（誤登録）',planned:'予定',ok:'外出中',soon:'まもなく帰院時刻',overdue:'帰院時刻超過',search:'捜索中',returned:'帰院済'};
 function countText(o,now){
@@ -1618,7 +1620,7 @@ function renderPatientChips(){
 function setRadio(name,v){const r=[...nf.querySelectorAll(`input[name="${name}"]`)].find(x=>x.value===v);if(r)r.checked=true;}
 function fillPatient(p){
   const f=nf.elements;
-  f.name.value=p.name||'';f.pid.value=p.pid||'';f.kana.value=p.kana||'';f.sex.value=p.sex||'';f.age.value=ageOf(p);f.adm.value=p.adm||'任意入院';setRadio('ward',p.ward);
+  f.name.value=p.name||'';f.pid.value=p.pid||'';f.kana.value=p.kana||'';f.sex.value=p.sex||'';f.age.value=ageOf(p);f.adm.value=p.adm||'任意入院';nf.querySelectorAll('input[name="ward"]').forEach(r=>r.checked=false);setRadio('ward',p.ward);   // 病棟の無い患者を呼んだ時に、前の人の病棟が残らないように
   f.selfTel.value=p.selfTel||'';f.famName.value=p.famName||'';f.famRel.value=p.famRel||'';f.famTel.value=p.famTel||'';
   f.dest.value=p.lastDest||'';
   const c=p.lastComp||{alone:true};setRadio('alone',c.alone?'1':'0');$('#compBox').hidden=!!c.alone;
@@ -1661,7 +1663,7 @@ function markOuting(p,o,at){
 }
 function isPlanForm(){const d=fromLocalInput(nf.elements.departAt.value);return (!nf.dataset.planId||nf.dataset.planMode==='edit')&&d&&d>Date.now()+PLAN_MIN*60000;}
 function updatePlanMode(){const plan=isPlanForm();$('#formBack').hidden=!nf.dataset.planId;$('#fsClothes').hidden=false;$('#fsTag').hidden=false;{const o0=$('#tagSelect').options[0];if(o0&&o0.value==='')o0.textContent=plan?'タグなし（出発時に選ぶ）':'タグなし';}
-  const n=$('#planNote');n.hidden=!plan;n.innerHTML=plan?'<b>出発日時が先なので「予定」として登録します。</b>服装の写真をここで撮っておけば、当日は「予定」タブの<b>「出発（GO）」</b>でタグを選んで看護師名を入れるだけです。<b>タグは「タグなし」のままでOK（出発時に選びます）</b>。ここでタグを選ぶと「予約中」になり、出発日まで他の患者には使えません。<b>帰院予定は、出発が早まっても遅れても変わりません。</b>':'';
+  const n=$('#planNote');n.hidden=!plan;n.innerHTML=plan?'<span class="nw"><b>出発日時が先なので</b></span><span class="nw"><b>「予定」として登録します。</b></span><span class="nw">服装の写真をここで撮っておけば、</span><span class="nw">当日は「予定」タブの<b>「出発（GO）」</b>で</span><span class="nw">タグを選んで看護師名を入れるだけです。</span><span class="nw"><b>タグは「タグなし」のままでOK</b></span><span class="nw"><b>（出発時に選びます）</b>。</span><span class="nw">ここでタグを選ぶと「予約中」になり、</span><span class="nw">出発日まで他の患者には使えません。</span><span class="nw"><b>帰院予定は、</b></span><span class="nw"><b>出発が早まっても遅れても変わりません。</b></span>':'';
   $('#submitBtn').textContent=plan?(nf.dataset.planMode==='edit'?'予定を更新':'予定として登録'):'この内容で出発を登録';
   const lb=nf.querySelector('input[name=departNurse]').closest('label');lb.firstChild.textContent=plan?'登録した看護師':'確認した看護師';}
 nf.elements.departAt.addEventListener('input',updatePlanMode);nf.elements.departAt.addEventListener('change',updatePlanMode);
@@ -1683,7 +1685,7 @@ $$('input[name="alone"]').forEach(r=>r.addEventListener('change',()=>{$('#compBo
 
 
 
-/* ---------- 見本5：改善（細かく選ぶ・出発前の札・外出の翌日確認・キーボード・タグのボタン） ---------- */
+/* ---------- 新規登録：細かく選ぶ・出発前の札・外出の翌日確認・キーボード・タグのボタン ---------- */
 function openMan(id,on){const m=$('#'+id);const b=document.querySelector(`.tfine[data-man="${id}"]`);m.hidden=!on;if(b){b.setAttribute('aria-expanded',on?'true':'false');b.textContent=on?'細かい選択を閉じる':'細かく選ぶ';}}
 $$('.tfine').forEach(b=>b.addEventListener('click',()=>openMan(b.dataset.man,$('#'+b.dataset.man).hidden)));
 nf.addEventListener('reset',()=>{openMan('depMan',false);openMan('dueMan',false);});
@@ -1706,7 +1708,12 @@ function renderTagBtns(){const sel=$('#tagSelect');const plan=isPlanForm();
   $$('#tagBtns .tb').forEach(b=>b.classList.toggle('on',b.dataset.tag===sel.value));}
 $('#tagBtns').addEventListener('click',e=>{const b=e.target.closest('[data-tag]');if(!b)return;const sel=$('#tagSelect');if(sel.value!==b.dataset.tag){sel.value=b.dataset.tag;sel.dispatchEvent(new Event('change',{bubbles:true}));}renderTagBtns();});
 
-/* ---------- 見本A：出発・帰院の時刻ボタン ---------- */
+/* ---------- 新規登録：出発・帰院の時刻ボタン ---------- */
+// 時刻の候補（仮の固定値）。後で「設定」に移すときは、この2つを settings から読むようにすればよい（ボタンは下で作る）
+const DEP_TMR_TIMES=['09:00','10:00','13:00','15:00'];   // 出発「明日」を押した後に出す時刻
+const GAIHAKU_DUE_TIMES=['10:00','13:00','15:00','17:00'];  // 外泊の帰院予定の時刻
+function tkTimeBtns(box,list){box.innerHTML=list.map(t=>`<button type="button" class="tb" data-t="${esc(t)}">${esc(t)}</button>`).join('');}
+tkTimeBtns($('#depTimes'),DEP_TMR_TIMES);tkTimeBtns($('#dueTimes'),GAIHAKU_DUE_TIMES);
 // 選択欄（日付・時刻・細かく入力）は各列の下へ移す。入力欄（name=departAt/dueAt）と値の読み取りは同じ
 $('#depMan').append(nf.elements.departAt._tp);$('#dueMan').append(nf.elements.dueAt._tp);
 let depPick=null,depSetting=false;
@@ -1731,7 +1738,7 @@ $('#dueQuick').addEventListener('click',e=>{const b=e.target.closest('.tb');if(!
   else if(b.dataset.d)tkSetDT('dueAt',tkAtHM(tkAddDays(tkDayStart(dep),Number(b.dataset.d)),due?tkHmOf(due):tkHmOf(round15(dep))));
   else if(b.dataset.t)tkSetDT('dueAt',tkAtHM(due?tkDayStart(due):tkAddDays(tkDayStart(dep),1),b.dataset.t));
   updateRq();});
-function tkSetHTML(el,h){if(el.innerHTML!==h)el.innerHTML=h;}
+function tkSetHTML(el,h){if(el._h!==h){el._h=h;el.innerHTML=h;}}   // 前に入れた文字列と比べる（毎秒の描き直しで、中の部品を作り直さない）
 function tkResHTML(t,which){if(!t)return '<span class="e">まだ選んでいません</span>';
   const r=tkRelDay(t);let h=`<span class="d">${r?r+' ':''}${tkMdOf(t)}</span><span class="t">${tkHmOf(t)}</span>`;
   if(which==='dep'){if(isPlanForm())h+='<span class="plan">予定として登録</span>';}
@@ -1750,7 +1757,7 @@ function paintTime(){const f=nf.elements;const dep=fromLocalInput(f.departAt.val
   $('#depCol').classList.toggle('isplan',isPlanForm());
 }
 
-/* ---------- 見本：必須の見分け・下の登録バー・患者欄のたたみ ---------- */
+/* ---------- 新規登録：必須の見分け・下の登録バー・患者欄のたたみ ---------- */
 const RQ=[{k:'name',lab:'患者氏名'},{k:'pid',lab:'患者ID'},{k:'ward',lab:'病棟'},{k:'departAt',lab:'出発日時'},{k:'dueAt',lab:'帰院予定日時'},{k:'departNurse'},{k:'compName',lab:'同行者氏名',cond:()=>nf.elements.alone.value==='0'}];
 function rqBox(k){return k==='ward'?$('#wardBox'):k==='departAt'?$('#depCol'):k==='dueAt'?$('#dueCol'):nf.elements[k].closest('label');}
 function rqFilled(k){return !!String((k==='ward'?nf.elements.ward.value:nf.elements[k].value)||'').trim();}
@@ -1793,7 +1800,7 @@ function pFold(){const f=nf.elements;if(!(f.name.value.trim()&&f.pid.value.trim(
   $('#pOpen').addEventListener('click',()=>{pExpand();nf.elements.name.focus({preventScroll:true});});
   updateRq();}
 function pExpand(){$('#pSum').hidden=true;$('#pFields').hidden=false;cExpand();}
-// 4. 連絡先：1つでも入っていれば要約にたたむ（空なら開いたまま）。備考：空なら「＋ 備考を書く」ボタンだけにする
+// 連絡先：1つでも入っていれば要約にたたむ（空なら開いたまま）。備考：空なら「＋ 備考を書く」ボタンだけにする
 function cFold(){const f=nf.elements;const v=k=>f[k].value.trim();
   if(!(v('selfTel')||v('famName')||v('famRel')||v('famTel'))){cExpand();return;}
   const na=t=>`<span class="na">${t}：未登録</span>`;
@@ -2478,7 +2485,7 @@ $('#soundBtn').addEventListener('click',()=>{const was=soundBtnSeen||$('#soundBt
 $('#muteOn').addEventListener('click',()=>{ensureAudio();soundOnAgain();});
 
 /* ---------- iPad単独動作（オフライン対応） ---------- */
-const APP_VERSION='2.2.3';
+const APP_VERSION='2.3.0';
 {const av=document.getElementById('aboutVer');if(av)av.textContent=APP_VERSION;}
 function updateSwInfo(){const el=$('#swInfo');if(!el)return;
   const standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
